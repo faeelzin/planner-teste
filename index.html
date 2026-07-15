@@ -982,10 +982,22 @@ function startRealtimeSync(){
 // Cada revisão é um "nó" independente no Firebase (chave = id da revisão), em vez de
 // fazer parte de um array único sobrescrito por inteiro a cada salvamento. Assim, adicionar/editar
 // uma revisão nunca apaga revisões que outra pessoa (ou outra aba) acabou de criar.
+function rvSanitizeItem(it){
+  // Corrige itens antigos/corrompidos que chegam do Firebase sem 'steps' válido
+  // (ex.: resquício de testes ou gravação incompleta), evitando que quebrem o rvRender inteiro.
+  if(!it||typeof it!=='object') return it;
+  if(!Array.isArray(it.steps)||it.steps.length!==RV_STEPS.length){
+    it.steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
+  } else {
+    it.steps=it.steps.map(function(s){ return (s&&typeof s==='object')?s:{doneAt:null,targetDate:null}; });
+  }
+  if(!Array.isArray(it.comments)) it.comments=it.comments||[];
+  return it;
+}
 function rvArrayFromMap(map){
   if(!map) return [];
   const arr=Array.isArray(map)?map.filter(Boolean):Object.keys(map).map(function(k){return map[k];});
-  return arr.filter(Boolean).sort(function(a,b){return (b.id||0)-(a.id||0);});
+  return arr.filter(Boolean).map(rvSanitizeItem).sort(function(a,b){return (b.id||0)-(a.id||0);});
 }
 function rvPersistItem(item){
   if(!fbEnabled||!fbRef||!item||item.id==null)return;
@@ -1744,7 +1756,8 @@ function rvISOToMs(iso){
 }
 
 function rvNextStep(item){
-  for(var i=0;i<item.steps.length;i++){ if(!item.steps[i].doneAt) return i; }
+  if(!item||!Array.isArray(item.steps)) return 0;
+  for(var i=0;i<item.steps.length;i++){ if(!item.steps[i]||!item.steps[i].doneAt) return i; }
   return -1;
 }
 // Calcula a data de cada etapa de revisão em cadeia: cada intervalo (2, 7, 15, 30 dias)
