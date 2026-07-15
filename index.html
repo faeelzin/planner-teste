@@ -1,0 +1,2127 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Planner OAB 47</title>
+<link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+--adm:#6366f1;--adm-l:#eef2ff;--adm-d:#3730a3;
+--civ:#0891b2;--civ-l:#e0f2fe;--civ-d:#0e4f6b;
+--con:#059669;--con-l:#d1fae5;--con-d:#065f46;
+--co2:#0f766e;--co2-l:#f0fdfa;--co2-d:#134e4a;
+--tra:#d97706;--tra-l:#fef3c7;--tra-d:#92400e;
+--pdt:#b45309;--pdt-l:#ffedd5;--pdt-d:#7c2d12;
+--emp:#7c3aed;--emp-l:#f3e8ff;--emp-d:#4c1d95;
+--pen:#dc2626;--pen-l:#fee2e2;--pen-d:#7f1d1d;
+--ppe:#9f1239;--ppe-l:#ffe4e6;--ppe-d:#4c0519;
+--tri:#0d9488;--tri-l:#ccfbf1;--tri-d:#134e4a;
+--bg:#f8f7f4;--bg2:#fff;--txt:#1a1a1a;--txt2:#6b7280;--bdr:#e5e7eb;
+}
+body{font-family:'DM Sans',sans-serif;background:var(--bg);color:var(--txt);font-size:14px}
+h1,h2,h3{font-family:'Outfit',sans-serif}
+button,.tb{font-family:'Outfit',sans-serif}
+
+/* WELCOME */
+.wo{position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(10,10,30,.8);backdrop-filter:blur(6px)}
+.wb{background:#fff;border-radius:22px;padding:36px 40px;max-width:500px;width:94%;text-align:center;box-shadow:0 24px 60px rgba(99,102,241,.3);animation:win .4s ease}
+@keyframes win{from{transform:scale(.85) translateY(20px);opacity:0}to{transform:scale(1);opacity:1}}
+.we{font-size:48px;display:block;margin-bottom:10px}
+.wt{font-family:'Outfit',sans-serif;font-size:22px;font-weight:800;background:linear-gradient(135deg,#6366f1,#8b5cf6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;margin-bottom:8px}
+.wm{font-size:14px;color:#374151;line-height:1.7;margin-bottom:14px}
+.wq{font-style:italic;color:#6b7280;font-size:12px;border-left:3px solid #6366f1;padding-left:10px;text-align:left;margin-bottom:18px}
+.wc{background:linear-gradient(135deg,#6366f1,#8b5cf6);color:#fff;border:none;border-radius:10px;padding:12px 28px;font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;cursor:pointer;width:100%}
+
+/* LAYOUT */
+.app{display:flex;flex-direction:column;min-height:100vh}
+.hdr{background:#fff;border-bottom:1px solid var(--bdr);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:200}
+.logo{font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;white-space:nowrap}.logo span{color:#6366f1}
+
+/* SEARCH */
+.srch{position:relative;flex:1;max-width:280px}
+.si{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:9px;padding:7px 11px 7px 32px;background:var(--bg)}
+.si:focus{outline:none;border-color:#6366f1;background:#fff}
+.sico{position:absolute;left:9px;top:50%;transform:translateY(-50%);font-size:12px;color:var(--txt2);pointer-events:none}
+.sdd{position:absolute;top:calc(100% + 4px);left:0;right:0;background:#fff;border:1px solid var(--bdr);border-radius:10px;box-shadow:0 8px 24px rgba(0,0,0,.12);max-height:340px;overflow-y:auto;z-index:400;display:none}
+.sdd.open{display:block}
+.si-item{padding:8px 12px;cursor:pointer;border-bottom:1px solid var(--bdr)}
+.si-item:last-child{border-bottom:none}
+.si-item:hover{background:var(--bg)}
+.si-top{font-size:12px;font-weight:500;margin-bottom:3px}
+.si-meta{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.sno{padding:12px;text-align:center;color:var(--txt2);font-size:12px}
+
+/* AVISOS BELL */
+.av-btn{background:none;border:1px solid var(--bdr);border-radius:8px;padding:6px 11px;cursor:pointer;font-size:13px;color:var(--txt2);position:relative;transition:all .2s}
+.av-btn:hover{background:#fff8e6;border-color:#f59e0b;color:#b45309}
+.av-badge{position:absolute;top:-4px;right:-4px;background:#dc2626;color:#fff;font-size:9px;font-family:'Outfit',sans-serif;font-weight:700;padding:1px 4px;border-radius:10px;min-width:14px;text-align:center}
+.av-panel{display:none;position:fixed;top:54px;right:16px;width:340px;background:#fff;border:1px solid var(--bdr);border-radius:14px;box-shadow:0 12px 40px rgba(0,0,0,.15);z-index:500;max-height:80vh;overflow-y:auto}
+.av-panel.open{display:block;animation:fadeIn .2s ease}
+@keyframes fadeIn{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:translateY(0)}}
+.av-header{padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--bdr)}
+.av-title{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600}
+.av-close{background:none;border:none;cursor:pointer;font-size:16px;color:var(--txt2)}
+.av-add{padding:12px 14px;border-bottom:1px solid var(--bdr)}
+.av-add textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:7px;padding:7px 9px;resize:none;min-height:56px;color:var(--txt)}
+.av-add textarea:focus{outline:none;border-color:#f59e0b}
+.av-add-row{display:flex;gap:6px;margin-top:6px;align-items:center}
+.av-add-row select{font-size:11px;border:1px solid var(--bdr);border-radius:6px;padding:4px 7px;font-family:'DM Sans',sans-serif;background:#fff;flex:1}
+.av-save{background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:5px 13px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+.av-list{padding:8px 0}
+.av-item{padding:10px 14px;border-bottom:1px solid var(--bdr);display:flex;gap:8px;align-items:flex-start}
+.av-item:last-child{border-bottom:none}
+.av-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:4px}
+.av-text{flex:1;font-size:12px;line-height:1.5;color:var(--txt)}
+.av-meta{font-size:10px;color:var(--txt2);margin-top:2px}
+.av-del{background:none;border:none;cursor:pointer;font-size:12px;color:var(--txt2);flex-shrink:0}
+.av-del:hover{color:#dc2626}
+.av-empty{padding:20px;text-align:center;color:var(--txt2);font-size:12px}
+
+/* COUNTDOWN */
+.cdb{background:linear-gradient(135deg,#4f46e5,#7c3aed);color:#fff;padding:9px 18px;display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.cdi{display:flex;gap:18px;align-items:center}
+.cdn{font-family:'Outfit',sans-serif;font-size:24px;font-weight:700;line-height:1}
+.cdl{font-size:10px;opacity:.8}
+.cds{font-size:20px;font-weight:300;opacity:.4}
+
+/* TABS */
+.tabs{background:#fff;border-bottom:1px solid var(--bdr);display:flex;overflow-x:auto}
+.tb{font-size:12px;font-weight:500;padding:10px 14px;border:none;background:transparent;cursor:pointer;color:var(--txt2);border-bottom:2px solid transparent;white-space:nowrap;transition:all .2s}
+.tb.active{color:#6366f1;border-bottom-color:#6366f1}
+.tb:hover:not(.active){color:var(--txt);background:var(--bg)}
+.cnt{padding:18px;flex:1}
+.tp{display:none}.tp.active{display:block}
+
+/* TAGS */
+.mt{display:inline-flex;align-items:center;padding:2px 8px;border-radius:20px;font-size:10px;font-weight:600;font-family:'Outfit',sans-serif;white-space:nowrap}
+.mt-ADM{background:var(--adm-l);color:var(--adm-d)}
+.mt-CIV{background:var(--civ-l);color:var(--civ-d)}
+
+.mt-CON{background:var(--con-l);color:var(--con-d)}
+.mt-CO2{background:var(--co2-l);color:var(--co2-d);border:1px dashed var(--co2)}
+.mt-TRA{background:var(--tra-l);color:var(--tra-d)}
+.mt-PDT{background:var(--pdt-l);color:var(--pdt-d);border:1px dashed var(--pdt)}
+.mt-EMP{background:var(--emp-l);color:var(--emp-d)}
+.mt-PEN{background:var(--pen-l);color:var(--pen-d)}
+.mt-PPE{background:var(--ppe-l);color:var(--ppe-d);border:1px dashed var(--ppe)}
+.mt-TRI{background:var(--tri-l);color:var(--tri-d)}
+.ia{background:#fee2e2;color:#7f1d1d;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600;font-family:'Outfit',sans-serif}
+.im{background:#fef3c7;color:#78350f;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600;font-family:'Outfit',sans-serif}
+.ib{background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600;font-family:'Outfit',sans-serif}
+
+/* WEEK PLANNER */
+.wnav{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.wg{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.dc{display:flex;flex-direction:column;gap:6px}
+.dh{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;text-align:center;padding:6px;background:var(--bg);border-radius:7px}
+.sc{background:#fff;border:1px solid var(--bdr);border-radius:8px;padding:8px 10px;cursor:grab;transition:all .2s}
+.sc:hover{border-color:#6366f1;box-shadow:0 2px 6px rgba(99,102,241,.12)}
+.sc.drag{opacity:.4}
+.ct{font-size:11px;font-weight:500;line-height:1.4;flex:1}
+.ca{display:flex;gap:3px;opacity:0;transition:opacity .2s}
+.sc:hover .ca{opacity:1}
+.ab{background:none;border:1px solid var(--bdr);border-radius:4px;padding:2px 4px;cursor:pointer;font-size:9px;color:var(--txt2)}
+.ab:hover{background:var(--bg)}
+.ab.dl:hover{background:#fee2e2;color:#dc2626}
+.cm{display:flex;gap:3px;flex-wrap:wrap;margin:4px 0}
+.cc{display:flex;gap:4px;flex-wrap:wrap;align-items:center}
+.ms{font-size:10px;font-family:'DM Sans',sans-serif;border:1px solid var(--bdr);border-radius:4px;padding:2px 4px;background:var(--bg);color:var(--txt);cursor:pointer}
+.tb2{font-size:9px;color:var(--txt2);background:var(--bg);padding:2px 4px;border-radius:4px}
+/* KANBAN */
+/* STATS */
+.sg{display:grid;grid-template-columns:repeat(auto-fit,minmax(120px,1fr));gap:8px;margin-bottom:16px}
+.sk{background:#fff;border:1px solid var(--bdr);border-radius:9px;padding:12px}
+.sv{font-family:'Outfit',sans-serif;font-size:22px;font-weight:700;line-height:1}
+.sl{font-size:10px;color:var(--txt2);margin-top:2px}
+.pb{height:5px;background:var(--bdr);border-radius:3px;margin-top:6px;overflow:hidden}
+.pf{height:100%;border-radius:3px;background:#6366f1;transition:width .5s}
+
+/* MATERIAS */
+.mtt{width:100%;border-collapse:collapse}
+.mtt th{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--txt2);padding:8px 10px;text-align:left;border-bottom:2px solid var(--bdr);background:var(--bg)}
+.mtt td{padding:7px 10px;border-bottom:1px solid var(--bdr);font-size:11px;vertical-align:top}
+.mtt tr:last-child td{border-bottom:none}
+.mtt tr:hover td{background:#fafafa}
+.sh{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;padding:12px 0 6px;border-bottom:2px solid var(--bdr);margin-bottom:9px;display:flex;align-items:center;gap:7px}
+.tsbtn{background:none;border:1px solid var(--bdr);border-radius:5px;padding:2px 7px;font-size:10px;font-family:'Outfit',sans-serif;color:var(--txt2);cursor:pointer;margin-top:3px}
+.tsbtn:hover{background:#eef2ff;color:#6366f1;border-color:#6366f1}
+.tsp{display:none;margin-top:5px;background:var(--bg);border-radius:6px;padding:7px 9px;font-size:10px;border-left:3px solid #6366f1}
+.tsp.open{display:block}
+.se{padding:3px 0;border-bottom:1px solid var(--bdr);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.se:last-child{border-bottom:none}
+
+/* TEMPO */
+.pc{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;padding:2px 8px;border-radius:5px}
+.pr{background:#fee2e2;color:#dc2626}.py{background:#fef3c7;color:#92400e}.pg{background:#d1fae5;color:#065f46}.pn{background:var(--bg);color:var(--txt2)}
+/* VARIAVEL */
+.var-header{display:flex;align-items:center;gap:10px;margin-bottom:16px;flex-wrap:wrap}
+.var-wsel{font-family:'DM Sans',sans-serif;font-size:13px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 12px;background:#fff;color:var(--txt);cursor:pointer;min-width:220px}
+.var-wsel:focus{outline:none;border-color:#6366f1}
+.var-week-label{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--txt2)}
+.var-days{display:grid;grid-template-columns:repeat(7,1fr);gap:8px;margin-bottom:16px}
+.var-day-col{background:#fff;border:1px solid var(--bdr);border-radius:10px;overflow:hidden}
+.var-day-head{font-family:'Outfit',sans-serif;font-size:11px;font-weight:700;text-align:center;padding:8px 4px;text-transform:uppercase;letter-spacing:.4px}
+.var-day-sun{background:#fee2e2;color:#7f1d1d}
+.var-day-wkd{background:var(--bg);color:var(--txt2)}
+.var-day-body{padding:6px;min-height:100px}
+.var-entry{background:var(--bg);border-radius:6px;padding:6px 50px 6px 8px;margin-bottom:5px;font-size:11px;border-left:3px solid #6366f1;position:relative}
+.var-entry-actions{position:absolute;top:4px;right:4px;display:flex;gap:3px}
+.var-entry-del{background:#fff;border:1px solid var(--bdr);border-radius:5px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:11px;color:var(--txt2);line-height:1;z-index:5}
+.var-entry-del:hover{color:#dc2626;background:#fee2e2;border-color:#fca5a5}
+.var-entry-edit{background:#fff;border:1px solid var(--bdr);border-radius:5px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:10px;color:var(--txt2);line-height:1;z-index:5}
+.var-entry-edit:hover{color:#6366f1;background:#eef2ff;border-color:#6366f1}
+.var-add-btn{width:100%;background:none;border:1px dashed var(--bdr);border-radius:6px;padding:5px;font-size:10px;color:var(--txt2);cursor:pointer;margin-top:4px;transition:all .2s}
+.var-add-btn:hover{border-color:#6366f1;color:#6366f1;background:#eef2ff}
+.var-stats-row{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-top:12px}
+.var-stat{background:#fff;border:1px solid var(--bdr);border-radius:8px;padding:10px 12px;text-align:center}
+.var-stat .vn{font-family:'Outfit',sans-serif;font-size:20px;font-weight:700}
+.var-stat .vl{font-size:10px;color:var(--txt2);margin-top:2px}
+.var-total-box{background:linear-gradient(135deg,#eef2ff,#f0fdfa);border:1px solid #c7d2fe;border-radius:10px;padding:12px 16px;margin-bottom:14px;display:flex;gap:20px;flex-wrap:wrap;align-items:center}
+.var-total-box .vti{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:#3730a3}
+.var-total-box .vtv{font-family:'Outfit',sans-serif;font-size:20px;font-weight:700;color:#6366f1}
+
+/* BUTTONS */
+.bp{background:#6366f1;color:#fff;border:none;border-radius:7px;padding:6px 13px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500;white-space:nowrap}
+.bp:hover{background:#4f46e5}
+.bg2{background:#fff;color:var(--txt);border:1px solid var(--bdr);border-radius:7px;padding:6px 12px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px}
+.bg2:hover{border-color:#6366f1;color:#6366f1}
+.bd{background:linear-gradient(135deg,#059669,#0891b2);color:#fff;border:none;border-radius:7px;padding:6px 13px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px;font-weight:500}
+
+/* MODAL */
+.mo{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:1000;align-items:center;justify-content:center}
+.mo.open{display:flex}
+.md{background:#fff;border-radius:13px;padding:20px;width:420px;max-width:95vw;max-height:90vh;overflow-y:auto}
+.md h3{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;margin-bottom:13px}
+.fg{margin-bottom:9px}
+.fg label{display:block;font-size:11px;color:var(--txt2);margin-bottom:2px;font-family:'Outfit',sans-serif;font-weight:500}
+.fg input,.fg select,.fg textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:6px;padding:6px 9px;background:#fff;color:var(--txt)}
+.fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#6366f1}
+.ma{display:flex;gap:6px;margin-top:12px;justify-content:flex-end}
+.bc{background:none;border:1px solid var(--bdr);border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px;color:var(--txt2)}
+.bs{background:#6366f1;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px}
+.bdc{background:#dc2626;color:#fff;border:none;border-radius:6px;padding:6px 12px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:12px}
+.cs{width:20px;height:20px;border-radius:50%;cursor:pointer;border:2px solid transparent;display:inline-block;margin:2px}
+.cs.sel{border-color:#1a1a1a;transform:scale(1.2)}
+
+/* CICLOS */
+.bn{background:#6366f1;color:#fff;font-size:9px;font-family:'Outfit',sans-serif;font-weight:600;padding:1px 5px;border-radius:20px}
+.co2n{background:#f0fdfa;border:1px dashed #0f766e;border-radius:6px;padding:6px 9px;font-size:10px;color:#134e4a;margin-bottom:7px}
+
+@media(max-width:1100px){.var-days{grid-template-columns:repeat(4,1fr)}}
+@media(max-width:900px){.wg{grid-template-columns:repeat(3,1fr)}.cig{grid-template-columns:repeat(3,1fr)}.var-days{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:600px){.wg{grid-template-columns:repeat(2,1fr)}.var-days{grid-template-columns:repeat(2,1fr)}}
+</style>
+</head>
+<body>
+
+<!-- WELCOME -->
+<div class="wo" id="wo">
+  <div class="wb">
+    <span class="we" id="we"></span>
+    <div class="wt" id="wt"></div>
+    <p class="wm" id="wm"></p>
+    <div class="wq" id="wq"></div>
+    <button class="wc" onclick="document.getElementById('wo').style.display='none'">Começar a estudar agora →</button>
+  </div>
+</div>
+
+<div class="app">
+<div class="hdr">
+  <div class="logo">OAB<span> Planner</span></div>
+  <div class="srch">
+    <span class="sico">🔍</span>
+    <input class="si" type="text" id="si" placeholder="Pesquisar tópico ou matéria…" oninput="onSrch(this.value)" onblur="setTimeout(()=>closeSrch(),200)">
+    <div class="sdd" id="sdd"></div>
+  </div>
+  <!-- AVISOS BUTTON -->
+  <div style="position:relative">
+    <button class="av-btn" onclick="tgAv()" id="avBtn">🔔 Avisos<span class="av-badge" id="avBadge" style="display:none">0</span></button>
+    <div class="av-panel" id="avPanel">
+      <div class="av-header">
+        <div class="av-title">📌 Avisos & Anotações</div>
+        <button class="av-close" onclick="tgAv()">✕</button>
+      </div>
+      <div class="av-add">
+        <textarea id="avTxt" placeholder="Escreva um aviso, anotação ou lembrete…"></textarea>
+        <div class="av-add-row">
+          <select id="avPri">
+            <option value="alta">🔴 Urgente</option>
+            <option value="media" selected>🟡 Normal</option>
+            <option value="baixa">🟢 Informativo</option>
+          </select>
+          <button class="av-save" onclick="addAv()">Adicionar</button>
+        </div>
+      </div>
+      <div class="av-list" id="avList"></div>
+    </div>
+  </div>
+  <div style="font-size:11px;color:var(--txt2);white-space:nowrap">47º EOU · FGV</div>
+</div>
+
+<div class="cdb">
+  <div><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600">📋 Prova Objetiva — 1ª Fase</div><div style="font-size:11px;opacity:.8">28 de novembro de 2026</div></div>
+  <div class="cdi">
+    <div style="text-align:center"><div class="cdn" id="cd">--</div><div class="cdl">dias</div></div>
+    <div class="cds">:</div>
+    <div style="text-align:center"><div class="cdn" id="ch">--</div><div class="cdl">horas</div></div>
+    <div class="cds">:</div>
+    <div style="text-align:center"><div class="cdn" id="cm">--</div><div class="cdl">min</div></div>
+    <div class="cds">:</div>
+    <div style="text-align:center"><div class="cdn" id="cs2">--</div><div class="cdl">seg</div></div>
+  </div>
+  <div style="text-align:right"><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600">159 dias de estudo</div><div style="font-size:11px;opacity:.8">Início: <span id="ssd"></span> · <span style="opacity:.6">v2026-06-22</span></div></div>
+</div>
+
+<div class="tabs">
+  <button class="tb active" onclick="sw('planner',this)">📅 Planejamento</button>
+  <button class="tb" onclick="sw('materias',this)">📚 Matérias</button>
+  <button class="tb" onclick="sw('stats',this)">📊 Estatísticas</button>
+  <button class="tb" onclick="sw('variavel',this)">📋 Variável</button>
+  <button class="tb" onclick="sw('revisoes',this)">🔁 Revisões</button>
+</div>
+
+<div class="cnt">
+
+<!-- PLANNER -->
+<div class="tp active" id="tp-planner">
+  <div class="wnav">
+    <div><label style="font-size:11px;color:var(--txt2);margin-right:4px">Semana:</label><select id="wsel" style="font-size:12px;border:1px solid var(--bdr);border-radius:7px;padding:5px 9px;background:#fff;cursor:pointer" onchange="rW()"></select></div>
+    <button class="bp" onclick="oAdd()">+ Adicionar tópico</button>
+    <button class="bd" onclick="oAddD()">+ Adicionar disciplina</button>
+    <span style="font-size:11px;color:var(--txt2)" id="wil"></span>
+  </div>
+  <div id="wv"><div class="wg" id="wg"></div></div></div>
+</div>
+
+
+<!-- VERTICALIZADO -->
+<div class="tp" id="tp-verticalizado">
+<style>
+.vt-search:focus{outline:none;border-color:#6366f1}
+.vt-btn:hover{background:#6366f1;color:#fff;border-color:#6366f1}
+.vt-disc-head:hover{background:#f8f7f4}
+.vt-disc-chevron.open{transform:rotate(90deg)}
+.vt-disc-body.open{display:block}
+.vt-table th{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:.4px;color:var(--txt2);padding:8px 14px;text-align:left;background:#f8f7f4;border-bottom:1px solid var(--bdr)}
+.vt-table th.vt-table td{padding:9px 14px;border-bottom:1px solid #f0f0f0;font-size:12px;vertical-align:middle;line-height:1.5}
+.vt-table tr:last-child td{border-bottom:none}
+.vt-table tr:hover td{background:#f8fffe}
+.vt-row-done td{text-decoration:line-through;color:#9ca3af}
+.vt-check-btn:hover{border-color:#059669;background:#ecfdf5;color:#059669}
+.vt-check-btn.done{background:#059669;border-color:#059669;color:#fff;font-size:18px}
+</style>
+<div class="vt-wrap">
+  <div class="vt-title">Edital Verticalizado — OAB 1 Fase · FGV</div>
+  <div class="vt-sub">Conteudo programatico completo e verticalizado por disciplina. Clique em cada materia para expandir os topicos. Marque o que voce ja estudou.</div>
+  <div class="vt-prog">
+    <div class="vt-prog-item"><div class="vt-prog-val" id="vtTotal">0</div><div class="vt-prog-lbl">Topicos totais</div></div>
+    <div class="vt-prog-item"><div class="vt-prog-val" id="vtDone" style="color:#059669">0</div><div class="vt-prog-lbl">Estudados</div></div>
+    <div class="vt-prog-item"><div class="vt-prog-val" id="vtPct" style="color:#6366f1">0%</div><div class="vt-prog-lbl">Progresso</div></div>
+    <div style="flex:2;min-width:120px"><div class="vt-prog-bar"><div class="vt-prog-fill" id="vtBar" style="width:0%"></div></div></div>
+  </div>
+  <div class="vt-tools">
+    <input class="vt-search" type="text" id="vtSearch" placeholder="Buscar topico ou subtema..." oninput="vtFilter()">
+    <select class="vt-filter" id="vtFiltDisc" onchange="vtFilter()"><option value="">Todas as disciplinas</option></select>
+    <select class="vt-filter" id="vtFiltInc" onchange="vtFilter()">
+      <option value="">Todas as incidencias</option>
+      <option value="alta">Alta incidencia</option>
+      <option value="media">Media incidencia</option>
+      <option value="baixa">Baixa incidencia</option>
+    </select>
+    <button class="vt-btn" onclick="vtExpandAll()">Expandir tudo</button>
+    <button class="vt-btn" onclick="vtCollapseAll()">Recolher tudo</button>
+    <button class="vt-btn" onclick="vtShowPending()">Ver não estudados</button>
+  </div>
+  <div id="vtDiscs"></div>
+</div>
+</div>
+
+<!-- MATERIAS -->
+<div class="tp" id="tp-materias">
+  <div style="margin-bottom:16px"><div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;margin-bottom:4px">Conteúdo Programático</div>
+  <div style="font-size:12px;color:var(--txt2)">Clique em "📅 Ver no cronograma" para ver quando cada tópico está agendado. Atualiza automaticamente.</div></div>
+  <div id="mcon"></div>
+</div>
+
+<!-- STATS -->
+<div class="tp" id="tp-stats">
+  <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;margin-bottom:12px">Painel de Progresso</div>
+  <div class="sg" id="stg"></div>
+  <div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;margin:14px 0 7px">Por Matéria</div>
+  <div id="stm"></div>
+</div>
+
+<!-- TEMPO -->
+<div class="tp" id="tp-tempo">
+  <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;margin-bottom:4px">Registro de Tempo & Questões</div>
+  <div style="font-size:12px;color:var(--txt2);margin-bottom:12px">Registre horas e questões. Clique em ✅ Estudei / ❌ Não estudei para marcar o status.</div>
+  <div class="ds" id="dsel"></div>
+  <div style="overflow-x:auto;background:#fff;border:1px solid var(--bdr);border-radius:10px">
+    <table class="tt">
+      <thead><tr><th>Matéria</th><th>Horas (hh:mm)</th><th>Questões</th><th>Erros</th><th>% Acertos</th></tr></thead>
+      <tbody id="ttb"></tbody>
+      <tfoot><tr style="background:var(--bg)">
+        <td style="font-family:'Outfit',sans-serif;font-weight:600;font-size:12px">Total</td>
+        <td><span class="th" id="tth">00:00h</span></td>
+        <td><span class="th" id="ttq">0</span></td>
+        <td><span class="th" id="tte">0</span></td>
+        <td><span class="pc pn" id="ttp">--</span></td>
+      </tr></tfoot>
+    </table>
+  </div>
+  <div style="margin-top:9px;display:flex;gap:6px;align-items:center">
+    <button class="bp" onclick="saveTD()">💾 Salvar</button>
+    <span style="font-size:11px;color:#059669" id="svc"></span>
+  </div>
+</div>
+
+<!-- VARIAVEL -->
+<div class="tp" id="tp-variavel">
+  <div style="margin-bottom:14px">
+    <div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;margin-bottom:4px">📋 Semana Variável</div>
+    <div style="font-size:12px;color:var(--txt2)">Crie uma semana personalizada com as matérias que desejar. Segunda a Domingo. Selecione a semana do calendário e adicione seus estudos livremente.</div>
+  </div>
+  <div class="var-header">
+    <div>
+      <label style="font-size:11px;color:var(--txt2);font-family:'Outfit',sans-serif;font-weight:500;display:block;margin-bottom:4px">Selecione a semana:</label>
+      <select class="var-wsel" id="varWsel" onchange="rVar()"></select>
+    </div>
+    <div class="var-week-label" id="varWLabel" style="margin-top:18px"></div>
+  </div>
+  <div class="var-total-box" id="varTotalBox" style="display:none"></div>
+  <div class="var-days" id="varDays"></div>
+  <div class="var-stats-row" id="varStats"></div>
+</div>
+
+<!-- REVISOES -->
+<div class="tp" id="tp-revisoes">
+<style>
+.rv-wrap{max-width:100%}
+.rv-header{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;margin-bottom:16px}
+.rv-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700}
+.rv-sub{font-size:12px;color:var(--txt2);margin-top:2px}
+.rv-add-box{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.rv-add-box h4{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;margin-bottom:10px;color:#6366f1}
+.rv-form{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end}
+.rv-form input,.rv-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
+.rv-form input:focus,.rv-form select:focus{outline:none;border-color:#6366f1}
+.rv-form label{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
+.rv-add-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;height:36px}
+.rv-add-btn:hover{background:#4f46e5}
+.rv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
+.rv-stat{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px;text-align:center}
+.rv-stat-val{font-family:'Outfit',sans-serif;font-size:22px;font-weight:700}
+.rv-stat-lbl{font-size:10px;color:var(--txt2);margin-top:2px}
+.rv-section{margin-bottom:20px}
+.rv-section-title{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;display:flex;align-items:center;gap:8px;margin-bottom:8px;padding:6px 0;border-bottom:2px solid var(--bdr)}
+.rv-section-cnt{font-family:'Outfit',sans-serif;font-size:11px;background:var(--bdr);padding:2px 8px;border-radius:20px;color:var(--txt2)}
+.rv-card{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;transition:box-shadow .2s}
+.rv-card:hover{box-shadow:0 2px 8px rgba(99,102,241,.1)}
+.rv-card.overdue{border-color:#fca5a5;background:#fff8f8}
+.rv-card.today{border-color:#6366f1;background:#f8f7ff}
+.rv-card.done-all{opacity:.6}
+.rv-card-left{flex:1;min-width:0}
+.rv-card-topic{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.rv-card-disc{font-size:11px;color:var(--txt2);margin-bottom:6px}
+.rv-card-note{font-size:11px;color:#6b7280;font-style:italic;margin-bottom:6px}
+.rv-steps{display:flex;gap:5px;flex-wrap:wrap}
+.rv-step{font-size:10px;font-family:'Outfit',sans-serif;font-weight:600;padding:3px 9px;border-radius:20px;border:1.5px solid}
+.rv-step-pending{background:#f3f4f6;color:#9ca3af;border-color:#e5e7eb}
+.rv-step-due{background:#eef2ff;color:#6366f1;border-color:#6366f1}
+.rv-step-overdue{background:#fee2e2;color:#dc2626;border-color:#dc2626}
+.rv-step-done{background:#d1fae5;color:#065f46;border-color:#a7f3d0;text-decoration:line-through}
+.rv-card-right{display:flex;flex-direction:column;align-items:flex-end;gap:6px;flex-shrink:0}
+.rv-next-lbl{font-size:10px;color:var(--txt2);text-align:right}
+.rv-next-date{font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;text-align:right}
+.rv-next-days{font-size:10px;text-align:right;font-weight:600}
+.rv-done-btn{background:#6366f1;color:#fff;border:none;border-radius:7px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+.rv-done-btn:hover{background:#4f46e5}
+.rv-done-btn.done{background:#059669}
+.rv-del-btn{background:none;border:1px solid var(--bdr);border-radius:7px;padding:4px 10px;font-size:11px;color:var(--txt2);cursor:pointer}
+.rv-del-btn:hover{color:#dc2626;border-color:#fca5a5;background:#fff8f8}
+.rv-edit-btn{background:#fff;border:1.5px solid #6366f1;color:#6366f1;border-radius:7px;padding:5px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap;display:flex;align-items:center;gap:4px}
+.rv-edit-btn:hover{background:#eef2ff}
+.rv-edit-modal{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:2000;align-items:center;justify-content:center}
+.rv-edit-modal.open{display:flex}
+.rv-edit-box{background:#fff;border-radius:14px;padding:22px 24px;width:460px;max-width:96vw;max-height:90vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.2)}
+.rv-edit-box h3{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;margin-bottom:16px;color:#6366f1}
+.rv-ef{margin-bottom:11px}
+.rv-ef label{display:block;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px;margin-bottom:3px}
+.rv-ef input,.rv-ef select,.rv-ef textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:7px;padding:7px 10px;background:#fff;color:var(--txt)}
+.rv-ef input:focus,.rv-ef select:focus{outline:none;border-color:#6366f1}
+.rv-edit-steps{display:flex;flex-direction:column;gap:6px;margin-top:4px}
+.rv-edit-step-row{display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:7px;padding:7px 10px;font-size:11px}
+.rv-edit-step-lbl{font-family:'Outfit',sans-serif;font-weight:600;min-width:50px;color:var(--txt2)}
+.rv-edit-step-done{color:#059669;font-size:12px}
+.rv-edit-step-date{font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--bdr);border-radius:5px;padding:3px 7px;background:#fff}
+.rv-edit-actions{display:flex;gap:8px;margin-top:16px;justify-content:flex-end}
+.rv-save-btn{background:#6366f1;color:#fff;border:none;border-radius:7px;padding:7px 18px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+.rv-save-btn:hover{background:#4f46e5}
+.rv-cancel-btn{background:#fff;border:1px solid var(--bdr);border-radius:7px;padding:7px 14px;font-family:'Outfit',sans-serif;font-size:12px;color:var(--txt2);cursor:pointer}
+.rv-cancel-btn:hover{background:var(--bg)}
+.rv-empty{padding:30px;text-align:center;color:var(--txt2);font-size:13px;background:#fff;border:1px dashed var(--bdr);border-radius:10px}
+.rv-tag-overdue{background:#fee2e2;color:#dc2626;font-size:9px;font-family:'Outfit',sans-serif;font-weight:700;padding:2px 7px;border-radius:20px}
+.rv-tag-today{background:#eef2ff;color:#6366f1;font-size:9px;font-family:'Outfit',sans-serif;font-weight:700;padding:2px 7px;border-radius:20px}
+.rv-comments{margin-top:8px;width:100%}
+.rv-comments-title{font-size:11px;color:var(--txt2);font-family:'Outfit',sans-serif;font-weight:600}
+.rv-comment-list{margin-top:6px;display:flex;flex-direction:column;gap:6px}
+.rv-comment-item{background:var(--bg);border-radius:7px;padding:6px 9px}
+.rv-comment-text{font-size:11px;color:var(--txt);line-height:1.4;white-space:pre-wrap}
+.rv-comment-meta{font-size:9px;color:var(--txt2);margin-top:3px;display:flex;justify-content:space-between;align-items:center}
+.rv-comment-meta button{background:none;border:none;cursor:pointer;color:var(--txt2);font-size:10px}
+.rv-comment-meta button:hover{color:#dc2626}
+.rv-comment-add{display:flex;gap:6px;margin-top:7px;align-items:flex-start}
+.rv-comment-add textarea{flex:1;font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--bdr);border-radius:7px;padding:6px 8px;resize:none;min-height:34px}
+.rv-comment-add textarea:focus{outline:none;border-color:#6366f1}
+.rv-comment-add button{background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
+.rv-comment-add button:hover{background:#d97706}
+@media(max-width:700px){.rv-form{grid-template-columns:1fr 1fr}.rv-stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:500px){.rv-form{grid-template-columns:1fr}}
+</style>
+<div class="rv-wrap">
+  <div class="rv-header">
+    <div>
+      <div class="rv-title">🔁 Repetição Espaçada</div>
+      <div class="rv-sub">Adicione o que estudou hoje. O sistema agenda revisões em 2, 7, 15 e 30 dias automaticamente.</div>
+    </div>
+  </div>
+  <div class="rv-add-box">
+    <h4>➕ Adicionar conteúdo estudado hoje</h4>
+    <div class="rv-form">
+      <div><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Controle de Constitucionalidade"></div>
+      <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
+      <div><label>Data que estudei</label><input type="date" id="rvDate"></div>
+      <div><label>1ª revisão desejada (opc.)</label><input type="date" id="rvFirstRev" title="Deixe em branco para calcular automaticamente (+2 dias)"></div>
+      <div><label>Anotação (opcional)</label><input type="text" id="rvNote" placeholder="Ex: foco nos legitimados da ADI"></div>
+      <div><label>&nbsp;</label><button class="rv-add-btn" onclick="rvAdd()">Adicionar</button></div>
+    </div>
+    <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
+      <input type="text" id="rvSearch" placeholder="🔍 Buscar revisão..." style="font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:6px 11px;background:#fff;flex:1;max-width:260px" oninput="rvRender()">
+      <select id="rvFiltDisc" style="font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;background:#fff" onchange="rvRender()"><option value="">Todas as disciplinas</option></select>
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvHideDone" onchange="rvRender()"> Ocultar concluídas</label>
+    </div>
+  </div>
+  <div class="rv-stats" id="rvStats"></div>
+  <div id="rvContent"></div>
+</div>
+
+<!-- MODAL EDIT REVISAO -->
+<div class="rv-edit-modal" id="rvEditModal">
+  <div class="rv-edit-box">
+    <h3>✏️ Editar revisão</h3>
+    <div class="rv-ef"><label>Tópico / Conteúdo *</label><input type="text" id="rvEditTopic"></div>
+    <div class="rv-ef"><label>Disciplina</label><select id="rvEditDisc"><option value="">— Sem disciplina —</option></select></div>
+    <div class="rv-ef"><label>Data que estudei</label><input type="date" id="rvEditStudiedAt"></div>
+    <div class="rv-ef"><label>Anotação</label><input type="text" id="rvEditNote" placeholder="Ex: foco nos legitimados da ADI"></div>
+    <div class="rv-ef">
+      <label>Datas de revisão do ciclo</label>
+      <div class="rv-edit-steps" id="rvEditSteps"></div>
+    </div>
+    <div class="rv-edit-actions">
+      <button class="rv-cancel-btn" onclick="rvCloseEdit()">Cancelar</button>
+      <button class="rv-save-btn" onclick="rvSaveEdit()">Salvar</button>
+    </div>
+  </div>
+</div><!-- /rv-edit-modal -->
+</div><!-- /tp-revisoes -->
+
+</div><!-- /cnt -->
+</div><!-- /app -->
+
+<!-- MODAL TOPIC -->
+<div class="mo" id="mo">
+  <div class="md">
+    <h3 id="mot">Adicionar tópico</h3>
+    <div class="fg"><label>Matéria</label><select id="mom"></select></div>
+    <div class="fg"><label>Tópico</label><input type="text" id="mop" placeholder="Ex: Atos Administrativos"></div>
+    <div class="fg"><label>Dia</label><select id="mod2"><option value="0">Segunda</option><option value="1">Terça</option><option value="2">Quarta</option><option value="3">Quinta</option><option value="4">Sexta</option></select></div>
+    <div class="fg"><label>Semana</label><select id="mow"></select></div>
+    <div class="fg"><label>Incidência</label><select id="moi"><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select></div>
+    <div class="fg"><label>Método</label><select id="mome"><option value="Questoes">Questões</option><option value="Aula">Aula</option><option value="Leitura">Leitura</option></select></div>
+    <div class="fg"><label>Horas previstas</label><input type="text" id="moh" placeholder="Ex: 1h30"></div>
+    <div class="ma"><button class="bc" onclick="cMo()">Cancelar</button><button class="bdc" id="bdm" onclick="dItem()" style="display:none">🗑 Excluir</button><button class="bs" onclick="svItem()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL DISC -->
+<div class="mo" id="mod3">
+  <div class="md">
+    <h3>Nova Disciplina</h3>
+    <div class="fg"><label>Nome</label><input type="text" id="dn" placeholder="Ex: Direito Ambiental"></div>
+    <div class="fg"><label>Código (até 4 letras)</label><input type="text" id="dc" placeholder="Ex: AMB" maxlength="4" style="text-transform:uppercase"></div>
+    <div class="fg"><label>Cor</label><div id="dcp" style="display:flex;gap:5px;flex-wrap:wrap;margin-top:4px"></div><input type="hidden" id="dco" value="#6366f1"></div>
+    <div class="fg"><label>Peso %</label><input type="number" id="dp" placeholder="Ex: 8" min="1" max="30"></div>
+    <div class="fg"><label>Nota (opcional)</label><input type="text" id="dno" placeholder="Descrição breve"></div>
+    <div style="font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;margin:8px 0 6px;border-top:1px solid var(--bdr);padding-top:8px">Primeiro tópico</div>
+    <div class="fg"><label>Tópico</label><input type="text" id="dt" placeholder="Ex: Princípios do Direito Ambiental"></div>
+    <div class="fg"><label>Dia</label><select id="dd"><option value="0">Segunda</option><option value="1">Terça</option><option value="2">Quarta</option><option value="3">Quinta</option><option value="4">Sexta</option></select></div>
+    <div class="fg"><label>Semana</label><select id="dw"></select></div>
+    <div class="fg"><label>Incidência</label><select id="di"><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select></div>
+    <div class="fg"><label>Método</label><select id="dme"><option value="Questoes">Questões</option><option value="Aula">Aula</option><option value="Leitura">Leitura</option></select></div>
+    <div class="fg"><label>Horas</label><input type="text" id="dh" placeholder="1h30"></div>
+    <div class="ma"><button class="bc" onclick="cMoD()">Cancelar</button><button class="bs" onclick="svD()">Criar</button></div>
+  </div>
+</div>
+
+<!-- MODAL VAR ENTRY -->
+<div class="mo" id="moVar">
+  <div class="md">
+    <h3 id="moVarTitle">Adicionar estudo</h3>
+    <div class="fg"><label>Matéria (opcional)</label><select id="vMat"><option value="">— Sem matéria —</option></select></div>
+    <div class="fg"><label>Tópico / Conteúdo</label><input type="text" id="vTop" placeholder="Ex: Controle de Constitucionalidade"></div>
+    <div class="fg"><label>Método</label><select id="vMe"><option value="Questoes">Questões</option><option value="Aula">Aula</option><option value="Leitura">Leitura</option></select></div>
+    <div class="fg"><label>Horas previstas</label><input type="text" id="vHr" placeholder="Ex: 1h30"></div>
+    <div class="fg"><label>Observação (opcional)</label><input type="text" id="vObs" placeholder="Ex: foco em questões difíceis"></div>
+    <div class="fg" id="vDayChangeFg" style="display:none">
+      <label>Mover para outro dia</label>
+      <select id="vDayChange">
+        <option value="">— Manter no mesmo dia —</option>
+      </select>
+    </div>
+    <input type="hidden" id="vDay">
+    <input type="hidden" id="vEntId">
+    <div class="ma"><button class="bc" onclick="cMoVar()">Cancelar</button><button class="bs" onclick="svVar()">Salvar</button></div>
+  </div>
+</div>
+
+<!-- MODAL DEL -->
+<div class="mo" id="moDel">
+  <div class="md" style="max-width:360px">
+    <h3>Confirmar exclusão</h3>
+    <p style="font-size:12px;color:var(--txt2);margin-bottom:6px">Este tópico também existe no edital, em <b>Matérias</b>.</p>
+    <p style="font-size:12px;color:var(--txt2);margin-bottom:14px">Deseja remover o tópico de <b>Matérias</b> também, ou apenas tirá-lo desta semana?</p>
+    <div class="ma" style="flex-wrap:wrap;justify-content:flex-end">
+      <button class="bc" onclick="cDel()">Cancelar</button>
+      <button class="bg2" onclick="cfDel(false)">Apagar só da semana</button>
+      <button class="bdc" onclick="cfDel(true)">Apagar e remover de Matérias</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL ADD TOPICO -->
+<div class="mo" id="moAddTopic">
+  <div class="md" style="max-width:380px">
+    <h3 id="atTitle">➕ Adicionar tópico</h3>
+    <div class="fg"><label>Tópico / Conteúdo *</label><input type="text" id="atTopic" placeholder="Ex: Prescrição e Decadência"></div>
+    <div class="fg"><label>Incidência na prova</label><select id="atInc"><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option></select></div>
+    <div class="ma">
+      <button class="bc" onclick="closeAddTopic()">Cancelar</button>
+      <button class="bdc" id="atDelBtn" onclick="delTopicFromModal()" style="display:none">🗑 Excluir</button>
+      <button class="bs" onclick="confirmAddTopic()" id="atSaveBtn">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- FIREBASE (armazenamento compartilhado em nuvem) -->
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.13.0/firebase-database-compat.js"></script>
+
+<script>
+
+// ── WELCOME ──
+const WM=[
+  {e:'⚖️',t:'Sua aprovação começa hoje.',m:'Cada hora de estudo é um tijolo na construção da sua carreira. O caminho é longo, mas você já deu o primeiro passo ao estar aqui.',q:'"O sucesso é a soma de pequenos esforços repetidos dia após dia." — Robert Collier'},
+  {e:'🏛️',t:'A OAB espera por você.',m:'Com planejamento e disciplina, a aprovação é apenas questão de tempo. Você está no caminho certo.',q:'"Não espere por circunstâncias ideais." — G. Bernard Shaw'},
+  {e:'📖',t:'Consistência supera intensidade.',m:'3 horas diárias com foco e método valem mais do que maratonas sem planejamento. Confie no processo.',q:'"Disciplina é a ponte entre metas e conquistas." — Jim Rohn'},
+  {e:'🌟',t:'Você é capaz. Sempre foi.',m:'Às vezes a dúvida bate. Mas lembre: você chegou até aqui porque tem o que é preciso.',q:'"Acredite que você pode e já está no meio do caminho." — T. Roosevelt'},
+  {e:'🎯',t:'Foco no objetivo.',m:'A OAB não é sobre decorar leis. É sobre raciocínio jurídico. Seu plano foi feito para isso.',q:'"Conhecimento sem ação é como ter óculos e não usá-los."'},
+  {e:'🚀',t:'Cada dia conta.',m:'Cada sessão de estudo te aproxima da aprovação. Hoje é mais um dia de vitória silenciosa.',q:'"Grandes resultados exigem grandes ambições." — Heráclito'},
+];
+(function(){
+  const w=WM[Math.floor(Math.random()*WM.length)];
+  document.getElementById('we').textContent=w.e;
+  document.getElementById('wt').textContent=w.t;
+  document.getElementById('wm').textContent=w.m;
+  document.getElementById('wq').textContent=w.q;
+})();
+
+// ── CONSTANTS ──
+const SS=new Date(2026,5,22);
+const PD=new Date(2026,10,28,13,0,0);
+const TW=22;
+const TW_FULL=24;
+const DYS=['Segunda','Terça','Quarta','Quinta','Sexta'];
+const ALL_DYS=['Segunda','Terça','Quarta','Quinta','Sexta','Sábado','Domingo'];
+const STO=[{v:'nao',l:'Não iniciado'},{v:'ini',l:'Iniciado'},{v:'rev',l:'Revisar'},{v:'fin',l:'Finalizado'}];
+const DCOLORS=['#6366f1','#0891b2','#059669','#d97706','#7c3aed','#dc2626','#0d9488','#be185d','#0369a1','#b45309','#9f1239','#1d4ed8'];
+const AV_COLORS={alta:'#dc2626',media:'#f59e0b',baixa:'#059669'};
+
+// ── DISCIPLINES ──
+let DISCS=[
+  {code:'CON',name:'D. Constitucional',color:'#059669',peso:12,dash:false,note:'Mais cobrados FGV: controle de constitucionalidade, direitos fundamentais, organização dos poderes.',topics:[
+    {t:'Princípios Fundamentais da República',inc:'alta'},{t:'Eficácia e aplicabilidade das normas constitucionais',inc:'alta'},
+    {t:'Poder Constituinte: originário, derivado e decorrente',inc:'alta'},{t:'Controle de Constitucionalidade: ADI, ADC, ADPF e ADO',inc:'alta'},
+    {t:'Direitos e Garantias Fundamentais',inc:'alta'},{t:'Tutela Constitucional das Liberdades: HC, HD, MS, MI',inc:'alta'},
+    {t:'Organização dos Poderes: Legislativo, Executivo e Judiciário',inc:'alta'},{t:'Processo Legislativo',inc:'alta'},
+    {t:'Súmulas Vinculantes STF aplicadas ao OAB',inc:'alta'},{t:'Interpretação constitucional e neoconstitucionalismo',inc:'media'},
+    {t:'Funções Essenciais à Justiça: MP, DP, AGU',inc:'media'},{t:'Defesa do Estado e das Instituições Democráticas',inc:'media'},
+  ]},
+  {code:'CO2',name:'D. Cons. (2)',color:'#0f766e',peso:10,dash:true,note:'Bloco complementar: direitos específicos, organização do Estado e temas de segunda camada FGV.',topics:[
+    {t:'Direitos Sociais (arts. 6º ao 11 CF)',inc:'alta'},{t:'Direitos Políticos: elegibilidade e inelegibilidade',inc:'alta'},
+    {t:'Administração Pública: art. 37 CF',inc:'alta'},{t:'Servidores públicos: estabilidade, teto, acumulação',inc:'alta'},
+    {t:'Recurso Ordinário e Recurso Extraordinário',inc:'alta'},{t:'Reclamação constitucional',inc:'media'},
+    {t:'Divisão Espacial do Poder: União, Estados, DF e Municípios',inc:'media'},{t:'Competências legislativas: arts. 21-24 CF',inc:'media'},
+    {t:'Sistema Tributário Nacional (Constituição)',inc:'media'},{t:'Ordem Econômica e Financeira',inc:'media'},
+    {t:'Ordem Social: saúde, educação, previdência',inc:'media'},{t:'Intervenção federal e estadual',inc:'media'},
+    {t:'Nacionalidade',inc:'media'},{t:'Tutelas provisórias nas ações constitucionais',inc:'media'},{t:'ADCT',inc:'baixa'},
+  ]},
+  {code:'CIV',name:'D. Civil',color:'#0891b2',peso:12,dash:false,topics:[
+    {t:'Pessoa natural e direitos da personalidade / LGPD',inc:'alta'},{t:'Pessoa jurídica, domicílio e bens',inc:'alta'},
+    {t:'Fatos, atos e negócios jurídicos; atos ilícitos',inc:'alta'},{t:'Prescrição e decadência',inc:'alta'},
+    {t:'Teoria Geral das Obrigações e modalidades',inc:'alta'},{t:'Inadimplemento, extinção e transmissão das obrigações',inc:'alta'},
+    {t:'Teoria do Contrato e contratos em espécie',inc:'alta'},{t:'Responsabilidade civil e modalidades',inc:'alta'},
+    {t:'Posse, Propriedade e Direitos Reais',inc:'alta'},{t:'Direito do Consumidor (CDC)',inc:'alta'},
+    {t:'Casamento e união estável',inc:'media'},{t:'Dissolução e regime de bens e alimentos',inc:'media'},
+    {t:'Poder familiar, tutela e curatela',inc:'media'},{t:'Sucessão legítima; inventário e partilha',inc:'media'},
+    {t:'Sucessão testamentária',inc:'media'},{t:'Títulos de crédito (Civil)',inc:'media'},
+  ]},
+    {code:'ADM',name:'D. Administrativo',color:'#6366f1',peso:15,dash:false,topics:[
+    {t:'Princípios administrativos e fontes',inc:'alta'},{t:'Organização administrativa (adm. direta e indireta)',inc:'alta'},
+    {t:'Poderes administrativos',inc:'alta'},{t:'Atos administrativos: conceito, atributos, espécies e extinção',inc:'alta'},
+    {t:'Licitações e contratos (Lei 14.133/2021)',inc:'alta'},{t:'Serviços públicos e concessões',inc:'alta'},
+    {t:'Controle da Administração Pública (TCU)',inc:'alta'},{t:'Improbidade administrativa (Lei 8.429/92 + Lei 14.230/21)',inc:'alta'},
+    {t:'Responsabilidade civil do Estado',inc:'alta'},{t:'Ações constitucionais: MS, HC, Ação Popular, ACP',inc:'alta'},
+    {t:'Agentes públicos e regime jurídico',inc:'media'},{t:'Bens públicos e intervenção na propriedade',inc:'media'},
+    {t:'Lei Anticorrupção (Lei 12.846/2013)',inc:'media'},{t:'Agências reguladoras',inc:'media'},
+    {t:'Parceria público-privada',inc:'media'},{t:'Terceiro setor',inc:'baixa'},
+  ]},
+  {code:'TRA',name:'D. do Trabalho',color:'#d97706',peso:8,dash:false,topics:[
+    {t:'Relação de emprego: conceito e requisitos',inc:'alta'},{t:'Empregado e empregador: conceito',inc:'alta'},
+    {t:'Contrato de emprego: modalidades e espécies',inc:'alta'},{t:'Jornada de trabalho e horas extras',inc:'alta'},
+    {t:'Remuneração, salário e adicionais',inc:'alta'},{t:'Cessação do contrato (aviso prévio, FGTS, rescisórias)',inc:'alta'},
+    {t:'Estabilidade e garantias provisórias de emprego',inc:'alta'},{t:'Reforma trabalhista (Lei 13.467/2017)',inc:'alta'},
+    {t:'Terceirização e responsabilidade subsidiária/solidária',inc:'alta'},{t:'Empregado doméstico (EC 72/2013)',inc:'media'},
+    {t:'Teletrabalho e trabalho intermitente',inc:'media'},{t:'Prescrição e decadência trabalhista',inc:'media'},
+    {t:'Direito Coletivo do Trabalho: sindicatos',inc:'media'},
+  ]},
+  {code:'PDT',name:'Proc. do Trabalho',color:'#b45309',peso:4,dash:true,note:'Processo do Trabalho separado — rito, recursos e execução.',topics:[
+    {t:'Princípios e competência da Justiça do Trabalho',inc:'alta'},{t:'Petição inicial e procedimentos',inc:'alta'},
+    {t:'Recursos trabalhistas (RO, RE, Agravo, Embargos)',inc:'alta'},{t:'Súmulas e Precedentes do TST',inc:'alta'},
+    {t:'Execução trabalhista e liquidação',inc:'media'},{t:'Dissídio coletivo e ação de cumprimento',inc:'media'},
+  ]},
+  {code:'EMP',name:'D. Empresarial',color:'#7c3aed',peso:10,dash:false,topics:[
+    {t:'Teoria da empresa: empresário e estabelecimento',inc:'alta'},{t:'Sociedades empresárias: tipos e constituição',inc:'alta'},
+    {t:'Sociedade limitada (Ltda.)',inc:'alta'},{t:'Sociedade Anônima (S.A.)',inc:'alta'},
+    {t:'Títulos de crédito: letra de câmbio, NP, cheque, duplicata',inc:'alta'},{t:'Recuperação judicial, extrajudicial e falência',inc:'alta'},
+    {t:'Desconsideração da personalidade jurídica',inc:'alta'},{t:'Contratos empresariais',inc:'media'},
+    {t:'Propriedade industrial: patentes e marcas',inc:'media'},{t:'Fusão, incorporação, cisão e transformação',inc:'media'},
+  ]},
+  {code:'PEN',name:'D. Penal',color:'#dc2626',peso:7,dash:false,topics:[
+    {t:'Teoria Geral do Delito: conduta, tipicidade, ilicitude, culpabilidade',inc:'alta'},{t:'Tipos penais dolosos e culposos',inc:'alta'},
+    {t:'Causas de exclusão da ilicitude',inc:'alta'},{t:'Concurso de crimes e concurso de pessoas',inc:'alta'},
+    {t:'Penas: espécies, aplicação e critérios',inc:'alta'},{t:'Crimes em espécie: pessoa e patrimônio',inc:'alta'},
+    {t:'Crimes em espécie: contra a administração pública',inc:'alta'},{t:'Extinção da punibilidade e prescrição penal',inc:'alta'},
+    {t:'Legislação penal especial (Drogas, Maria da Penha, ECA)',inc:'alta'},{t:'Execução penal: progressão',inc:'media'},
+  ]},
+  {code:'PPE',name:'Proc. Penal',color:'#9f1239',peso:3,dash:true,note:'Processo Penal separado — procedimentos, provas e recursos.',topics:[
+    {t:'Princípios processuais penais e constitucionais',inc:'alta'},{t:'Inquérito policial e ação penal',inc:'alta'},
+    {t:'Provas no processo penal e cadeia de custódia',inc:'alta'},{t:'Prisões, medidas cautelares e liberdade provisória',inc:'alta'},
+    {t:'Recursos no processo penal',inc:'alta'},{t:'Habeas Corpus no processo penal',inc:'alta'},
+    {t:'Competência e jurisdição penal',inc:'alta'},{t:'Acordo de não persecução penal (ANPP)',inc:'media'},
+    {t:'Audiência de custódia',inc:'media'},{t:'Nulidades no processo penal',inc:'media'},
+  ]},
+  {code:'TRI',name:'D. Tributário',color:'#0d9488',peso:10,dash:false,topics:[
+    {t:'Fontes e Princípios tributários',inc:'alta'},{t:'Limitações ao poder de tributar',inc:'alta'},
+    {t:'Tributo: conceito, classificação e espécies',inc:'alta'},{t:'Imunidades tributárias',inc:'alta'},
+    {t:'Competência tributária',inc:'alta'},{t:'Obrigação tributária e fato gerador',inc:'alta'},
+    {t:'Crédito tributário: constituição, suspensão, extinção e exclusão',inc:'alta'},{t:'Responsabilidade tributária',inc:'alta'},
+    {t:'Execução fiscal e embargos',inc:'alta'},{t:'Ações judiciais tributárias',inc:'alta'},
+    {t:'Processo administrativo tributário',inc:'media'},{t:'Impostos em espécie',inc:'media'},
+    {t:'Benefícios fiscais: isenção, anistia, remissão',inc:'media'},{t:'Distribuição das receitas tributárias',inc:'baixa'},
+  ]},
+];
+
+const WT=[
+[[{m:'CON',t:'Tutela Constitucional das Liberdades: HC e MS',i:'alta',me:'Questoes',h:'1h'},{m:'ADM',t:'Licitações: Lei 14.133/2021',i:'alta',me:'Aula',h:'1h'},{m:'ADM',t:'Licitações — questões FGV',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'TRI',t:'Obrigação tributária e fato gerador',i:'alta',me:'Aula',h:'1h'},{m:'CIV',t:'Teoria Geral das Obrigações e modalidades',i:'alta',me:'Aula',h:'1h'},{m:'PEN',t:'Concurso de crimes e concurso de pessoas',i:'alta',me:'Aula',h:'1h'}],
+ [{m:'CON',t:'Mandado de Injunção e Habeas Data',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CO2',t:'Servidores públicos: estabilidade e teto (art. 37 CF)',i:'alta',me:'Questoes',h:'1h30'},{m:'TRA',t:'Remuneração, salário e adicionais',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CON',t:'Processo Legislativo — questões FGV',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Sociedade limitada — Ltda.',i:'alta',me:'Aula',h:'1h30'}]],
+[[{m:'CON',t:'Súmulas Vinculantes STF aplicadas ao OAB',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Crédito tributário: lançamento e suspensão',i:'alta',me:'Aula',h:'1h'},{m:'PEN',t:'Penas: espécies, aplicação e critérios',i:'alta',me:'Aula',h:'1h'}],
+ [{m:'CIV',t:'Extinção das obrigações e inadimplemento',i:'alta',me:'Aula',h:'1h'},{m:'ADM',t:'Contratos administrativos',i:'alta',me:'Aula',h:'1h'},{m:'CO2',t:'Sistema Tributário Nacional na CF',i:'media',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Poder Constituinte: emendas e revisão',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CO2',t:'Competências legislativas: arts. 21, 22, 23 e 24 CF',i:'media',me:'Leitura',h:'1h30'},{m:'TRA',t:'Cessação do contrato e verbas rescisórias',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CON',t:'Interpretação constitucional e neoconstitucionalismo',i:'media',me:'Leitura',h:'1h30'},{m:'EMP',t:'Sociedade Anônima (S.A.)',i:'alta',me:'Aula',h:'1h30'}]],
+[[{m:'CON',t:'Revisão bloco CON 1 — simulado 30 questões',i:'alta',me:'Questoes',h:'1h'},{m:'ADM',t:'Serviços públicos e agências reguladoras',i:'alta',me:'Aula',h:'1h'},{m:'ADM',t:'Responsabilidade civil do Estado — questões',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'Teoria do Contrato: formação e extinção',i:'alta',me:'Aula',h:'1h'},{m:'TRI',t:'Extinção e exclusão do crédito tributário',i:'alta',me:'Aula',h:'1h'},{m:'CO2',t:'Reclamação constitucional',i:'media',me:'Aula',h:'1h'}],
+ [{m:'CON',t:'Direitos Fundamentais: dimensões e eficácia',i:'alta',me:'Questoes',h:'1h30'},{m:'PPE',t:'Inquérito policial e ação penal',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CO2',t:'Direitos Sociais — questões FGV',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Processo do Trabalho: princípios e competência da JT',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CON',t:'Funções Essenciais à Justiça: MP, DP, AGU',i:'media',me:'Aula',h:'1h30'},{m:'EMP',t:'Títulos de crédito: cheque e duplicata',i:'alta',me:'Aula',h:'1h30'}]],
+[[{m:'CON',t:'Controle de Const.: espécies e legitimados',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'Responsabilidade civil',i:'alta',me:'Aula',h:'1h'},{m:'ADM',t:'Improbidade administrativa — Lei 14.230/21',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'TRI',t:'Responsabilidade tributária',i:'alta',me:'Aula',h:'1h'},{m:'ADM',t:'Controle da Administração Pública e TCU',i:'alta',me:'Aula',h:'1h'},{m:'PPE',t:'Prisões, medidas cautelares e liberdade provisória',i:'alta',me:'Aula',h:'1h'}],
+ [{m:'CON',t:'Organização dos Poderes — questões FGV',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CO2',t:'Ordem Econômica e Financeira (arts. 170-192 CF)',i:'media',me:'Aula',h:'1h30'},{m:'TRA',t:'Estabilidade, FGTS e aviso prévio',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CON',t:'Poder Constituinte — revisão e questões',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Falência e recuperação judicial',i:'alta',me:'Aula',h:'1h30'}]],
+[[{m:'CON',t:'Direitos Sociais: saúde, educação e previdência (CF)',i:'alta',me:'Questoes',h:'1h'},{m:'ADM',t:'Agentes públicos: regime jurídico',i:'media',me:'Aula',h:'1h'},{m:'ADM',t:'Lei Anticorrupção e compliance',i:'media',me:'Leitura',h:'1h'}],
+ [{m:'CIV',t:'Posse e propriedade',i:'alta',me:'Aula',h:'1h'},{m:'TRI',t:'Imunidades tributárias — questões',i:'alta',me:'Questoes',h:'1h'},{m:'PEN',t:'Legislação penal especial: Lei de Drogas',i:'alta',me:'Aula',h:'1h'}],
+ [{m:'CON',t:'Súmulas vinculantes — revisão aprofundada',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CO2',t:'Administração Pública: concurso público e cargo',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Petição inicial e procedimentos trabalhistas',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CON',t:'Habeas Corpus: cabimento e procedimento — questões',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Recuperação judicial: plano e credores',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Mandado de Segurança individual e coletivo — questões',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'Direito do Consumidor: responsabilidade',i:'alta',me:'Questoes',h:'1h'},{m:'ADM',t:'Licitações — simulado FGV sem. 8',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'Servidores públicos: acumulação, vencimentos, demissão',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Execução fiscal e embargos',i:'alta',me:'Aula',h:'1h'},{m:'CO2',t:'Intervenção federal e estadual',i:'media',me:'Aula',h:'1h'}],
+ [{m:'CON',t:'Ação Popular e ACP — questões FGV',i:'media',me:'Questoes',h:'1h30'},{m:'ADM',t:'Bens públicos e desapropriação',i:'media',me:'Aula',h:'1h30'}],
+ [{m:'PEN',t:'Legislação penal especial: Maria da Penha e ECA',i:'alta',me:'Aula',h:'1h30'},{m:'TRA',t:'Reforma trabalhista: pontos principais',i:'alta',me:'Aula',h:'1h30'}],
+ [{m:'CON',t:'Controle de Const. — simulado FGV 30q',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Propriedade industrial: patentes e marcas',i:'media',me:'Aula',h:'1h30'}]],
+[[{m:'CON',t:'Organização do Estado: federalismo',i:'media',me:'Aula',h:'1h'},{m:'CIV',t:'Família: casamento e regime de bens',i:'media',me:'Aula',h:'1h'},{m:'ADM',t:'Controle judicial dos atos — questões',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'Sistema Tributário Nacional na CF',i:'media',me:'Leitura',h:'1h'},{m:'TRI',t:'Processo administrativo tributário',i:'media',me:'Aula',h:'1h'},{m:'CO2',t:'Ordem Social: saúde, previdência, educação',i:'media',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Processo Legislativo — questões FGV completas',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Intervenção na propriedade — questões',i:'media',me:'Questoes',h:'1h30'}],
+ [{m:'PPE',t:'Provas no processo penal e cadeia de custódia',i:'alta',me:'Aula',h:'1h30'},{m:'TRA',t:'Terceirização e responsabilidade',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Defesa do Estado e Inst. Democráticas',i:'media',me:'Leitura',h:'1h30'},{m:'EMP',t:'Contratos empresariais',i:'media',me:'Aula',h:'1h30'}]],
+[[{m:'CON',t:'Revisão bloco CON 2 — simulado 30 questões',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'Família: alimentos e poder familiar',i:'media',me:'Aula',h:'1h'},{m:'ADM',t:'Revisão bloco ADM — simulado',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'CO2 — simulado bloco complementar 20 questões',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Impostos federais: IR, IPI, IOF',i:'media',me:'Aula',h:'1h'},{m:'CO2',t:'Tutelas provisórias nas ações constitucionais',i:'media',me:'Aula',h:'1h'}],
+ [{m:'CON',t:'Poder de polícia — questões',i:'alta',me:'Questoes',h:'1h30'},{m:'PPE',t:'Acordo de não persecução penal (ANPP)',i:'media',me:'Aula',h:'1h30'}],
+ [{m:'PDT',t:'Recursos trabalhistas: RO, Agravo, Embargos',i:'alta',me:'Aula',h:'1h30'},{m:'TRA',t:'Prescrição e decadência trabalhista',i:'media',me:'Aula',h:'1h30'}],
+ [{m:'CON',t:'ADCT — Disposições Transitórias',i:'baixa',me:'Leitura',h:'1h30'},{m:'EMP',t:'Desconsideração da personalidade jurídica',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Direitos Fundamentais — simulado 40q',i:'alta',me:'Questoes',h:'1h'},{m:'ADM',t:'Improbidade: questões FGV avançadas',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'Direitos reais: usufruto, servidão, hipoteca',i:'media',me:'Aula',h:'1h'},{m:'TRI',t:'Impostos estaduais: ICMS, IPVA',i:'media',me:'Questoes',h:'1h'},{m:'CO2',t:'Direito de Nacionalidade',i:'media',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Organização dos Poderes — simulado FGV',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Terceiro setor e parcerias',i:'baixa',me:'Leitura',h:'1h30'}],
+ [{m:'CO2',t:'Competências legislativas — questões FGV',i:'media',me:'Questoes',h:'1h30'},{m:'PEN',t:'Crimes em espécie: tráfico e lei de drogas',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'MS, MI, HC e HD — questões avançadas',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Sociedade Anônima: administração',i:'media',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Controle de Const. — simulado avançado 30q',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'Sucessão legítima e testamentária',i:'media',me:'Aula',h:'1h'},{m:'ADM',t:'Serviços públicos — simulado',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'CO2 — revisão geral bloco complementar',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Impostos municipais: ISS, IPTU',i:'media',me:'Questoes',h:'1h'},{m:'CO2',t:'CO2 — questões FGV sem. 12',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Processo Legislativo — simulado avançado',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Atos adm. — questões FGV completas',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'PPE',t:'Recursos no processo penal — questões FGV',i:'alta',me:'Questoes',h:'1h30'},{m:'TRA',t:'Direito Coletivo: sindicatos',i:'media',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Tutelas constitucionais — revisão geral',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Falência — questões FGV',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Simulado CON — 50 questões',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'Responsabilidade civil — questões FGV',i:'alta',me:'Questoes',h:'1h'},{m:'ADM',t:'Responsabilidade do Estado — simulado',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'Simulado CO2 — 30 questões',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Crédito tributário — questões FGV',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'CO2 — simulado 20q',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Controle de Const. — consolidação',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Contratos adm. e licitações — simulado 30q',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CO2',t:'Administração Pública CF — questões FGV',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Execução trabalhista — questões FGV',i:'media',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Direitos Fundamentais — consolidação',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Títulos de crédito — questões FGV',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Organização dos Poderes — questões FGV',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'Família — questões FGV',i:'media',me:'Questoes',h:'1h'},{m:'ADM',t:'Lei Anticorrupção — questões FGV',i:'media',me:'Questoes',h:'1h'}],
+ [{m:'TRI',t:'Execução fiscal — questões FGV',i:'alta',me:'Questoes',h:'1h'},{m:'PPE',t:'Prisões e HC — questões FGV',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Súmulas vinculantes — revisão questões FGV',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Improbidade adm. — revisão e questões',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CO2',t:'Direitos Políticos e Sociais — simulado',i:'alta',me:'Questoes',h:'1h30'},{m:'TRA',t:'Estabilidade e FGTS — questões FGV',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Controle de Const. — revisão final sem. 14',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Recuperação judicial — questões',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Simulado geral CON — 50 questões',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'Simulado geral CO2 — 30 questões',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Simulado TRI — 25 questões',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'Simulado CIV — 50 questões',i:'alta',me:'Questoes',h:'1h'},{m:'PEN',t:'Simulado PEN — 20 questões',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'CON — correção e revisão simulado',i:'alta',me:'Leitura',h:'1h30'},{m:'ADM',t:'Simulado ADM — 30 questões',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'Simulado TRA — 25 questões',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Simulado PDT — 15 questões',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'CON — pontos fracos simulado',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Simulado EMP — 25 questões',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Revisão pontos fracos CON',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'Revisão pontos fracos CO2',i:'alta',me:'Questoes',h:'1h'},{m:'PEN',t:'Revisão pontos fracos PEN',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'Revisão pontos fracos CIV',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Revisão pontos fracos TRI',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Revisão CON — segunda rodada',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Revisão pontos fracos ADM',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'Revisão pontos fracos TRA',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Revisão pontos fracos PDT',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Revisão CON — terceira rodada',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Revisão pontos fracos EMP',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Simulado geral 80q — bloco 1',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'Proc. Civil: revisão completa questões',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Simulado TRI completo',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'CO2 — correção e revisão simulado',i:'alta',me:'Leitura',h:'1h'},{m:'ADM',t:'Simulado ADM + CO2',i:'alta',me:'Questoes',h:'1h'},{m:'PPE',t:'Proc. Penal — simulado completo',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Direitos Fundamentais — revisão final',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'Proc. Trabalho — simulado completo',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Execução trabalhista — revisão',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Controle de Const. — revisão final',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'EMP — revisão final',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Simulado geral 80q — bloco 2',i:'alta',me:'Questoes',h:'1h'},{m:'CIV',t:'CIV — responsabilidade civil revisão final',i:'alta',me:'Questoes',h:'1h'},{m:'PEN',t:'PEN — revisão final',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'Simulado CO2 — bloco complementar 40q',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Ações tributárias — revisão final',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'CO2 Adm. Pública — revisão final',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Organização dos Poderes — revisão final',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Licitações e contratos — revisão final',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'Relação de emprego e rescisão — revisão final',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Recursos trabalhistas — revisão final',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Tutelas constitucionais — revisão final',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Falência e títulos — revisão final',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Revisão de súmulas e precedentes STF/STJ',i:'alta',me:'Leitura',h:'1h'},{m:'CIV',t:'Revisão de súmulas e precedentes CIV',i:'alta',me:'Leitura',h:'1h'},{m:'PEN',t:'Revisão final PEN',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CO2',t:'CO2 — revisão Direitos Políticos e Sociais',i:'alta',me:'Leitura',h:'1h'},{m:'TRI',t:'Revisão de súmulas TRI',i:'alta',me:'Leitura',h:'1h'},{m:'PPE',t:'Revisão final PPE',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'Revisão súmulas constitucionais — segunda rodada',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Revisão de súmulas e precedentes ADM',i:'alta',me:'Leitura',h:'1h30'}],
+ [{m:'TRA',t:'Revisão de súmulas TST',i:'alta',me:'Leitura',h:'1h30'},{m:'PDT',t:'Súmulas TST processo do trabalho',i:'alta',me:'Leitura',h:'1h30'}],
+ [{m:'CON',t:'Súmulas STF — questões difíceis',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Revisão final EMP',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Simulado final CON — 80q completo',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'Simulado final CO2 — 40q completo',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Revisão pontos críticos TRI',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'Revisão pontos críticos CIV',i:'alta',me:'Questoes',h:'1h'},{m:'PEN',t:'Revisão pontos críticos PEN + PPE',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'CON — análise de erros do simulado final',i:'alta',me:'Leitura',h:'1h30'},{m:'ADM',t:'Revisão pontos críticos ADM',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'Revisão pontos críticos TRA',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Revisão pontos críticos PDT',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'CON — pontos mais cobrados FGV revisão',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Revisão pontos críticos EMP',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Últimos 45 dias — revisão geral CON',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'Últimos 45 dias — revisão geral CO2',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Últimos 45 dias — TRI + PPE + PEN',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'Últimos 45 dias — revisão geral CIV',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'CO2 — segunda rodada revisão',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'CON — segunda rodada revisão geral',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Últimos 45 dias — revisão geral ADM',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'Últimos 45 dias — revisão geral TRA',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Últimos 45 dias — revisão PDT',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'CON — questões que mais caem FGV',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Últimos 45 dias — revisão geral EMP',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Revisão final CF — pontos mais cobrados FGV',i:'alta',me:'Questoes',h:'1h'},{m:'CO2',t:'Revisão final CO2 — pontos mais cobrados FGV',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'Revisão final TRI',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'Revisão final CIV',i:'alta',me:'Questoes',h:'1h'},{m:'PEN',t:'Revisão final PEN + PPE',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CON',t:'CON — revisão intensiva final',i:'alta',me:'Questoes',h:'1h30'},{m:'ADM',t:'Revisão final ADM',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'Revisão final TRA',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'Revisão final PDT',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'Simulado completo 80q — penúltimo',i:'alta',me:'Questoes',h:'1h30'},{m:'EMP',t:'Revisão final EMP',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'Revisão leve CON — anotações e destaques',i:'alta',me:'Leitura',h:'1h'},{m:'CO2',t:'CO2 revisão leve',i:'alta',me:'Leitura',h:'1h'},{m:'PEN',t:'PEN revisão leve',i:'alta',me:'Questoes',h:'1h'}],
+ [{m:'CIV',t:'CIV revisão leve — questões erradas',i:'alta',me:'Questoes',h:'1h'},{m:'TRI',t:'TRI revisão leve',i:'alta',me:'Questoes',h:'1h'},{m:'PPE',t:'PPE revisão leve — descanso pré-prova',i:'alta',me:'Leitura',h:'1h'}],
+ [{m:'CON',t:'CON revisão leve — pontos-chave',i:'alta',me:'Leitura',h:'1h30'},{m:'ADM',t:'ADM revisão leve',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'TRA',t:'TRA revisão leve',i:'alta',me:'Questoes',h:'1h30'},{m:'PDT',t:'PDT revisão leve',i:'alta',me:'Questoes',h:'1h30'}],
+ [{m:'CON',t:'CON — descanso estratégico e revisão suave',i:'alta',me:'Leitura',h:'1h30'},{m:'EMP',t:'EMP revisão leve',i:'alta',me:'Questoes',h:'1h30'}]],
+[[{m:'CON',t:'VÉSPERA — revisão flash CON',i:'alta',me:'Leitura',h:'1h'},{m:'CO2',t:'VÉSPERA — revisão flash CO2',i:'alta',me:'Leitura',h:'1h'},{m:'PEN',t:'VÉSPERA — revisão flash PEN + PPE',i:'alta',me:'Leitura',h:'1h'}],
+ [{m:'CIV',t:'VÉSPERA — revisão flash CIV',i:'alta',me:'Leitura',h:'1h'},{m:'ADM',t:'VÉSPERA — revisão flash ADM',i:'alta',me:'Leitura',h:'1h'},{m:'CO2',t:'VÉSPERA — descanso e preparo mental',i:'alta',me:'Leitura',h:'1h'}],
+ [{m:'CON',t:'VÉSPERA — relax e confiança ✨',i:'alta',me:'Leitura',h:'30m'},{m:'TRI',t:'VÉSPERA — revisão flash TRI',i:'alta',me:'Leitura',h:'30m'}],
+ [{m:'TRA',t:'VÉSPERA — revisão flash TRA',i:'alta',me:'Leitura',h:'30m'},{m:'EMP',t:'VÉSPERA — revisão flash EMP',i:'alta',me:'Leitura',h:'30m'}],
+ [{m:'CON',t:'DIA DA PROVA — 28/11/2026',i:'alta',me:'Questoes',h:'5h'}]],
+];
+
+// ── STATE ──
+let CARDS=[], CW=1, CV='week', EID=null, DID=null, TDAY=0, TWK=1, TEMPO={}, SST={};
+let VARDATA={};
+let AVISOS=[];
+let curVarWk=1;
+
+function gD(c){return DISCS.find(d=>d.code===c);}
+// ── STORAGE ──
+const SK='oab47_state';
+
+// ⚠️ CONFIGURAÇÃO DO FIREBASE ⚠️
+// Substitua os valores abaixo pelos dados do SEU projeto Firebase
+// (Console Firebase → Configurações do projeto → Seus apps → SDK setup and configuration).
+// Sem isso preenchido corretamente, o site continua funcionando, mas cada
+// pessoa/máquina terá seus próprios dados salvos localmente (sem compartilhar).
+const firebaseConfig = {
+  apiKey: "AIzaSyB71qIpewluy6dL1NyNRlitd6cTrxPVnNI",
+  authDomain: "rfy-planner.firebaseapp.com",
+  projectId: "rfy-planner",
+  storageBucket: "rfy-planner.firebasestorage.app",
+  messagingSenderId: "481855257457",
+  appId: "1:481855257457:web:de45019f6ebb63edeed4d0"
+};
+
+let fbEnabled=false, fbRef=null, fbSaveTimer=null, fbLastSentJson=null, fbSuppressNextWrite=false;
+try{
+  if(firebaseConfig.apiKey && firebaseConfig.apiKey!=='SUA_API_KEY_AQUI' && typeof firebase!=='undefined'){
+    firebase.initializeApp(firebaseConfig);
+    fbRef=firebase.database().ref('plannerCompartilhado');
+    fbEnabled=true;
+  }
+}catch(e){ console.warn('Firebase indisponível, usando apenas localStorage.',e); fbEnabled=false; }
+
+function buildStateData(){
+  const topicDone={};
+  DISCS.forEach(d=>{
+    (d.topics||[]).forEach((t,ti)=>{
+      if(t.done) topicDone[d.code+'_'+ti]=true;
+    });
+  });
+  return {
+    cards:CARDS,tempo:TEMPO,sst:SST,
+    vardata:VARDATA,avisos:AVISOS,
+    topicDone:topicDone,
+    discs:DISCS,
+    rv:RV_ITEMS
+  };
+}
+
+function applyStateData(data){
+  if(data.cards&&data.cards.length) CARDS=data.cards; else initC();
+  if(data.tempo) TEMPO=data.tempo;
+  if(data.sst) SST=data.sst;
+  if(data.vardata) VARDATA=data.vardata;
+  if(data.avisos) AVISOS=data.avisos;
+  // RV_ITEMS (revisões) é sincronizado à parte, um item por vez — ver rvLoadInitial()/rvStartRealtimeSync().
+  // Isso evita que uma escrita atrasada do restante do estado apague revisões adicionadas por outra pessoa.
+  if(!fbEnabled&&data.rv) RV_ITEMS=data.rv;
+  if(data.discs&&data.discs.length){
+    const defaultCodes=['CON','CO2','ADM','CIV','TRA','PDT','EMP','PEN','PPE','TRI'];
+    DISCS=data.discs;
+    DISCS.forEach(function(d){
+      if(defaultCodes.indexOf(d.code)===-1){
+        const st=document.createElement('style');
+        st.textContent='.mt-'+d.code+'{background:'+d.color+'22;color:'+d.color+';font-weight:600;font-family:Outfit,sans-serif;padding:2px 8px;border-radius:20px;font-size:10px;display:inline-flex;align-items:center;}';
+        document.head.appendChild(st);
+      }
+    });
+  } else if(data.topicDone){
+    Object.keys(data.topicDone).forEach(function(k){
+      const parts=k.lastIndexOf('_');
+      const code=k.substring(0,parts);
+      const ti=parseInt(k.substring(parts+1));
+      const disc=gD(code);
+      if(disc&&disc.topics&&disc.topics[ti]) disc.topics[ti].done=true;
+    });
+  }
+}
+
+// Re-renderiza a tela ativa (usado quando outra pessoa altera dados em tempo real)
+function renderAll(){
+  const activeP=document.querySelector('.tp.active');
+  const tab=activeP?activeP.id.replace('tp-',''):'planner';
+  if(tab==='planner')rW();
+  if(tab==='stats')rStats();
+  if(tab==='materias')rMat();
+  if(tab==='variavel'&&typeof rVar==='function')rVar();
+  if(tab==='revisoes')rvRender();
+  rAv();
+}
+
+function fbDataForRoot(){
+  const data=buildStateData();
+  delete data.rv; // rv não vai no "pacote geral" — cada revisão é salva em seu próprio nó (ver rvPersistItem)
+  return data;
+}
+
+function save(){
+  const data=buildStateData();
+  const json=JSON.stringify(data);
+  try{ localStorage.setItem(SK,json); }catch(e){ console.warn('localStorage save failed',e); }
+  if(window.storage){ window.storage.set(SK,json).catch(function(){}); }
+  // Envia para o Firebase (com debounce curto para não disparar uma escrita a cada tecla).
+  // Importante: os dados são remontados NA HORA em que o timer dispara (não no momento do clique),
+  // para nunca sobrescrever o servidor com um estado antigo/desatualizado.
+  if(fbEnabled&&fbRef){
+    if(fbSaveTimer) clearTimeout(fbSaveTimer);
+    fbSaveTimer=setTimeout(function(){
+      const fresh=fbDataForRoot();
+      fbLastSentJson=JSON.stringify(fresh);
+      fbRef.update(fresh).catch(function(e){ console.warn('Falha ao salvar no Firebase',e); });
+    },300);
+  }
+}
+
+// Escuta alterações feitas por QUALQUER pessoa em tempo real e atualiza a tela na hora
+// (cards, cronograma, matérias, avisos — revisões têm sua própria sincronização, ver rvStartRealtimeSync)
+function startRealtimeSync(){
+  if(!fbEnabled||!fbRef)return;
+  fbRef.on('value',function(snapshot){
+    const raw=snapshot.val();
+    if(!raw)return;
+    const data=Object.assign({},raw);
+    delete data.rv;
+    const json=JSON.stringify(data);
+    if(json===fbLastSentJson)return; // já é o que a própria pessoa acabou de enviar
+    applyStateData(data);
+    fbLastSentJson=json;
+    renderAll();
+  });
+}
+
+// ── SINCRONIZAÇÃO GRANULAR DAS REVISÕES ──
+// Cada revisão é um "nó" independente no Firebase (chave = id da revisão), em vez de
+// fazer parte de um array único sobrescrito por inteiro a cada salvamento. Assim, adicionar/editar
+// uma revisão nunca apaga revisões que outra pessoa (ou outra aba) acabou de criar.
+function rvArrayFromMap(map){
+  if(!map) return [];
+  const arr=Array.isArray(map)?map.filter(Boolean):Object.keys(map).map(function(k){return map[k];});
+  return arr.filter(Boolean).sort(function(a,b){return (b.id||0)-(a.id||0);});
+}
+function rvPersistItem(item){
+  if(!fbEnabled||!fbRef||!item||item.id==null)return;
+  fbRef.child('rv').child(String(item.id)).set(item).catch(function(e){ console.warn('Falha ao sincronizar revisão no Firebase',e); });
+}
+function rvPersistDelete(id){
+  if(!fbEnabled||!fbRef)return;
+  fbRef.child('rv').child(String(id)).remove().catch(function(e){ console.warn('Falha ao excluir revisão no Firebase',e); });
+}
+let fbRvLastSentJson=null;
+function rvStartRealtimeSync(){
+  if(!fbEnabled||!fbRef)return;
+  fbRef.child('rv').on('value',function(snapshot){
+    const items=rvArrayFromMap(snapshot.val());
+    const json=JSON.stringify(items);
+    if(json===fbRvLastSentJson)return;
+    RV_ITEMS=items;
+    fbRvLastSentJson=json;
+    const rvTab=document.getElementById('tp-revisoes');
+    if(rvTab&&rvTab.classList.contains('active')) rvRender();
+  });
+}
+async function rvLoadInitial(localData){
+  if(fbEnabled&&fbRef){
+    try{
+      const snap=await fbRef.child('rv').once('value');
+      const val=snap.val();
+      if(Array.isArray(val)&&val.length){
+        // Formato antigo (um array só, sobrescrito por inteiro) → migra para 1 nó por revisão
+        const map={};
+        val.filter(Boolean).forEach(function(it){ if(it&&it.id!=null) map[String(it.id)]=it; });
+        await fbRef.child('rv').set(map);
+        RV_ITEMS=rvArrayFromMap(map);
+      } else if(val&&!Array.isArray(val)){
+        RV_ITEMS=rvArrayFromMap(val);
+      } else if(localData&&localData.rv&&localData.rv.length){
+        const map={};
+        localData.rv.forEach(function(it){ if(it&&it.id!=null) map[String(it.id)]=it; });
+        RV_ITEMS=rvArrayFromMap(map);
+        fbRef.child('rv').set(map).catch(function(){});
+      } else {
+        RV_ITEMS=[];
+      }
+      fbRvLastSentJson=JSON.stringify(RV_ITEMS);
+    }catch(e){
+      console.warn('Falha ao carregar revisões do Firebase, usando dados locais.',e);
+      if(localData&&localData.rv) RV_ITEMS=localData.rv;
+    }
+  } else if(localData&&localData.rv){
+    RV_ITEMS=localData.rv;
+  }
+}
+
+async function load(){
+  let data=null;
+  // 1. Se o Firebase estiver configurado, ele é a fonte principal (dados compartilhados)
+  if(fbEnabled&&fbRef){
+    try{
+      const snap=await fbRef.once('value');
+      if(snap.exists()) data=snap.val();
+    }catch(e){ console.warn('Falha ao ler do Firebase, usando dados locais.',e); }
+  }
+  // 2. Cloud storage do próprio ambiente (quando aberto dentro do Claude)
+  if(!data&&window.storage){
+    try{
+      const r=await window.storage.get(SK);
+      if(r&&r.value) data=JSON.parse(r.value);
+    }catch(e){}
+  }
+  // 3. Fallback: localStorage da própria máquina
+  if(!data){
+    try{
+      const s=localStorage.getItem(SK);
+      if(s) data=JSON.parse(s);
+    }catch(e){}
+  }
+  // 4. Migração legada de chaves antigas
+  if(!data){
+    const oldKeys=['oab47j','oab47i','oab47h','oab47g'];
+    for(const prefix of oldKeys){
+      try{
+        const s=localStorage.getItem(prefix+'_c');
+        if(s){
+          const cards=JSON.parse(s);
+          const tempo=JSON.parse(localStorage.getItem(prefix+'_t')||'{}');
+          const sst=JSON.parse(localStorage.getItem(prefix+'_s')||'{}');
+          const vardata=JSON.parse(localStorage.getItem(prefix+'_v')||'{}');
+          const avisos=JSON.parse(localStorage.getItem(prefix+'_av')||'[]');
+          const discsRaw=localStorage.getItem(prefix+'_d');
+          const oldDiscs=discsRaw?JSON.parse(discsRaw):null;
+          const topicDone={};
+          if(oldDiscs) oldDiscs.forEach(d=>{(d.topics||[]).forEach((t,ti)=>{if(t.done)topicDone[d.code+'_'+ti]=true;});});
+          data={cards,tempo,sst,vardata,avisos,topicDone};
+          console.log('Migrated from legacy key:',prefix);
+          break;
+        }
+      }catch(e){}
+    }
+  }
+  if(data){
+    applyStateData(data);
+    // Se veio de uma fonte local mas o Firebase está ativo e vazio, envia esses dados como ponto de partida
+    if(fbEnabled&&fbRef){
+      try{
+        const snap=await fbRef.once('value');
+        if(!snap.exists()) fbRef.update(fbDataForRoot()).catch(function(){});
+      }catch(e){}
+    }
+  } else {
+    initC();
+    if(fbEnabled&&fbRef) fbRef.update(fbDataForRoot()).catch(function(){});
+  }
+  await rvLoadInitial(data);
+  startRealtimeSync();
+  rvStartRealtimeSync();
+}
+
+function initC(){CARDS=[];let id=1;WT.forEach((wk,wi)=>{wk.forEach((day,di)=>{day.forEach(c=>{CARDS.push({id:id++,wk:wi+1,dy:di,mt:c.m,tp:c.t,inc:c.i,me:c.me,hr:c.h,st:'nao'});});});});}
+
+// ── COUNTDOWN ──
+function tick(){
+  const n=new Date(),df=PD-n;
+  if(df<=0)return;
+  document.getElementById('cd').textContent=String(Math.floor(df/86400000)).padStart(2,'0');
+  document.getElementById('ch').textContent=String(Math.floor((df%86400000)/3600000)).padStart(2,'0');
+  document.getElementById('cm').textContent=String(Math.floor((df%3600000)/60000)).padStart(2,'0');
+  document.getElementById('cs2').textContent=String(Math.floor((df%60000)/1000)).padStart(2,'0');
+  document.getElementById('ssd').textContent=SS.toLocaleDateString('pt-BR');
+}
+setInterval(tick,1000);tick();
+
+// ── TABS ──
+function sw(tab,btn){
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('tp-'+tab).classList.add('active');
+  if(tab==='planner')rW();
+  if(tab==='stats')rStats();
+  if(tab==='materias')rMat();
+  if(tab==='variavel')rVar();
+  if(tab==='revisoes')rvRender();
+}
+
+// ── HELPERS ──
+function incCls(i){return i==='alta'?'ia':i==='media'?'im':'ib';}
+function incLbl(i){return i==='alta'?'Alta':i==='media'?'Média':'Baixa';}
+function gPV(q,e){const qi=parseInt(q)||0,ei=parseInt(e)||0;if(!qi)return '--';return Math.round((qi-ei)/qi*100)+'%';}
+function gPC(q,e){const qi=parseInt(q)||0,ei=parseInt(e)||0;if(!qi)return 'pn';const p=Math.round((qi-ei)/qi*100);return p<70?'pr':p<=80?'py':'pg';}
+
+// ── WEEK SELECT BUILD ──
+function bWSel(id){
+  const s=document.getElementById(id);if(!s)return;s.innerHTML='';
+  for(let i=1;i<=TW;i++){
+    const sd=new Date(SS);sd.setDate(sd.getDate()+(i-1)*7);
+    const ed=new Date(sd);ed.setDate(ed.getDate()+4);
+    const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    const o=document.createElement('option');o.value=i;o.textContent='Sem. '+i+' ('+fmt(sd)+'–'+fmt(ed)+')';s.appendChild(o);
+  }
+}
+function bVarWSel(){
+  const s=document.getElementById('varWsel');if(!s)return;s.innerHTML='';
+  for(let i=1;i<=TW_FULL;i++){
+    const sd=new Date(SS);sd.setDate(sd.getDate()+(i-1)*7);
+    const ed=new Date(sd);ed.setDate(ed.getDate()+6);
+    const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    const o=document.createElement('option');o.value=i;o.textContent='Sem. '+i+' ('+fmt(sd)+' – '+fmt(ed)+')';s.appendChild(o);
+  }
+}
+function bMSel(id){
+  const s=document.getElementById(id);if(!s)return;s.innerHTML='';
+  DISCS.forEach(d=>{const o=document.createElement('option');o.value=d.code;o.textContent=d.name;s.appendChild(o);});
+}
+function bMSelOpt(id){
+  const s=document.getElementById(id);if(!s)return;
+  s.innerHTML='<option value="">— Sem matéria —</option>';
+  DISCS.forEach(d=>{const o=document.createElement('option');o.value=d.code;o.textContent=d.name;s.appendChild(o);});
+}
+
+// ── PLANNER ──
+function rW(){
+  CW=parseInt(document.getElementById('wsel').value)||1;
+  const sd=new Date(SS);sd.setDate(sd.getDate()+(CW-1)*7);
+  const ed=new Date(sd);ed.setDate(ed.getDate()+4);
+  const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+  const lbl=document.getElementById('wil');if(lbl)lbl.textContent=fmt(sd)+' a '+fmt(ed);
+  const cards=CARDS.filter(c=>c.wk===CW);
+  const g=document.getElementById('wg');g.innerHTML='';
+  DYS.forEach((day,di)=>{
+    const col=document.createElement('div');col.className='dc';col.dataset.day=di;
+    col.innerHTML='<div class="dh">'+day+'</div>';
+    cards.filter(c=>c.dy===di).forEach(c=>col.appendChild(bCard(c)));
+    col.addEventListener('dragover',e=>{e.preventDefault();col.style.background='#f0f0ff';});
+    col.addEventListener('dragleave',()=>{col.style.background='';});
+    col.addEventListener('drop',e=>{
+      e.preventDefault();col.style.background='';
+      const id=parseInt(e.dataTransfer.getData('text'));
+      const card=CARDS.find(x=>x.id===id);
+      if(card){card.dy=di;card.wk=CW;save();rW();}
+    });
+    g.appendChild(col);
+  });
+}
+
+function bCard(c){
+  const d=gD(c.mt);const nm=d?d.name:c.mt;const col=d?d.color:'#888';const dsh=d&&d.dash;
+  const div=document.createElement('div');div.className='sc';div.draggable=true;div.dataset.id=c.id;
+  div.innerHTML='<div style="display:flex;align-items:flex-start;justify-content:space-between;gap:4px;margin-bottom:4px">'
+    +'<div class="ct">'+c.tp+'</div>'
+    +'<div class="ca"><button class="ab" onclick="oEdit('+c.id+')">✏️</button><button class="ab dl" onclick="oDel('+c.id+')">🗑</button></div></div>'
+    +'<div class="cm"><span class="mt mt-'+c.mt+'"'+(dsh?' style="border:1px dashed '+col+'"':'')+'>'+nm+'</span>'
+    +'<span class="'+incCls(c.inc)+'">'+incLbl(c.inc)+'</span></div>'
+    +'<div class="cc"><select class="ms" onchange="updSt('+c.id+',this.value)">'
+    +STO.map(s=>'<option value="'+s.v+'"'+(c.st===s.v?' selected':'')+'>'+s.l+'</option>').join('')
+    +'</select><select class="ms" onchange="updMe('+c.id+',this.value)">'
+    +['Questoes','Aula','Leitura'].map(m=>'<option value="'+m+'"'+(c.me===m?' selected':'')+'>'+(m==='Questoes'?'Questões':m)+'</option>').join('')
+    +'</select>'+(c.hr?'<span class="tb2">⏱ '+c.hr+'</span>':'')+'</div>';
+  div.addEventListener('dragstart',e=>{e.dataTransfer.setData('text',c.id);div.classList.add('drag');});
+  div.addEventListener('dragend',()=>{div.classList.remove('drag');});
+  return div;
+}
+
+
+function updSt(id,v){const c=CARDS.find(x=>x.id===id);if(c){c.st=v;save();}}
+function updMe(id,v){const c=CARDS.find(x=>x.id===id);if(c){c.me=v;save();}}
+
+// ── SEARCH ──
+function onSrch(val){
+  const dd=document.getElementById('sdd');
+  if(!val||val.trim().length<2){dd.classList.remove('open');return;}
+  const q=val.toLowerCase();const res=[];
+  CARDS.forEach(c=>{
+    if(c.tp.toLowerCase().includes(q)||(gD(c.mt)&&gD(c.mt).name.toLowerCase().includes(q))){
+      const sd=new Date(SS);sd.setDate(sd.getDate()+(c.wk-1)*7+c.dy);
+      res.push(Object.assign({},c,{dateStr:sd.toLocaleDateString('pt-BR',{weekday:'short',day:'2-digit',month:'2-digit'})}));
+    }
+  });
+  DISCS.forEach(d=>{
+    (d.topics||[]).forEach(t=>{
+      if(t.t.toLowerCase().includes(q)){
+        const already=res.find(r=>r.mt===d.code&&r.tp.toLowerCase().includes(t.t.substring(0,20).toLowerCase()));
+        if(!already)res.push({id:-1,mt:d.code,tp:t.t,inc:t.inc,wk:'—',dy:null,dateStr:'Não agendado'});
+      }
+    });
+  });
+  const seen=new Set();
+  const uniq=res.filter(r=>{const k=r.mt+r.tp;if(seen.has(k))return false;seen.add(k);return true;});
+  if(!uniq.length){dd.innerHTML='<div class="sno">Nenhum resultado para "'+val+'"</div>';dd.classList.add('open');return;}
+  dd.innerHTML=uniq.slice(0,10).map(r=>{
+    const d=gD(r.mt);const nm=d?d.name:r.mt;const col=d?d.color:'#888';
+    return '<div class="si-item" onclick="goW('+r.wk+','+r.id+')"><div class="si-top">'+r.tp+'</div>'
+      +'<div class="si-meta"><span style="background:'+col+'20;color:'+col+';padding:1px 6px;border-radius:20px;font-size:10px;font-weight:600">'+nm+'</span>'
+      +'<span class="'+incCls(r.inc)+'">'+incLbl(r.inc)+'</span>'
+      +'<span style="font-size:10px;color:var(--txt2)">Sem.'+r.wk+(r.dy!==null&&r.dy!==undefined?' · '+DYS[r.dy]:'')+' · '+r.dateStr+'</span></div></div>';
+  }).join('');
+  dd.classList.add('open');
+}
+function closeSrch(){document.getElementById('sdd').classList.remove('open');}
+function goW(wk,id){
+  if(wk==='—')return;
+  closeSrch();document.getElementById('si').value='';
+  document.querySelectorAll('.tb').forEach(b=>b.classList.remove('active'));
+  document.querySelectorAll('.tp').forEach(p=>p.classList.remove('active'));
+  document.querySelectorAll('.tb')[0].classList.add('active');
+  document.getElementById('tp-planner').classList.add('active');
+  document.getElementById('wsel').value=wk;rW();
+  if(id>0){setTimeout(()=>{const el=document.querySelector('.sc[data-id="'+id+'"]');if(el){el.scrollIntoView({behavior:'smooth',block:'center'});el.style.outline='2px solid #6366f1';setTimeout(()=>{el.style.outline='';},2000);}},200);}
+}
+
+// ── AVISOS ──
+function tgAv(){const p=document.getElementById('avPanel');p.classList.toggle('open');}
+document.addEventListener('click',function(e){
+  const p=document.getElementById('avPanel');const b=document.getElementById('avBtn');
+  if(p&&p.classList.contains('open')&&!p.contains(e.target)&&!b.contains(e.target)){p.classList.remove('open');}
+});
+function rAv(){
+  const list=document.getElementById('avList');const badge=document.getElementById('avBadge');
+  if(!AVISOS.length){list.innerHTML='<div class="av-empty">📭 Nenhum aviso ainda.<br>Crie lembretes e anotações!</div>';}
+  else{list.innerHTML=AVISOS.map(a=>'<div class="av-item"><div class="av-dot" style="background:'+AV_COLORS[a.pri]+'"></div><div><div class="av-text">'+a.txt+'</div><div class="av-meta">'+(a.pri==='alta'?'🔴 Urgente':a.pri==='media'?'🟡 Normal':'🟢 Informativo')+' · '+a.date+'</div></div><button class="av-del" onclick="delAv('+a.id+')">✕</button></div>').join('');}
+  const cnt=AVISOS.filter(a=>a.pri==='alta').length;
+  if(cnt>0){badge.style.display='block';badge.textContent=cnt;}else{badge.style.display='none';}
+}
+function addAv(){
+  const txt=document.getElementById('avTxt').value.trim();const pri=document.getElementById('avPri').value;
+  if(!txt)return;
+  AVISOS.unshift({id:Date.now(),txt,pri,date:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
+  save();rAv();document.getElementById('avTxt').value='';
+}
+function delAv(id){AVISOS=AVISOS.filter(a=>a.id!==id);save();rAv();}
+
+// ── MODAL TOPIC ──
+function oAdd(){EID=null;document.getElementById('mot').textContent='Adicionar tópico';document.getElementById('mop').value='';document.getElementById('moh').value='1h30';bWSel('mow');bMSel('mom');document.getElementById('mow').value=CW;document.getElementById('bdm').style.display='none';document.getElementById('mo').classList.add('open');}
+function oEdit(id){EID=id;const c=CARDS.find(x=>x.id===id);if(!c)return;document.getElementById('mot').textContent='Editar tópico';bMSel('mom');bWSel('mow');document.getElementById('mom').value=c.mt;document.getElementById('mop').value=c.tp;document.getElementById('mod2').value=c.dy;document.getElementById('mow').value=c.wk;document.getElementById('moi').value=c.inc;document.getElementById('mome').value=c.me;document.getElementById('moh').value=c.hr||'';document.getElementById('bdm').style.display='inline-block';document.getElementById('mo').classList.add('open');}
+function cMo(){document.getElementById('mo').classList.remove('open');EID=null;}
+function svItem(){
+  const mt=document.getElementById('mom').value;const tp=document.getElementById('mop').value.trim();
+  if(!tp){alert('Informe o tópico');return;}
+  const dy=parseInt(document.getElementById('mod2').value);const wk=parseInt(document.getElementById('mow').value);
+  const inc=document.getElementById('moi').value;const me=document.getElementById('mome').value;const hr=document.getElementById('moh').value;
+  if(EID){const c=CARDS.find(x=>x.id===EID);if(c)Object.assign(c,{mt,tp,dy,wk,inc,me,hr});}
+  else{const mx=CARDS.reduce((m,x)=>Math.max(m,x.id),0);CARDS.push({id:mx+1,wk,dy,mt,tp,inc,me,hr,st:'nao'});}
+  save();cMo();rW();
+}
+function dItem(){cMo();oDel(EID);}
+function oDel(id){DID=id;document.getElementById('moDel').classList.add('open');}
+function cDel(){document.getElementById('moDel').classList.remove('open');DID=null;}
+function cfDel(removeFromMaterias){
+  if(DID){
+    const card=CARDS.find(x=>x.id===DID);
+    CARDS=CARDS.filter(x=>x.id!==DID);
+    if(card&&removeFromMaterias)removeOrphanTopic(card);
+  }
+  save();cDel();rW();
+}
+function removeOrphanTopic(card){
+  const disc=gD(card.mt);if(!disc||!disc.topics)return;
+  const t=disc.topics.find(t=>card.tp.toLowerCase().includes(t.t.substring(0,22).toLowerCase()));
+  if(!t)return;
+  disc.topics=disc.topics.filter(x=>x!==t);
+}
+
+// ── MODAL DISC ──
+function oAddD(){
+  bWSel('dw');
+  const cp=document.getElementById('dcp');cp.innerHTML='';document.getElementById('dco').value='#6366f1';
+  DCOLORS.forEach(col=>{
+    const sw=document.createElement('div');sw.className='cs';sw.style.background=col;
+    sw.onclick=()=>{document.querySelectorAll('.cs').forEach(x=>x.classList.remove('sel'));sw.classList.add('sel');document.getElementById('dco').value=col;};
+    if(col==='#6366f1')sw.classList.add('sel');cp.appendChild(sw);
+  });
+  ['dn','dc','dp','dno','dt','dh'].forEach(id=>{const el=document.getElementById(id);if(el)el.value=id==='dh'?'1h30':'';});
+  document.getElementById('mod3').classList.add('open');
+}
+function cMoD(){document.getElementById('mod3').classList.remove('open');}
+function svD(){
+  const name=document.getElementById('dn').value.trim();const code=document.getElementById('dc').value.trim().toUpperCase();
+  const color=document.getElementById('dco').value;const peso=parseInt(document.getElementById('dp').value)||5;
+  const note=document.getElementById('dno').value.trim();const topic=document.getElementById('dt').value.trim();
+  const dy=parseInt(document.getElementById('dd').value);const wk=parseInt(document.getElementById('dw').value)||1;
+  const inc=document.getElementById('di').value;const me=document.getElementById('dme').value;const hr=document.getElementById('dh').value||'1h30';
+  if(!name||!code){alert('Informe nome e código');return;}
+  if(DISCS.find(d=>d.code===code)){alert('Código já existe');return;}
+  DISCS.push({code,name,color,peso,dash:false,note,topics:topic?[{t:topic,inc}]:[]});
+  const st=document.createElement('style');
+  st.textContent='.mt-'+code+'{background:'+color+'22;color:'+color+';font-weight:600;font-family:Outfit,sans-serif;padding:2px 8px;border-radius:20px;font-size:10px;display:inline-flex;align-items:center;}';
+  document.head.appendChild(st);
+  if(topic){const mx=CARDS.reduce((m,x)=>Math.max(m,x.id),0);CARDS.push({id:mx+1,wk,dy,mt:code,tp:topic,inc,me,hr,st:'nao'});}
+  save();cMoD();rW();alert('Disciplina "'+name+'" criada com sucesso!');
+}
+
+// ── STATS ──
+function rStats(){
+  const cardTotal=CARDS.length;const cardFin=CARDS.filter(c=>c.st==='fin').length;
+  const ini=CARDS.filter(c=>c.st==='ini').length;const rev=CARDS.filter(c=>c.st==='rev').length;
+  // Count manually-marked topics that have NO scheduled cards (extra coverage beyond the cronograma)
+  let manualTotal=0,manualFin=0;
+  DISCS.forEach(d=>{
+    (d.topics||[]).forEach(t=>{
+      const hasCards=CARDS.some(c=>c.mt===d.code&&c.tp.toLowerCase().includes(t.t.substring(0,22).toLowerCase()));
+      if(!hasCards){manualTotal++;if(t.done)manualFin++;}
+    });
+  });
+  const total=cardTotal+manualTotal;const fin=cardFin+manualFin;
+  const pct=total?Math.round(fin/total*100):0;
+  document.getElementById('stg').innerHTML='<div class="sk"><div class="sv">'+total+'</div><div class="sl">Tópicos totais</div></div>'
+    +'<div class="sk"><div class="sv" style="color:#059669">'+fin+'</div><div class="sl">Finalizados</div><div class="pb"><div class="pf" style="width:'+pct+'%;background:#059669"></div></div></div>'
+    +'<div class="sk"><div class="sv" style="color:#1d4ed8">'+ini+'</div><div class="sl">Iniciados</div></div>'
+    +'<div class="sk"><div class="sv" style="color:#d97706">'+rev+'</div><div class="sl">Para revisar</div></div>'
+    +'<div class="sk"><div class="sv">'+pct+'%</div><div class="sl">Progresso geral</div><div class="pb"><div class="pf" style="width:'+pct+'%"></div></div></div>';
+  const m=document.getElementById('stm');m.innerHTML='';
+  DISCS.forEach(d=>{
+    const mc=CARDS.filter(c=>c.mt===d.code);const mcFin=mc.filter(c=>c.st==='fin').length;
+    let mManualTotal=0,mManualFin=0;
+    (d.topics||[]).forEach(t=>{
+      const hasCards=CARDS.some(c=>c.mt===d.code&&c.tp.toLowerCase().includes(t.t.substring(0,22).toLowerCase()));
+      if(!hasCards){mManualTotal++;if(t.done)mManualFin++;}
+    });
+    const mTotal=mc.length+mManualTotal;const mFin=mcFin+mManualFin;
+    const mp=mTotal?Math.round(mFin/mTotal*100):0;
+    const brd=d.dash?'border:1px dashed '+d.color+';border-left:4px solid '+d.color:'border-left:4px solid '+d.color;
+    m.innerHTML+='<div style="background:#fff;'+brd+';border-radius:8px;padding:11px;margin-bottom:7px;display:flex;align-items:center;gap:10px">'
+      +'<div style="min-width:170px"><div style="font-family:Outfit,sans-serif;font-size:12px;font-weight:600;color:'+d.color+'">'+d.name+'</div>'
+      +'<div style="font-size:10px;color:var(--txt2)">'+mFin+'/'+mTotal+'</div></div>'
+      +'<div style="flex:1"><div class="pb"><div class="pf" style="width:'+mp+'%;background:'+d.color+'"></div></div></div>'
+      +'<div style="font-family:Outfit,sans-serif;font-size:13px;font-weight:600;color:'+d.color+';min-width:36px;text-align:right">'+mp+'%</div></div>';
+  });
+}
+
+// ── MATERIAS ──
+function rMat(){
+  const con=document.getElementById('mcon');con.innerHTML='';
+  DISCS.forEach(m=>{
+    const sec=document.createElement('div');sec.style.marginBottom='20px';
+    const brd=m.dash?'border:1px dashed '+m.color:'';
+    sec.innerHTML='<div class="sh">'
+      +'<div style="width:8px;height:8px;border-radius:50%;background:'+(m.dash?'transparent':m.color)+';'+(m.dash?'outline:2px dashed '+m.color+';outline-offset:2px':'')+'">'+'</div>'
+      +'<span style="color:'+m.color+'">'+m.name+'</span>'
+      +'<span class="bn">'+(m.topics||[]).length+' tópicos</span>'
+      +'<span style="font-size:10px;color:var(--txt2);font-weight:400;margin-left:4px">Peso: '+m.peso+'%</span>'
+      +'<button class="tsbtn" style="margin-top:0;margin-left:auto;border-color:#6366f1;color:#6366f1" onclick="openAddTopic(&quot;'+m.code+'&quot;)">➕ Adicionar tópico</button></div>'
+      +(m.note?'<div class="co2n">💡 '+m.note+'</div>':'')
+      +'<div style="background:#fff;border:1px solid var(--bdr);border-radius:9px;overflow:hidden;'+brd+'">'
+      +'<table class="mtt"><thead><tr><th>Tópico</th><th>Incidência</th><th>No Cronograma</th></tr></thead>'
+      +'<tbody id="tb-'+m.code+'"></tbody></table></div>';
+    con.appendChild(sec);
+    const tb=document.getElementById('tb-'+m.code);
+    (m.topics||[]).forEach((t,ti)=>{
+      const matches=CARDS.filter(c=>c.mt===m.code&&c.tp.toLowerCase().includes(t.t.substring(0,22).toLowerCase()));
+      const pid='p-'+m.code+'-'+ti;
+      const cardsDone=matches.length>0&&matches.every(c=>c.st==='fin');
+      const manualDone=!!t.done;
+      const isDone=matches.length>0?cardsDone:manualDone;
+      const tr=document.createElement('tr');
+      tr.id='tr-'+m.code+'-'+ti;
+      tr.innerHTML='<td><div style="font-size:11px;margin-bottom:3px'+(isDone?';text-decoration:line-through;color:#9ca3af':'')+'">'+t.t+'</div>'
+        +'<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">'
+        +'<button class="tsbtn" onclick="tgSch(&quot;'+pid+'&quot;)">📅 Ver no cronograma</button>'
+        +'<button class="tsbtn" style="'+(isDone?'background:#d1fae5;color:#065f46;border-color:#a7f3d0':'')+'" onclick="markTopicDone(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">'+(isDone?'✅ Finalizado':'☐ Marcar como finalizado')+'</button>'
+        +'<button class="tsbtn" style="color:#6366f1" onclick="openEditTopic(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">✏️ Editar tópico</button>'
+        +'</div>'
+        +'<div class="tsp" id="'+pid+'">'
+        +(matches.length?matches.map(c=>{
+          const sd=new Date(SS);sd.setDate(sd.getDate()+(c.wk-1)*7+c.dy);
+          return '<div class="se">'
+            +'<span style="font-family:Outfit,sans-serif;font-size:10px;font-weight:600;color:'+m.color+'">Sem.'+c.wk+'</span>'
+            +'<span style="font-size:10px;color:var(--txt2)">'+DYS[c.dy]+'</span>'
+            +'<span style="font-size:10px;color:var(--txt2)">'+sd.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+'</span>'
+            +'<span style="font-size:10px;color:var(--txt2)">⏱'+c.hr+'</span>'
+            +'<span style="font-size:9px;background:'+(c.me==='Questoes'?'#e0f2fe':c.me==='Aula'?'#ede9fe':'#ecfdf5')
+            +';color:'+(c.me==='Questoes'?'#0e4f6b':c.me==='Aula'?'#4c1d95':'#065f46')
+            +';padding:1px 5px;border-radius:3px">'+(c.me==='Questoes'?'Questões':c.me)+'</span>'
+            +'<button class="tsbtn" style="padding:1px 6px;font-size:9px" onclick="openMoveCard('+c.id+')">📆 Alterar semana</button></div>';
+        }).join(''):'<div style="font-size:10px;color:var(--txt2);padding:3px 0">Não agendado ainda no cronograma. Você ainda pode marcá-lo como finalizado manualmente.</div>')
+        +'</div></td>'
+        +'<td><span class="'+incCls(t.inc)+'">'+incLbl(t.inc)+'</span></td>'
+        +'<td style="font-size:10px;color:var(--txt2)">'+(matches.length?'<span style="color:#059669;font-weight:600">'+matches.length+'x</span>':'<span style="color:#9ca3af">—</span>')+'</td>';
+      tb.appendChild(tr);
+    });
+  });
+}
+function tgSch(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
+function markTopicDone(matCode,tiStr){
+  const ti=parseInt(tiStr);
+  const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
+  const t=disc.topics[ti];
+  const matches=CARDS.filter(c=>c.mt===matCode&&c.tp.toLowerCase().includes(t.t.substring(0,22).toLowerCase()));
+  if(matches.length){
+    const allDone=matches.every(c=>c.st==='fin');
+    const newStatus=allDone?'ini':'fin';
+    matches.forEach(c=>{c.st=newStatus;});
+  }else{
+    t.done=!t.done;
+  }
+  save();rMat();
+  if(document.getElementById('tp-stats').classList.contains('active'))rStats();
+}
+
+// ── ADD/EDIT/DEL TOPICO (Matérias) ──
+let atCode=null;
+let atIndex=null; // null = modo adicionar, número = modo edição
+function openAddTopic(code){
+  atCode=code;atIndex=null;
+  const disc=gD(code);
+  document.getElementById('atTitle').textContent='➕ Adicionar tópico — '+(disc?disc.name:code);
+  document.getElementById('atTopic').value='';
+  document.getElementById('atInc').value='alta';
+  document.getElementById('atDelBtn').style.display='none';
+  document.getElementById('atSaveBtn').textContent='Adicionar';
+  document.getElementById('moAddTopic').classList.add('open');
+}
+function openEditTopic(code,tiStr){
+  const ti=parseInt(tiStr);
+  const disc=gD(code);if(!disc||!disc.topics||!disc.topics[ti])return;
+  const t=disc.topics[ti];
+  atCode=code;atIndex=ti;
+  document.getElementById('atTitle').textContent='✏️ Editar tópico — '+(disc?disc.name:code);
+  document.getElementById('atTopic').value=t.t;
+  document.getElementById('atInc').value=t.inc||'alta';
+  document.getElementById('atDelBtn').style.display='inline-block';
+  document.getElementById('atSaveBtn').textContent='Salvar';
+  document.getElementById('moAddTopic').classList.add('open');
+}
+function closeAddTopic(){
+  document.getElementById('moAddTopic').classList.remove('open');
+  atCode=null;atIndex=null;
+}
+function confirmAddTopic(){
+  const disc=gD(atCode);if(!disc)return;
+  const t=(document.getElementById('atTopic').value||'').trim();
+  if(!t){alert('Informe o tópico.');return;}
+  const inc=document.getElementById('atInc').value;
+  if(atIndex===null){
+    if(!disc.topics)disc.topics=[];
+    disc.topics.push({t,inc});
+  }else{
+    if(!disc.topics||!disc.topics[atIndex])return;
+    disc.topics[atIndex].t=t;
+    disc.topics[atIndex].inc=inc;
+  }
+  save();closeAddTopic();rMat();
+  if(document.getElementById('tp-stats').classList.contains('active'))rStats();
+}
+function delTopicFromModal(){
+  if(atCode===null||atIndex===null)return;
+  delTopic(atCode,atIndex);
+}
+function delTopic(matCode,tiStr){
+  const ti=parseInt(tiStr);
+  const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
+  if(!confirm('Excluir o tópico "'+disc.topics[ti].t+'"? Isso não remove os itens já agendados no cronograma.'))return;
+  disc.topics.splice(ti,1);
+  save();closeAddTopic();rMat();
+  if(document.getElementById('tp-stats').classList.contains('active'))rStats();
+}
+
+// ── MOVE CARD (mini week-change popup) ──
+function openMoveCard(cardId){
+  const c=CARDS.find(x=>x.id===cardId);if(!c)return;
+  const existing=document.getElementById('moveCardPopup');
+  if(existing)existing.remove();
+  const pop=document.createElement('div');
+  pop.id='moveCardPopup';
+  pop.className='mo open';
+  pop.style.zIndex='1100';
+  const wOpts=Array.from({length:TW},(_, i)=>i+1).map(w=>'<option value="'+w+'"'+(w===c.wk?' selected':'')+'>Semana '+w+'</option>').join('');
+  const dOpts=DYS.map((d,i)=>'<option value="'+i+'"'+(i===c.dy?' selected':'')+'>'+d+'</option>').join('');
+  pop.innerHTML='<div class="md" style="max-width:300px">'
+    +'<h3>Alterar data do tópico</h3>'
+    +'<div style="font-size:11px;color:var(--txt2);margin-bottom:10px">'+c.tp+'</div>'
+    +'<div class="fg"><label>Semana</label><select id="moveWeekSel">'+wOpts+'</select></div>'
+    +'<div class="fg"><label>Dia</label><select id="moveDaySel">'+dOpts+'</select></div>'
+    +'<div class="ma"><button class="bc" onclick="closeMoveCard()">Cancelar</button><button class="bs" onclick="confirmMoveCard('+cardId+')">Salvar</button></div>'
+    +'</div>';
+  document.body.appendChild(pop);
+}
+function closeMoveCard(){const p=document.getElementById('moveCardPopup');if(p)p.remove();}
+function confirmMoveCard(cardId){
+  const c=CARDS.find(x=>x.id===cardId);if(!c)return;
+  const newWk=parseInt(document.getElementById('moveWeekSel').value);
+  const newDy=parseInt(document.getElementById('moveDaySel').value);
+  c.wk=newWk;c.dy=newDy;
+  save();closeMoveCard();rMat();
+  if(document.getElementById('tp-planner').classList.contains('active'))rW();
+}
+
+// ── CICLOS ──
+
+// ── TEMPO ──
+
+
+
+
+
+
+
+
+// ── VARIAVEL ──
+let varCurDay=null;
+function rVar(){
+  curVarWk=parseInt(document.getElementById('varWsel').value)||1;
+  const sd=new Date(SS);sd.setDate(sd.getDate()+(curVarWk-1)*7);
+  const ed=new Date(sd);ed.setDate(ed.getDate()+6);
+  const fmt=d=>d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'});
+  const lbl=document.getElementById('varWLabel');if(lbl)lbl.textContent=fmt(sd)+' a '+fmt(ed);
+  const con=document.getElementById('varDays');con.innerHTML='';
+  let totalEntries=0,totalMins=0;
+  ALL_DYS.forEach((_,di)=>{
+    const key='w'+curVarWk+'_'+di;
+    const dayEnt=VARDATA[key]||[];
+    totalEntries+=dayEnt.length;
+    dayEnt.forEach(entry=>{
+      if(entry.hr){
+        const parts=entry.hr.match(/^([0-9]+)h([0-9]+)?/);
+        if(parts){totalMins+=(parseInt(parts[1])||0)*60+(parseInt(parts[2])||0);}
+      }
+    });
+  });
+  const tbox=document.getElementById('varTotalBox');
+  if(totalEntries>0&&tbox){
+    const hh=Math.floor(totalMins/60);const mm=totalMins%60;
+    tbox.style.display='flex';
+    const matSet=new Set();
+    ALL_DYS.forEach((_,di)=>{(VARDATA['w'+curVarWk+'_'+di]||[]).forEach(e=>{if(e.mat)matSet.add(e.mat);});});
+    tbox.innerHTML='<div><div class="vti">Total da semana</div><div class="vtv">'+String(hh).padStart(2,'0')+'h'+String(mm).padStart(2,'0')+'m</div></div>'
+      +'<div><div class="vti">Entradas</div><div class="vtv">'+totalEntries+'</div></div>'
+      +'<div><div class="vti">Disciplinas</div><div class="vtv">'+matSet.size+'</div></div>';
+  }else if(tbox){tbox.style.display='none';}
+  ALL_DYS.forEach((day,di)=>{
+    const isWeekend=di===6;
+    const dayDate=new Date(sd);dayDate.setDate(dayDate.getDate()+di);
+    const dateStr=dayDate.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+    const key='w'+curVarWk+'_'+di;const dayEnt=VARDATA[key]||[];
+    const col=document.createElement('div');col.className='var-day-col';
+    const headCls=isWeekend?'var-day-sun':'var-day-wkd';
+    col.innerHTML='<div class="var-day-head '+headCls+'">'+day+'<br><span style="font-size:9px;font-weight:400;opacity:.7">'+dateStr+'</span></div>'
+      +'<div class="var-day-body"></div>';
+    con.appendChild(col);
+    const body=col.querySelector('.var-day-body');
+    dayEnt.forEach((entry,ei)=>{
+      const disc=gD(entry.mat);const col2=disc?disc.color:'#9ca3af';const nm=disc?disc.name:'(sem matéria)';
+      const div=document.createElement('div');div.className='var-entry';div.style.borderLeftColor=col2;
+      div.innerHTML='<div class="var-entry-actions">'
+        +'<button class="var-entry-edit" onclick="oEditVar('+di+','+ei+')" title="Editar">✏️</button>'
+        +'<button class="var-entry-del" data-di="'+di+'" data-ei="'+ei+'" onclick="askDelVarE(this)" title="Excluir">✕</button>'
+        +'</div>'
+        +'<div style="font-family:Outfit,sans-serif;font-size:9px;font-weight:700;color:'+col2+';margin-bottom:2px">'+nm+'</div>'
+        +'<div style="font-size:10px;line-height:1.3;margin-bottom:3px">'+entry.top+'</div>'
+        +'<div style="display:flex;gap:4px;flex-wrap:wrap;align-items:center">'
+        +'<span style="font-size:9px;background:'+col2+'20;color:'+col2+';padding:1px 5px;border-radius:10px">'+entry.me+'</span>'
+        +(entry.hr?'<span style="font-size:9px;color:var(--txt2)">⏱'+entry.hr+'</span>':'')+'</div>'
+        +(entry.obs?'<div style="font-size:9px;color:var(--txt2);margin-top:2px;font-style:italic">'+entry.obs+'</div>':'');
+      body.appendChild(div);
+    });
+    const addBtn=document.createElement('button');addBtn.className='var-add-btn';addBtn.textContent='+ Adicionar estudo';
+    addBtn.onclick=()=>{varCurDay=di;oMoVar(di);};body.appendChild(addBtn);
+  });
+}
+function askDelVarE(btn){
+  if(btn.dataset.armed==='1'){
+    const di=parseInt(btn.dataset.di);const ei=parseInt(btn.dataset.ei);
+    delVarE(di,ei);
+    return;
+  }
+  btn.dataset.armed='1';
+  btn.textContent='✓';
+  btn.title='Clique novamente para confirmar a exclusão';
+  btn.style.background='#dc2626';
+  btn.style.color='#fff';
+  btn.style.borderColor='#dc2626';
+  btn.style.width='auto';
+  btn.style.padding='0 6px';
+  clearTimeout(btn._armTimer);
+  btn._armTimer=setTimeout(()=>{
+    btn.dataset.armed='0';
+    btn.textContent='✕';
+    btn.title='';
+    btn.style.background='';
+    btn.style.color='';
+    btn.style.borderColor='';
+    btn.style.width='';
+    btn.style.padding='';
+  },3000);
+}
+function delVarE(di,ei){
+  const key='w'+curVarWk+'_'+di;if(!VARDATA[key])return;
+  VARDATA[key].splice(ei,1);save();rVar();
+}
+function oMoVar(di){
+  bMSelOpt('vMat');
+  document.getElementById('vTop').value='';document.getElementById('vHr').value='1h30';
+  document.getElementById('vObs').value='';document.getElementById('vEntId').value='';
+  document.getElementById('vMe').value='Questoes';
+  document.getElementById('vDay').value=di;
+  document.getElementById('vDayChangeFg').style.display='none';
+  const title=document.getElementById('moVarTitle');
+  if(title)title.textContent='Adicionar estudo — '+ALL_DYS[di]+' ('+_varDayDate(di)+')';
+  document.getElementById('moVar').classList.add('open');
+}
+function oEditVar(di,ei){
+  const key='w'+curVarWk+'_'+di;
+  if(!VARDATA[key]||!VARDATA[key][ei])return;
+  const entry=VARDATA[key][ei];
+  bMSelOpt('vMat');
+  document.getElementById('vMat').value=entry.mat||'';
+  document.getElementById('vTop').value=entry.top||'';
+  document.getElementById('vMe').value=entry.me||'Questoes';
+  document.getElementById('vHr').value=entry.hr||'';
+  document.getElementById('vObs').value=entry.obs||'';
+  document.getElementById('vDay').value=di;
+  document.getElementById('vEntId').value=ei;
+  // Populate day-change select with all 7 days of the current week
+  const sel=document.getElementById('vDayChange');
+  sel.innerHTML='<option value="">— Manter no mesmo dia ('+ALL_DYS[di]+') —</option>';
+  ALL_DYS.forEach((d,idx)=>{
+    if(idx===di)return; // skip current day
+    const o=document.createElement('option');
+    o.value=idx;
+    const dateStr=_varDayDate(idx);
+    o.textContent=d+' ('+dateStr+')';
+    sel.appendChild(o);
+  });
+  document.getElementById('vDayChangeFg').style.display='block';
+  const title=document.getElementById('moVarTitle');
+  if(title)title.textContent='Editar estudo — '+ALL_DYS[di]+' ('+_varDayDate(di)+')';
+  document.getElementById('moVar').classList.add('open');
+}
+function _varDayDate(di){
+  const d=new Date(SS);d.setDate(d.getDate()+(curVarWk-1)*7+di);
+  return d.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'});
+}
+function cMoVar(){document.getElementById('moVar').classList.remove('open');}
+function svVar(){
+  const mat=document.getElementById('vMat').value;const top=document.getElementById('vTop').value.trim();
+  if(!top){alert('Informe o tópico/conteúdo');return;}
+  const me=document.getElementById('vMe').value;const hr=document.getElementById('vHr').value;
+  const obs=document.getElementById('vObs').value.trim();
+  const di=parseInt(document.getElementById('vDay').value);
+  const entIdRaw=document.getElementById('vEntId').value;
+  const dayChangeRaw=document.getElementById('vDayChange').value;
+  const key='w'+curVarWk+'_'+di;if(!VARDATA[key])VARDATA[key]=[];
+  if(entIdRaw!==''){
+    const ei=parseInt(entIdRaw);
+    if(VARDATA[key][ei]){
+      const updatedEntry=Object.assign(VARDATA[key][ei],{mat,top,me,hr,obs});
+      if(dayChangeRaw!==''){
+        // Move entry to a different day
+        const newDi=parseInt(dayChangeRaw);
+        VARDATA[key].splice(ei,1); // remove from current day
+        const newKey='w'+curVarWk+'_'+newDi;
+        if(!VARDATA[newKey])VARDATA[newKey]=[];
+        VARDATA[newKey].push(updatedEntry); // add to new day
+      }
+    }
+  }else{
+    VARDATA[key].push({mat,top,me,hr,inc:'media',obs,st:'nao'});
+  }
+  save();cMoVar();rVar();
+}
+
+
+// ── VERTICALIZADO ──
+
+
+
+
+
+
+
+
+
+
+
+
+// ── VERTICALIZADO END ──
+
+// ── REVISÕES (Repetição Espaçada) ──
+var RV_ITEMS = [];
+var RV_STEPS = [2, 7, 15, 25];
+
+function rvSave(){ save(); }
+function rvLoad(){ /* RV_ITEMS loaded by main load() */ }
+
+// ── date helpers ──
+function rvDayStart(ms){ var d=new Date(ms); return new Date(d.getFullYear(),d.getMonth(),d.getDate()).getTime(); }
+function rvToday(){ return rvDayStart(Date.now()); }
+function rvAddDays(ms,n){ return ms+n*86400000; }
+function rvFmtDate(ms){ return new Date(ms).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function rvFmtShort(ms){ return new Date(ms).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}); }
+function rvDaysDiff(ms){ return Math.round((ms-rvToday())/86400000); }
+function rvTodayISO(){
+  var d=new Date(); 
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function rvISOToMs(iso){
+  var p=iso.split('-'); return new Date(parseInt(p[0]),parseInt(p[1])-1,parseInt(p[2])).getTime();
+}
+
+function rvNextStep(item){
+  for(var i=0;i<item.steps.length;i++){ if(!item.steps[i].doneAt) return i; }
+  return -1;
+}
+// Calcula a data de cada etapa de revisão em cadeia: cada intervalo (2, 7, 15, 30 dias)
+// conta a partir da revisão anterior (real, se já feita; ou planejada, se ainda não) —
+// e não a partir da data original de estudo. Ex.: estudou dia 11, revisa em +2 (13);
+// revisou de fato dia 13, próxima em +7 a partir de 13 (20); e assim por diante.
+function rvPlannedDates(item){
+  var dates=[];
+  var base=item.studiedAt;
+  for(var i=0;i<RV_STEPS.length;i++){
+    var s=item.steps[i];
+    var d;
+    if(s.doneAt) d=rvDayStart(s.doneAt);
+    else if(s.targetDate) d=rvDayStart(s.targetDate);
+    else d=rvDayStart(rvAddDays(rvDayStart(base),RV_STEPS[i]));
+    dates.push(d);
+    base=d;
+  }
+  return dates;
+}
+function rvNextDue(item){
+  var i=rvNextStep(item); if(i<0) return null;
+  return rvPlannedDates(item)[i];
+}
+
+function rvPopulateDisc(){
+  ['rvDisc','rvFiltDisc','rvEditDisc'].forEach(function(id){
+    var sel=document.getElementById(id); if(!sel) return;
+    var cur=sel.value;
+    var prefix=id==='rvFiltDisc'?'<option value="">Todas as disciplinas</option>':'<option value="">— Sem disciplina —</option>';
+    sel.innerHTML=prefix;
+    DISCS.forEach(function(d){ var o=document.createElement('option'); o.value=d.code; o.textContent=d.name; sel.appendChild(o); });
+    if(cur) sel.value=cur;
+  });
+}
+function rvMsToISO(ms){
+  var d=new Date(ms);
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+
+function rvSetTodayDate(){
+  var el=document.getElementById('rvDate');
+  if(el&&!el.value) el.value=rvTodayISO();
+}
+
+function rvAdd(){
+  var topic=(document.getElementById('rvTopic').value||'').trim();
+  if(!topic){ alert('Informe o tópico/conteúdo estudado.'); return; }
+  var disc=document.getElementById('rvDisc').value;
+  var note=(document.getElementById('rvNote').value||'').trim();
+  var dateEl=document.getElementById('rvDate');
+  var studiedAt=dateEl&&dateEl.value ? rvISOToMs(dateEl.value) : rvToday();
+  var firstRevEl=document.getElementById('rvFirstRev');
+  var firstRevDate=firstRevEl&&firstRevEl.value ? rvISOToMs(firstRevEl.value) : null;
+  var steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
+  if(firstRevDate) steps[0].targetDate=firstRevDate;
+  var newItem={id:Date.now(),topic:topic,disc:disc,note:note,studiedAt:studiedAt,steps:steps};
+  RV_ITEMS.unshift(newItem);
+  rvSave(); rvPersistItem(newItem);
+  document.getElementById('rvTopic').value='';
+  document.getElementById('rvNote').value='';
+  document.getElementById('rvDisc').value='';
+  if(firstRevEl) firstRevEl.value='';
+  if(dateEl) dateEl.value=rvTodayISO();
+  rvRender();
+}
+
+function rvMarkStep(id,stepIdx){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  if(rvNextStep(item)!==stepIdx) return;
+  item.steps[stepIdx].doneAt=rvToday();
+  rvSave(); rvPersistItem(item); rvRender();
+}
+
+function rvUndoStep(id,stepIdx){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  if(item.steps[stepIdx]) item.steps[stepIdx].doneAt=null;
+  rvSave(); rvPersistItem(item); rvRender();
+}
+
+function rvResetCycle(id){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  // Show inline reset dialog
+  var existingDlg=document.getElementById('rvResetDlg-'+id);
+  if(existingDlg){ existingDlg.remove(); return; }
+  var card=document.getElementById('rvcard-'+id); if(!card) return;
+  var dlg=document.createElement('div');
+  dlg.id='rvResetDlg-'+id;
+  dlg.style.cssText='background:#fff;border:1.5px solid #6366f1;border-radius:10px;padding:12px 14px;margin-top:8px;font-size:12px';
+  var todayISO=rvTodayISO();
+  dlg.innerHTML='<div style="font-family:Outfit,sans-serif;font-weight:600;font-size:12px;margin-bottom:8px;color:#6366f1">🔁 Reiniciar ciclo de revisão</div>'
+    +'<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap">'
+    +'<label style="font-size:11px;color:var(--txt2)">Data de início do novo ciclo:</label>'
+    +'<input type="date" id="rvResetDate-'+id+'" value="'+todayISO+'" style="font-family:DM Sans,sans-serif;font-size:11px;border:1px solid var(--bdr);border-radius:6px;padding:4px 8px">'
+    +'<button onclick="rvConfirmReset('+id+')" style="background:#6366f1;color:#fff;border:none;border-radius:6px;padding:5px 12px;font-family:Outfit,sans-serif;font-size:11px;font-weight:600;cursor:pointer">Confirmar</button>'
+    +'<button onclick="document.getElementById(\'rvResetDlg-'+id+'\').remove()" style="background:none;border:1px solid var(--bdr);border-radius:6px;padding:5px 10px;font-size:11px;cursor:pointer;color:var(--txt2)">Cancelar</button>'
+    +'</div>';
+  card.appendChild(dlg);
+}
+
+function rvConfirmReset(id){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  var dateEl=document.getElementById('rvResetDate-'+id);
+  var newStart=dateEl&&dateEl.value ? rvISOToMs(dateEl.value) : rvToday();
+  item.studiedAt=newStart;
+  item.steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
+  rvSave(); rvPersistItem(item); rvRender();
+}
+
+function rvDelete(id){
+  var btn=document.getElementById('rvdel-'+id); if(!btn) return;
+  if(btn.dataset.armed==='1'){
+    RV_ITEMS=RV_ITEMS.filter(function(x){ return x.id!==id; });
+    rvSave(); rvPersistDelete(id); rvRender(); return;
+  }
+  btn.dataset.armed='1'; btn.textContent='Confirmar?'; btn.style.color='#dc2626'; btn.style.borderColor='#fca5a5';
+  setTimeout(function(){ if(btn){ btn.dataset.armed='0'; btn.textContent='🗑'; btn.style.color=''; btn.style.borderColor=''; } },3000);
+}
+
+// ── COMENTÁRIOS (avisos por revisão) ──
+function rvAddComment(id){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  var ta=document.getElementById('rvCommentInput-'+id); if(!ta) return;
+  var txt=(ta.value||'').trim();
+  if(!txt) return;
+  if(!item.comments) item.comments=[];
+  item.comments.unshift({id:Date.now(),txt:txt,date:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})});
+  rvSave(); rvPersistItem(item); rvRender();
+}
+function rvDelComment(id,cid){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item||!item.comments) return;
+  item.comments=item.comments.filter(function(c){ return c.id!==cid; });
+  rvSave(); rvPersistItem(item); rvRender();
+}
+
+// ── EDITAR REVISÃO ──
+var rvEditId=null;
+function rvOpenEdit(id){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  rvEditId=id;
+  rvPopulateDisc();
+  document.getElementById('rvEditTopic').value=item.topic||'';
+  document.getElementById('rvEditDisc').value=item.disc||'';
+  document.getElementById('rvEditStudiedAt').value=rvMsToISO(item.studiedAt);
+  document.getElementById('rvEditNote').value=item.note||'';
+  var wrap=document.getElementById('rvEditSteps'); wrap.innerHTML='';
+  var plannedDatesForEdit=rvPlannedDates(item);
+  RV_STEPS.forEach(function(days,i){
+    var s=item.steps[i];
+    var dateVal;
+    if(s.doneAt) dateVal=rvMsToISO(s.doneAt);
+    else if(s.targetDate) dateVal=rvMsToISO(s.targetDate);
+    else dateVal=rvMsToISO(plannedDatesForEdit[i]);
+    var row=document.createElement('div');
+    row.className='rv-edit-step-row';
+    row.innerHTML=
+      '<span class="rv-edit-step-lbl">+'+days+'d</span>'+
+      '<label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--txt2)">'+
+        '<input type="checkbox" id="rvEditStepDone-'+i+'"'+(s.doneAt?' checked':'')+'> Concluída</label>'+
+      '<input type="date" class="rv-edit-step-date" id="rvEditStepDate-'+i+'" value="'+dateVal+'">';
+    wrap.appendChild(row);
+  });
+  document.getElementById('rvEditModal').classList.add('open');
+}
+function rvCloseEdit(){
+  document.getElementById('rvEditModal').classList.remove('open');
+  rvEditId=null;
+}
+function rvSaveEdit(){
+  var item=RV_ITEMS.find(function(x){ return x.id===rvEditId; }); if(!item) return;
+  var topic=(document.getElementById('rvEditTopic').value||'').trim();
+  if(!topic){ alert('Informe o tópico/conteúdo.'); return; }
+  item.topic=topic;
+  item.disc=document.getElementById('rvEditDisc').value;
+  item.note=(document.getElementById('rvEditNote').value||'').trim();
+  var studiedEl=document.getElementById('rvEditStudiedAt');
+  if(studiedEl&&studiedEl.value) item.studiedAt=rvISOToMs(studiedEl.value);
+  RV_STEPS.forEach(function(days,i){
+    var doneChk=document.getElementById('rvEditStepDone-'+i);
+    var dateEl=document.getElementById('rvEditStepDate-'+i);
+    var ms=dateEl&&dateEl.value?rvISOToMs(dateEl.value):null;
+    if(!item.steps[i]) item.steps[i]={doneAt:null,targetDate:null};
+    if(doneChk&&doneChk.checked){
+      item.steps[i].doneAt=ms||rvToday();
+      item.steps[i].targetDate=null;
+    } else {
+      item.steps[i].doneAt=null;
+      item.steps[i].targetDate=ms;
+    }
+  });
+  rvSave(); rvPersistItem(item); rvCloseEdit(); rvRender();
+}
+
+function rvRender(){
+  rvPopulateDisc();
+  rvSetTodayDate();
+  var today=rvToday();
+  var qRaw=(document.getElementById('rvSearch')||{}).value||'';
+  var q=qRaw.toLowerCase();
+  var filtDisc=(document.getElementById('rvFiltDisc')||{}).value||'';
+  var hideDone=document.getElementById('rvHideDone')&&document.getElementById('rvHideDone').checked;
+
+  var overdue=[],dueToday=[],upcoming=[],allDone=[];
+
+  RV_ITEMS.forEach(function(item){
+    if(q&&!item.topic.toLowerCase().includes(q)&&!(item.note||'').toLowerCase().includes(q)) return;
+    if(filtDisc&&item.disc!==filtDisc) return;
+    var next=rvNextStep(item);
+    if(next<0){ if(!hideDone) allDone.push({item:item}); return; }
+    var due=rvNextDue(item);
+    var diff=rvDaysDiff(due);
+    var entry={item:item,diff:diff,stepIdx:next,due:due};
+    if(diff<0) overdue.push(entry);
+    else if(diff===0) dueToday.push(entry);
+    else upcoming.push(entry);
+  });
+  upcoming.sort(function(a,b){ return a.diff-b.diff; });
+
+  // Stats
+  var statsEl=document.getElementById('rvStats');
+  if(statsEl){
+    var pct=RV_ITEMS.length?Math.round(allDone.length/RV_ITEMS.length*100):0;
+    statsEl.innerHTML=
+      '<div class="rv-stat"><div class="rv-stat-val" style="color:#dc2626">'+overdue.length+'</div><div class="rv-stat-lbl">Atrasadas</div></div>'+
+      '<div class="rv-stat"><div class="rv-stat-val" style="color:#6366f1">'+dueToday.length+'</div><div class="rv-stat-lbl">Para hoje</div></div>'+
+      '<div class="rv-stat"><div class="rv-stat-val" style="color:#d97706">'+upcoming.length+'</div><div class="rv-stat-lbl">Próximas</div></div>'+
+      '<div class="rv-stat"><div class="rv-stat-val" style="color:#059669">'+allDone.length+'/'+RV_ITEMS.length+'</div><div class="rv-stat-lbl">Ciclos completos</div>'+
+      '<div style="height:4px;background:var(--bdr);border-radius:2px;margin-top:5px;overflow:hidden"><div style="height:100%;width:'+pct+'%;background:#059669;border-radius:2px;transition:width .4s"></div></div></div>';
+  }
+
+  var con=document.getElementById('rvContent'); if(!con) return;
+  con.innerHTML='';
+
+  function makeCard(entry,isAllDone){
+    var item=entry.item;
+    var disc=item.disc?gD(item.disc):null;
+    var discColor=disc?disc.color:'#9ca3af';
+    var discName=disc?disc.name:(item.disc||'');
+    var diff=isAllDone?null:entry.diff;
+    var stepIdx=isAllDone?-1:entry.stepIdx;
+    var due=isAllDone?null:entry.due;
+
+    // steps pills
+    var stepsHtml=RV_STEPS.map(function(days,i){
+      var s=item.steps[i];
+      var cls,lbl,extra='';
+      if(s.doneAt){
+        cls='rv-step-done'; lbl='✓ +'+days+'d';
+        extra=' title="Feito em '+rvFmtDate(s.doneAt)+'"';
+        // allow undo only last done step
+        var lastDone=rvNextStep(item); // -1 if all done, else first pending
+        var isLast=(lastDone<0&&i===RV_STEPS.length-1)||(lastDone>0&&i===lastDone-1);
+        if(isLast) extra+=' onclick="rvUndoStep('+item.id+','+i+')" style="cursor:pointer"';
+      } else if(!isAllDone&&i===stepIdx&&diff<=0){ cls='rv-step-overdue'; lbl='⏰ +'+days+'d'; }
+      else if(!isAllDone&&i===stepIdx){ cls='rv-step-due'; lbl='+'+days+'d'; }
+      else{ cls='rv-step-pending'; lbl='+'+days+'d'; }
+      return '<span class="rv-step '+cls+'"'+extra+'>'+lbl+'</span>';
+    }).join('');
+
+    // right side labels
+    var rightHtml='';
+    if(isAllDone){
+      rightHtml='<div class="rv-next-date" style="color:#059669;font-size:14px">✅ Completo</div>'+
+        '<button class="rv-done-btn" style="background:#f59e0b" onclick="rvResetCycle('+item.id+')">🔁 Reiniciar ciclo</button>';
+    } else {
+      var nextTxt,nextColor,daysTxt;
+      if(diff<0){
+        nextTxt=rvFmtShort(due); nextColor='#dc2626';
+        daysTxt='<span style="color:#dc2626">'+Math.abs(diff)+'d de atraso</span>';
+      } else if(diff===0){
+        nextTxt='HOJE'; nextColor='#6366f1';
+        daysTxt='<span style="color:#6366f1;font-weight:700">Hoje</span>';
+      } else {
+        nextTxt=rvFmtShort(due); nextColor='#374151';
+        daysTxt='<span style="color:#d97706">em '+diff+' dia'+(diff>1?'s':'')+'</span>';
+      }
+      var plannedDatesForSched=rvPlannedDates(item);
+      var schedHtml='';
+      RV_STEPS.forEach(function(days,i){
+        if(!item.steps[i].doneAt){
+          var schedDate=rvFmtShort(plannedDatesForSched[i]);
+          schedHtml+='<div style="font-size:9px;color:var(--txt2)">+'+days+'d → '+schedDate+'</div>';
+        }
+      });
+      rightHtml=
+        '<div class="rv-next-lbl">Próxima revisão</div>'+
+        '<div class="rv-next-date" style="color:'+nextColor+'">'+nextTxt+'</div>'+
+        '<div class="rv-next-days">'+daysTxt+'</div>'+
+        '<details style="margin-top:4px"><summary style="font-size:9px;color:var(--txt2);cursor:pointer">Ver agenda</summary>'+schedHtml+'</details>'+
+        '<button class="rv-done-btn" onclick="rvMarkStep('+item.id+','+stepIdx+')">'+(diff<=0?'✅ Revisei!':'✅ Revisar')+'</button>';
+    }
+
+    var comments=item.comments||[];
+    var commentsHtml=
+      '<div class="rv-comments">'+
+        '<div class="rv-comments-title">💬 Comentários ('+comments.length+')</div>'+
+        '<div class="rv-comment-list">'+
+          (comments.length?comments.map(function(c){
+            return '<div class="rv-comment-item">'+
+              '<div class="rv-comment-text">'+c.txt+'</div>'+
+              '<div class="rv-comment-meta"><span>'+c.date+'</span><button onclick="rvDelComment('+item.id+','+c.id+')">Excluir</button></div>'+
+            '</div>';
+          }).join(''):'<div style="font-size:10px;color:var(--txt2)">Nenhum comentário ainda.</div>')+
+        '</div>'+
+        '<div class="rv-comment-add">'+
+          '<textarea id="rvCommentInput-'+item.id+'" placeholder="Adicionar um aviso/comentário..."></textarea>'+
+          '<button onclick="rvAddComment('+item.id+')">Adicionar</button>'+
+        '</div>'+
+      '</div>';
+
+    var card=document.createElement('div');
+    card.id='rvcard-'+item.id;
+    card.className='rv-card'+(diff!==null&&diff<0?' overdue':diff===0?' today':isAllDone?' done-all':'');
+    card.innerHTML=
+      '<div class="rv-card-left">'+
+        '<div class="rv-card-topic">'+item.topic+'</div>'+
+        (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
+        (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
+        '<div class="rv-steps">'+stepsHtml+'</div>'+
+        '<div style="font-size:10px;color:var(--txt2);margin-top:4px">Estudado: '+rvFmtDate(item.studiedAt)+'</div>'+
+        commentsHtml+
+      '</div>'+
+      '<div class="rv-card-right">'+rightHtml+
+        '<button class="rv-edit-btn" onclick="rvOpenEdit('+item.id+')">✏️ Editar</button>'+
+        '<button class="rv-del-btn" id="rvdel-'+item.id+'" onclick="rvDelete('+item.id+')">🗑</button>'+
+      '</div>';
+    return card;
+  }
+
+  function makeSection(emoji,title,entries,styleOverride,isAllDone){
+    if(entries.length===0&&!isAllDone) return;
+    var sec=document.createElement('div'); sec.className='rv-section';
+    sec.innerHTML='<div class="rv-section-title">'+emoji+' '+title+'<span class="rv-section-cnt"'+(styleOverride?' style="'+styleOverride+'"':'')+'>'+entries.length+'</span></div>';
+    if(entries.length===0){
+      sec.innerHTML+='<div class="rv-empty">'+(isAllDone?'Nenhum ciclo completo ainda.':'Nenhuma revisão nessa categoria.')+'</div>';
+    } else {
+      entries.forEach(function(e){ sec.appendChild(makeCard(e,!!isAllDone)); });
+    }
+    con.appendChild(sec);
+  }
+
+  if(overdue.length) makeSection('⚠️','Atrasadas',overdue,'background:#fee2e2;color:#dc2626');
+  if(dueToday.length) makeSection('📅','Para revisar hoje',dueToday,'background:#eef2ff;color:#6366f1');
+
+  // Upcoming grouped by week
+  if(upcoming.length){
+    var sec=document.createElement('div'); sec.className='rv-section';
+    sec.innerHTML='<div class="rv-section-title">🗓️ Próximas revisões<span class="rv-section-cnt">'+upcoming.length+'</span></div>';
+    var thisWeek=upcoming.filter(function(e){ return e.diff<=7; });
+    var later=upcoming.filter(function(e){ return e.diff>7; });
+    if(thisWeek.length){ var lbl=document.createElement('div'); lbl.style.cssText='font-size:10px;font-family:Outfit,sans-serif;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin:6px 0 4px'; lbl.textContent='Esta semana (até 7 dias)'; sec.appendChild(lbl); thisWeek.forEach(function(e){ sec.appendChild(makeCard(e,false)); }); }
+    if(later.length){ var lbl2=document.createElement('div'); lbl2.style.cssText='font-size:10px;font-family:Outfit,sans-serif;font-weight:600;color:var(--txt2);text-transform:uppercase;letter-spacing:.4px;margin:10px 0 4px'; lbl2.textContent='Mais adiante (8+ dias)'; sec.appendChild(lbl2); later.forEach(function(e){ sec.appendChild(makeCard(e,false)); }); }
+    if(!upcoming.length) sec.innerHTML+='<div class="rv-empty">Nenhuma revisão agendada para os próximos dias.</div>';
+    con.appendChild(sec);
+  } else if(!overdue.length&&!dueToday.length){
+    var sec2=document.createElement('div'); sec2.className='rv-section';
+    sec2.innerHTML='<div class="rv-section-title">🗓️ Próximas revisões<span class="rv-section-cnt">0</span></div><div class="rv-empty">Nenhuma revisão agendada para os próximos dias.</div>';
+    con.appendChild(sec2);
+  }
+
+  if(allDone.length) makeSection('✅','Ciclos completos',allDone,'background:#d1fae5;color:#065f46',true);
+
+  if(RV_ITEMS.length===0){
+    con.innerHTML='<div class="rv-empty" style="font-size:14px;padding:40px">📚 Nenhum conteúdo ainda.<br><span style="font-size:12px;margin-top:8px;display:block">Adicione o que você estudou e informe a data. O sistema agenda as revisões automaticamente em 2, 7, 15 e 30 dias.</span></div>';
+  }
+}
+// ── REVISÕES END ──
+
+
+(async function(){
+  await load();
+  bWSel('wsel');bWSel('mow');bWSel('dw');
+  bVarWSel();
+  bMSel('mom');bMSelOpt('vMat');
+  rW();rAv();
+})();
+
+</script>
+</body>
+</html>
