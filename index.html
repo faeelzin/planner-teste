@@ -36,8 +36,9 @@ button,.tb{font-family:'Outfit',sans-serif}
 
 /* LAYOUT */
 .app{display:flex;flex-direction:column;min-height:100vh}
-.hdr{background:#fff;border-bottom:1px solid var(--bdr);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;position:sticky;top:0;z-index:200}
-.logo{font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;white-space:nowrap}.logo span{color:#6366f1}
+.top-fixed{position:sticky;top:0;z-index:250;background:#fff}
+.hdr{background:#fff;border-bottom:1px solid var(--bdr);padding:10px 16px;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+  .logo{font-family:'Outfit',sans-serif;font-size:17px;font-weight:700;white-space:nowrap}.logo span{color:#6366f1}
 
 /* SEARCH */
 .srch{position:relative;flex:1;max-width:280px}
@@ -228,6 +229,7 @@ button,.tb{font-family:'Outfit',sans-serif}
 </div>
 
 <div class="app">
+<div class="top-fixed">
 <div class="hdr">
   <div class="logo">OAB<span> Planner</span></div>
   <div class="srch">
@@ -281,6 +283,7 @@ button,.tb{font-family:'Outfit',sans-serif}
   <button class="tb" onclick="sw('variavel',this)">📋 Variável</button>
   <button class="tb" onclick="sw('revisoes',this)">🔁 Revisões</button>
 </div>
+</div><!-- /top-fixed -->
 
 <div class="cnt">
 
@@ -493,7 +496,13 @@ button,.tb{font-family:'Outfit',sans-serif}
       <div><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Controle de Constitucionalidade"></div>
       <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
       <div><label>Data que estudei</label><input type="date" id="rvDate"></div>
-      <div><label>1ª revisão desejada (opc.)</label><input type="date" id="rvFirstRev" title="Deixe em branco para calcular automaticamente (+2 dias)"></div>
+<div><label>Considerar a data que estudei?</label>
+        <select id="rvUseStudied" onchange="document.getElementById('rvFirstRev').disabled=(this.value==='sim')">
+          <option value="sim" selected>Sim (calcular +2, +7, +15, +25 a partir da data que estudei)</option>
+          <option value="nao">Não (seguir a partir da data desejada abaixo)</option>
+        </select>
+      </div>
+      <div><label>Data desejada p/ 1ª revisão</label><input type="date" id="rvFirstRev" title="Só é usada se você escolher 'Não' acima" disabled></div>
       <div><label>Anotação (opcional)</label><input type="text" id="rvNote" placeholder="Ex: foco nos legitimados da ADI"></div>
       <div><label>&nbsp;</label><button class="rv-add-btn" onclick="rvAdd()">Adicionar</button></div>
     </div>
@@ -1818,8 +1827,10 @@ function rvAdd(){
   var note=(document.getElementById('rvNote').value||'').trim();
   var dateEl=document.getElementById('rvDate');
   var studiedAt=dateEl&&dateEl.value ? rvISOToMs(dateEl.value) : rvToday();
+var useStudiedEl=document.getElementById('rvUseStudied');
+  var useStudied=useStudiedEl?useStudiedEl.value:'sim';
   var firstRevEl=document.getElementById('rvFirstRev');
-  var firstRevDate=firstRevEl&&firstRevEl.value ? rvISOToMs(firstRevEl.value) : null;
+  var firstRevDate=(useStudied==='nao'&&firstRevEl&&firstRevEl.value) ? rvISOToMs(firstRevEl.value) : null;
   var steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
   if(firstRevDate) steps[0].targetDate=firstRevDate;
   var newItem={id:Date.now(),topic:topic,disc:disc,note:note,studiedAt:studiedAt,steps:steps};
@@ -1925,11 +1936,32 @@ function rvOpenEdit(id){
       '<span class="rv-edit-step-lbl">+'+days+'d</span>'+
       '<label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--txt2)">'+
         '<input type="checkbox" id="rvEditStepDone-'+i+'"'+(s.doneAt?' checked':'')+'> Concluída</label>'+
+      '<input type="date" class="rv-edit-step-date" id="rvEditStepDate-'+i+'" value="'+dateVal+'" onchange="rvEditCascade('+i+')">';
+      '<label style="display:flex;align-items:center;gap:4px;font-size:10px;color:var(--txt2)">'+
+        '<input type="checkbox" id="rvEditStepDone-'+i+'"'+(s.doneAt?' checked':'')+'> Concluída</label>'+
       '<input type="date" class="rv-edit-step-date" id="rvEditStepDate-'+i+'" value="'+dateVal+'">';
     wrap.appendChild(row);
   });
-  document.getElementById('rvEditModal').classList.add('open');
+document.getElementById('rvEditModal').classList.add('open');
 }
+
+function rvEditCascade(changedIdx){
+  var baseEl=document.getElementById('rvEditStepDate-'+changedIdx);
+  if(!baseEl||!baseEl.value) return;
+  var baseMs=rvISOToMs(baseEl.value);
+  for(var j=changedIdx+1;j<RV_STEPS.length;j++){
+    var doneChk=document.getElementById('rvEditStepDone-'+j);
+    var dateEl=document.getElementById('rvEditStepDate-'+j);
+    if(doneChk&&doneChk.checked){
+      if(dateEl&&dateEl.value) baseMs=rvISOToMs(dateEl.value);
+      continue;
+    }
+    var newMs=rvAddDays(baseMs,RV_STEPS[j]);
+    if(dateEl) dateEl.value=rvMsToISO(newMs);
+    baseMs=newMs;
+  }
+}
+
 function rvCloseEdit(){
   document.getElementById('rvEditModal').classList.remove('open');
   rvEditId=null;
