@@ -483,8 +483,6 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-us-manual-select{font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid #f59e0b!important;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
   .rv-us-auto{background:#d1fae5;color:#065f46}
 .rv-us-manual{background:#ffedd5;color:#9a3412}
-.rv-us-auto-select{border-color:#059669!important}
-.rv-us-manual-select{border-color:#f59e0b!important}
 .rv-comment-add button{background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
 .rv-comment-add button:hover{background:#d97706}
 @media(max-width:700px){.rv-form{grid-template-columns:1fr 1fr}.rv-stats{grid-template-columns:repeat(2,1fr)}}
@@ -504,7 +502,7 @@ button,.tb{font-family:'Outfit',sans-serif}
       <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
       <div><label>Data que estudei</label><input type="date" id="rvDate"></div>
 <div><label>Considerar a data que estudei? <span id="rvUseStudiedBadge" class="rv-us-badge rv-us-auto">🟢 Automático</span></label>
-<select id="rvUseStudied" class="rv-us-auto-select" onchange="rvUpdateUseStudiedUI()">  
+<select id="rvUseStudied" class="rv-us-auto-select" onchange="rvUpdateUseStudiedUI()">
   <option value="nao">✏️ Não — vou definir a data da 1ª revisão manualmente</option>
         </select>
       </div>
