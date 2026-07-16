@@ -994,12 +994,31 @@ function startRealtimeSync(){
 function rvSanitizeItem(it){
   // Corrige itens antigos/corrompidos que chegam do Firebase sem 'steps' válido
   // (ex.: resquício de testes ou gravação incompleta), evitando que quebrem o rvRender inteiro.
+  //
+  // IMPORTANTE: o Firebase Realtime Database apaga silenciosamente qualquer propriedade
+  // com valor `null` ao salvar. Um step "vazio" ({doneAt:null,targetDate:null}) não sobra
+  // com nenhuma propriedade e é removido por inteiro — o que pode transformar o array de
+  // 4 steps em um array mais curto (ou num objeto esparso tipo {"0":{...},"2":{...}}).
+  // Por isso NÃO podemos simplesmente resetar tudo quando o tamanho não bate: precisamos
+  // reconstruir o array na posição certa, preservando qualquer targetDate/doneAt que já
+  // exista (ex.: a data de 1ª revisão escolhida manualmente pelo usuário).
   if(!it||typeof it!=='object') return it;
-  if(!Array.isArray(it.steps)||it.steps.length!==RV_STEPS.length){
-    it.steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
-  } else {
-    it.steps=it.steps.map(function(s){ return (s&&typeof s==='object')?s:{doneAt:null,targetDate:null}; });
+  var raw=it.steps;
+  var byIndex=[];
+  if(Array.isArray(raw)){
+    byIndex=raw;
+  } else if(raw&&typeof raw==='object'){
+    Object.keys(raw).forEach(function(k){
+      var idx=parseInt(k,10);
+      if(!isNaN(idx)) byIndex[idx]=raw[k];
+    });
   }
+  var fixed=[];
+  for(var i=0;i<RV_STEPS.length;i++){
+    var s=byIndex[i];
+    fixed.push((s&&typeof s==='object') ? {doneAt:s.doneAt||null,targetDate:s.targetDate||null} : {doneAt:null,targetDate:null});
+  }
+  it.steps=fixed;
   if(!Array.isArray(it.comments)) it.comments=it.comments||[];
   return it;
 }
