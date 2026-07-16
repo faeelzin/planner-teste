@@ -478,6 +478,11 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-comment-add{display:flex;gap:6px;margin-top:7px;align-items:flex-start}
 .rv-comment-add textarea{flex:1;font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--bdr);border-radius:7px;padding:6px 8px;resize:none;min-height:34px}
 .rv-comment-add textarea:focus{outline:none;border-color:#6366f1}
+  .rv-us-badge{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;display:inline-block}
+.rv-us-auto{background:#d1fae5;color:#065f46}
+.rv-us-manual{background:#ffedd5;color:#9a3412}
+.rv-us-auto-select{border-color:#059669!important}
+.rv-us-manual-select{border-color:#f59e0b!important}
 .rv-comment-add button{background:#f59e0b;color:#fff;border:none;border-radius:7px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;cursor:pointer;white-space:nowrap}
 .rv-comment-add button:hover{background:#d97706}
 @media(max-width:700px){.rv-form{grid-template-columns:1fr 1fr}.rv-stats{grid-template-columns:repeat(2,1fr)}}
@@ -496,10 +501,10 @@ button,.tb{font-family:'Outfit',sans-serif}
       <div><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Controle de Constitucionalidade"></div>
       <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
       <div><label>Data que estudei</label><input type="date" id="rvDate"></div>
-<div><label>Considerar a data que estudei?</label>
-        <select id="rvUseStudied" onchange="document.getElementById('rvFirstRev').disabled=(this.value==='sim')">
-          <option value="sim" selected>Sim (calcular +2, +7, +15, +25 a partir da data que estudei)</option>
-          <option value="nao">Não (seguir a partir da data desejada abaixo)</option>
+<div><label>Considerar a data que estudei? <span id="rvUseStudiedBadge" class="rv-us-badge rv-us-auto">🟢 Automático</span></label>
+        <select id="rvUseStudied" class="rv-us-auto-select" onchange="rvUpdateUseStudiedUI()">
+          <option value="sim" selected>✅ Sim — calcular +2, +7, +15, +25 a partir da data que estudei</option>
+          <option value="nao">✏️ Não — vou definir a data da 1ª revisão manualmente</option>
         </select>
       </div>
       <div><label>Data desejada p/ 1ª revisão</label><input type="date" id="rvFirstRev" title="Só é usada se você escolher 'Não' acima" disabled></div>
@@ -1839,6 +1844,16 @@ function rvSetTodayDate(){
   if(el&&!el.value) el.value=rvTodayISO();
 }
 
+function rvUpdateUseStudiedUI(){
+  var sel=document.getElementById('rvUseStudied');
+  var badge=document.getElementById('rvUseStudiedBadge');
+  var isAuto=(sel.value==='sim');
+  document.getElementById('rvFirstRev').disabled=isAuto;
+  badge.textContent=isAuto?'🟢 Automático':'🟠 Manual';
+  badge.className='rv-us-badge '+(isAuto?'rv-us-auto':'rv-us-manual');
+  sel.className=isAuto?'rv-us-auto-select':'rv-us-manual-select';
+}
+  
 function rvAdd(){
   var topic=(document.getElementById('rvTopic').value||'').trim();
   if(!topic){ alert('Informe o tópico/conteúdo estudado.'); return; }
