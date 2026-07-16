@@ -1396,8 +1396,9 @@ function rMat(){
       +'<div style="width:8px;height:8px;border-radius:50%;background:'+(m.dash?'transparent':m.color)+';'+(m.dash?'outline:2px dashed '+m.color+';outline-offset:2px':'')+'">'+'</div>'
       +'<span style="color:'+m.color+'">'+m.name+'</span>'
       +'<span class="bn">'+(m.topics||[]).length+' tópicos</span>'
-      +'<span style="font-size:10px;color:var(--txt2);font-weight:400;margin-left:4px">Peso: '+m.peso+'%</span>'
-      +'<button class="tsbtn" style="margin-top:0;margin-left:auto;border-color:#6366f1;color:#6366f1" onclick="openAddTopic(&quot;'+m.code+'&quot;)">➕ Adicionar tópico</button></div>'
+     +'<span style="font-size:10px;color:var(--txt2);font-weight:400;margin-left:4px">Peso: '+m.peso+'%</span>'
+      +'<button class="tsbtn" style="margin-top:0;margin-left:auto;border-color:#6366f1;color:#6366f1" onclick="openAddTopic(&quot;'+m.code+'&quot;)">➕ Adicionar tópico</button>'
+      +'<button class="tsbtn" style="border-color:#dc2626;color:#dc2626" onclick="delDisc(&quot;'+m.code+'&quot;)">🗑 Apagar matéria</button></div>'
       +(m.note?'<div class="co2n">💡 '+m.note+'</div>':'')
       +'<div style="background:#fff;border:1px solid var(--bdr);border-radius:9px;overflow:hidden;'+brd+'">'
       +'<table class="mtt"><thead><tr><th>Tópico</th><th>Incidência</th><th>No Cronograma</th></tr></thead>'
@@ -1456,6 +1457,13 @@ function markTopicDone(matCode,tiStr){
 }
 
 // ── ADD/EDIT/DEL TOPICO (Matérias) ──
+  function delDisc(code){
+  const d=gD(code); if(!d) return;
+  if(!confirm('Apagar a matéria "'+d.name+'"? Todos os tópicos dela na aba Matérias serão removidos (o cronograma já criado não é apagado).')) return;
+  DISCS=DISCS.filter(x=>x.code!==code);
+  save(); rMat();
+  if(document.getElementById('tp-stats').classList.contains('active')) rStats();
+}
 let atCode=null;
 let atIndex=null; // null = modo adicionar, número = modo edição
 function openAddTopic(code){
