@@ -149,6 +149,8 @@ button,.tb{font-family:'Outfit',sans-serif}
 .sh{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;padding:12px 0 6px;border-bottom:2px solid var(--bdr);margin-bottom:9px;display:flex;align-items:center;gap:7px}
 .tsbtn{background:none;border:1px solid var(--bdr);border-radius:5px;padding:2px 7px;font-size:10px;font-family:'Outfit',sans-serif;color:var(--txt2);cursor:pointer;margin-top:3px}
 .tsbtn:hover{background:#eef2ff;color:#6366f1;border-color:#6366f1}
+  .topic-comment{width:100%;min-height:32px;resize:vertical;font-family:'Outfit',sans-serif;font-size:11px;padding:5px 7px;border:1px solid var(--bdr);border-radius:6px;box-sizing:border-box}
+.topic-comment:focus{outline:none;border-color:#6366f1}
 .tsp{display:none;margin-top:5px;background:var(--bg);border-radius:6px;padding:7px 9px;font-size:10px;border-left:3px solid #6366f1}
 .tsp.open{display:block}
 .se{padding:3px 0;border-bottom:1px solid var(--bdr);display:flex;gap:6px;flex-wrap:wrap;align-items:center}
@@ -1454,28 +1456,22 @@ function rMat(){
         +'<button class="tsbtn" style="'+(isDone?'background:#d1fae5;color:#065f46;border-color:#a7f3d0':'')+'" onclick="markTopicDone(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">'+(isDone?'✅ Finalizado':'☐ Marcar como finalizado')+'</button>'
         +'<button class="tsbtn" style="color:#6366f1" onclick="openEditTopic(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">✏️ Editar tópico</button>'
         +'</div>'
-        +'<div class="tsp" id="'+pid+'">'
-        +(matches.length?matches.map(c=>{
-          const sd=new Date(SS);sd.setDate(sd.getDate()+(c.wk-1)*7+c.dy);
-          return '<div class="se">'
-            +'<span style="font-family:Outfit,sans-serif;font-size:10px;font-weight:600;color:'+m.color+'">Sem.'+c.wk+'</span>'
-            +'<span style="font-size:10px;color:var(--txt2)">'+DYS[c.dy]+'</span>'
-            +'<span style="font-size:10px;color:var(--txt2)">'+sd.toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'})+'</span>'
-            +'<span style="font-size:10px;color:var(--txt2)">⏱'+c.hr+'</span>'
-            +'<span style="font-size:9px;background:'+(c.me==='Questoes'?'#e0f2fe':c.me==='Aula'?'#ede9fe':'#ecfdf5')
-            +';color:'+(c.me==='Questoes'?'#0e4f6b':c.me==='Aula'?'#4c1d95':'#065f46')
-            +';padding:1px 5px;border-radius:3px">'+(c.me==='Questoes'?'Questões':c.me)+'</span>'
-            +'<button class="tsbtn" style="padding:1px 6px;font-size:9px" onclick="openMoveCard('+c.id+')">📆 Alterar semana</button></div>';
-        }).join(''):'<div style="font-size:10px;color:var(--txt2);padding:3px 0">Não agendado ainda no cronograma. Você ainda pode marcá-lo como finalizado manualmente.</div>')
-        +'</div></td>'
++'<div style="margin-top:6px">'
++'<textarea class="topic-comment" placeholder="💬 Adicionar comentário..." onchange="updTopicComment(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;,this.value)">'+(t.comment?t.comment.replace(/</g,'&lt;'):'')+'</textarea>'
++'</div></td>'
         +'<td><span class="'+incCls(t.inc)+'">'+incLbl(t.inc)+'</span></td>'
         +'<td style="font-size:10px;color:var(--txt2)">'+(matches.length?'<span style="color:#059669;font-weight:600">'+matches.length+'x</span>':'<span style="color:#9ca3af">—</span>')+'</td>';
       tb.appendChild(tr);
     });
   });
 }
-function tgSch(id){const el=document.getElementById(id);if(el)el.classList.toggle('open');}
 function markTopicDone(matCode,tiStr){
+  function updTopicComment(matCode,tiStr,val){
+  const ti=parseInt(tiStr);
+  const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
+  disc.topics[ti].comment=val;
+  save();
+}
   const ti=parseInt(tiStr);
   const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
   const t=disc.topics[ti];
