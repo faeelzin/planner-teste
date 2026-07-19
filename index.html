@@ -1465,12 +1465,6 @@ function rMat(){
   });
 }
 function markTopicDone(matCode,tiStr){
-  function updTopicComment(matCode,tiStr,val){
-  const ti=parseInt(tiStr);
-  const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
-  disc.topics[ti].comment=val;
-  save();
-}
   const ti=parseInt(tiStr);
   const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
   const t=disc.topics[ti];
@@ -1484,6 +1478,13 @@ function markTopicDone(matCode,tiStr){
   }
   save();rMat();
   if(document.getElementById('tp-stats').classList.contains('active'))rStats();
+}
+
+function updTopicComment(matCode,tiStr,val){
+  const ti=parseInt(tiStr);
+  const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
+  disc.topics[ti].comment=val;
+  save();
 }
 
 // ── ADD/EDIT/DEL TOPICO (Matérias) ──
