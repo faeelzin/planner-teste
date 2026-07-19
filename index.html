@@ -1452,7 +1452,6 @@ function rMat(){
       tr.id='tr-'+m.code+'-'+ti;
       tr.innerHTML='<td><div style="font-size:11px;margin-bottom:3px'+(isDone?';text-decoration:line-through;color:#9ca3af':'')+'">'+t.t+'</div>'
         +'<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">'
-        +'<button class="tsbtn" onclick="tgSch(&quot;'+pid+'&quot;)">📅 Ver no cronograma</button>'
         +'<button class="tsbtn" style="'+(isDone?'background:#d1fae5;color:#065f46;border-color:#a7f3d0':'')+'" onclick="markTopicDone(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">'+(isDone?'✅ Finalizado':'☐ Marcar como finalizado')+'</button>'
         +'<button class="tsbtn" style="color:#6366f1" onclick="openEditTopic(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">✏️ Editar tópico</button>'
         +'</div>'
