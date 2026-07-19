@@ -111,6 +111,7 @@ button,.tb{font-family:'Outfit',sans-serif}
 .ia{background:#fee2e2;color:#7f1d1d;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600;font-family:'Outfit',sans-serif}
 .im{background:#fef3c7;color:#78350f;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600;font-family:'Outfit',sans-serif}
 .ib{background:#d1fae5;color:#065f46;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600;font-family:'Outfit',sans-serif}
+.inm{background:#e5e7eb;color:#374151;padding:1px 6px;border-radius:20px;font-size:9px;font-weight:600;font-family:'Outfit',sans-serif}
 
 /* WEEK PLANNER */
 .wnav{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
@@ -1177,8 +1178,8 @@ function sw(tab,btn){
 }
 
 // ── HELPERS ──
-function incCls(i){return i==='alta'?'ia':i==='media'?'im':'ib';}
-function incLbl(i){return i==='alta'?'Alta':i==='media'?'Média':'Baixa';}
+function incCls(i){return i==='alta'?'ia':i==='media'?'im':i==='baixa'?'ib':'inm';}
+function incLbl(i){return i==='alta'?'Alta':i==='media'?'Média':i==='baixa'?'Baixa':'Não marquei';}
 function gPV(q,e){const qi=parseInt(q)||0,ei=parseInt(e)||0;if(!qi)return '--';return Math.round((qi-ei)/qi*100)+'%';}
 function gPC(q,e){const qi=parseInt(q)||0,ei=parseInt(e)||0;if(!qi)return 'pn';const p=Math.round((qi-ei)/qi*100);return p<70?'pr':p<=80?'py':'pg';}
 
