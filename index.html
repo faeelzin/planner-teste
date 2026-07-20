@@ -146,6 +146,11 @@ button,.tb{font-family:'Outfit',sans-serif}
 .mtt td{padding:7px 10px;border-bottom:1px solid var(--bdr);font-size:11px;vertical-align:top}
 .mtt tr:last-child td{border-bottom:none}
 .mtt tr:hover td{background:#fafafa}
+.mtt-row-done td{background:#f7fdfa}
+.mtt-topic-done{text-decoration:line-through;text-decoration-color:#059669;text-decoration-thickness:2px;color:#4b5563;font-weight:500}
+.mat-filter{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;cursor:pointer;margin-top:10px}
+.mat-filter:focus{outline:none;border-color:#6366f1}
+.mtt-topic-done{text-decoration:line-through;text-decoration-color:#059669;text-decoration-thickness:2px;color:#4b5563;font-weight:500}
 .sh{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;padding:12px 0 6px;border-bottom:2px solid var(--bdr);margin-bottom:9px;display:flex;align-items:center;gap:7px}
 .tsbtn{background:none;border:1px solid var(--bdr);border-radius:5px;padding:2px 7px;font-size:10px;font-family:'Outfit',sans-serif;color:var(--txt2);cursor:pointer;margin-top:3px}
 .tsbtn:hover{background:#eef2ff;color:#6366f1;border-color:#6366f1}
@@ -347,7 +352,11 @@ button,.tb{font-family:'Outfit',sans-serif}
 <!-- MATERIAS -->
 <div class="tp" id="tp-materias">
   <div style="margin-bottom:16px"><div style="font-family:'Outfit',sans-serif;font-size:16px;font-weight:600;margin-bottom:4px">Conteúdo Programático</div>
-  <div style="font-size:12px;color:var(--txt2)">Clique em "📅 Ver no cronograma" para ver quando cada tópico está agendado. Atualiza automaticamente.</div></div>
+  <div style="font-size:12px;color:var(--txt2)">Clique em "📅 Ver no cronograma" para ver quando cada tópico está agendado. Atualiza automaticamente.</div>
+  <select class="mat-filter" id="matFilterSel" onchange="rMat()">
+    <option value="">Todas as matérias</option>
+  </select>
+  </div>
   <div id="mcon"></div>
 </div>
 
@@ -1426,7 +1435,15 @@ function rStats(){
 // ── MATERIAS ──
 function rMat(){
   const con=document.getElementById('mcon');con.innerHTML='';
-  DISCS.forEach(m=>{
+  const fsel=document.getElementById('matFilterSel');
+  if(fsel&&fsel.options.length<=1){
+    DISCS.forEach(m=>{
+      const o=document.createElement('option');o.value=m.code;o.textContent=m.name;fsel.appendChild(o);
+    });
+  }
+  const filterCode=fsel?fsel.value:'';
+  const list=filterCode?DISCS.filter(m=>m.code===filterCode):DISCS;
+  list.forEach(m=>{
     const sec=document.createElement('div');sec.style.marginBottom='20px';
     const brd=m.dash?'border:1px dashed '+m.color:'';
     sec.innerHTML='<div class="sh">'
@@ -1448,9 +1465,10 @@ function rMat(){
       const cardsDone=matches.length>0&&matches.every(c=>c.st==='fin');
       const manualDone=!!t.done;
       const isDone=matches.length>0?cardsDone:manualDone;
-      const tr=document.createElement('tr');
-      tr.id='tr-'+m.code+'-'+ti;
-      tr.innerHTML='<td><div style="font-size:11px;margin-bottom:3px'+(isDone?';text-decoration:line-through;color:#9ca3af':'')+'">'+t.t+'</div>'
+     const tr=document.createElement('tr');
+tr.id='tr-'+m.code+'-'+ti;
+if(isDone)tr.classList.add('mtt-row-done');
+tr.innerHTML='<td><div class="'+(isDone?'mtt-topic-done':'')+'" style="font-size:11px;margin-bottom:3px">'+t.t+'</div>'
         +'<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">'
         +'<button class="tsbtn" style="'+(isDone?'background:#d1fae5;color:#065f46;border-color:#a7f3d0':'')+'" onclick="markTopicDone(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">'+(isDone?'✅ Finalizado':'☐ Marcar como finalizado')+'</button>'
         +'<button class="tsbtn" style="color:#6366f1" onclick="openEditTopic(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">✏️ Editar tópico</button>'
