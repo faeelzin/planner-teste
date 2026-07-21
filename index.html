@@ -498,12 +498,62 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-comment-add button:hover{background:#d97706}
 @media(max-width:700px){.rv-form{grid-template-columns:1fr 1fr}.rv-stats{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:500px){.rv-form{grid-template-columns:1fr}}
+  .rv-agenda-box{background:#fff;border:1px solid var(--bdr);border-radius:12px;margin-bottom:18px;overflow:hidden}
+.rv-agenda-toggle{display:flex;align-items:center;justify-content:space-between;padding:12px 16px;cursor:pointer;font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#6366f1;user-select:none}
+.rv-agenda-toggle:hover{background:#f8f7ff}
+.rv-agenda-panel{display:none;padding:0 16px 16px}
+.rv-agenda-panel.open{display:block}
+.rv-agenda-nav{display:flex;align-items:center;justify-content:space-between;gap:8px;margin-bottom:10px}
+.rv-agenda-nav button{background:#fff;border:1px solid var(--bdr);border-radius:7px;padding:6px 12px;font-family:'Outfit',sans-serif;font-size:11px;font-weight:600;color:var(--txt2);cursor:pointer}
+.rv-agenda-nav button:hover{background:var(--bg);color:#6366f1}
+.rv-agenda-month-lbl{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;text-transform:capitalize}
+.rv-agenda-weekdays{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:0 auto 4px;max-width:320px}
+.rv-agenda-weekdays div{text-align:center;font-size:8px;font-family:'Outfit',sans-serif;font-weight:700;color:var(--txt2);text-transform:uppercase}
+.rv-agenda-days{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin:0 auto;max-width:320px}
+.rv-agenda-day{aspect-ratio:1;border:1px solid var(--bdr);border-radius:6px;display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-family:'DM Sans',sans-serif;font-size:10px;position:relative;background:#fff}
+.rv-agenda-day.empty{border:none;cursor:default;background:transparent}
+.rv-agenda-day:not(.empty):hover{border-color:#6366f1;background:#f8f7ff}
+.rv-agenda-day.today{border-color:#6366f1;border-width:2px;font-weight:700}
+.rv-agenda-day.has-rev{background:#eef2ff}
+.rv-agenda-daynum{font-size:11px}
+.rv-agenda-daycount{position:absolute;top:2px;right:2px;background:#6366f1;color:#fff;font-size:8px;font-weight:700;padding:1px 4px;border-radius:20px;font-family:'Outfit',sans-serif}
+.rv-day-list{background:#fdfdff;border:1.5px solid #6366f1;border-radius:9px;padding:10px 12px;margin-top:10px;box-shadow:0 4px 14px rgba(99,102,241,.1)}
+.rv-day-list-head{display:flex;align-items:center;justify-content:space-between;font-family:'Outfit',sans-serif;font-size:12px;font-weight:700;color:#6366f1;margin-bottom:6px}
+.rv-day-list-close{background:none;border:none;cursor:pointer;color:var(--txt2);font-size:13px;line-height:1}
+.rv-day-list-close:hover{color:#dc2626}
+.day-rev-empty{font-size:10px;color:var(--txt2);text-align:center;padding:6px 2px}
+.day-rev-item{border-bottom:1px dashed var(--bdr);padding:7px 0}
+.day-rev-item:last-child{border-bottom:none}
+.day-rev-item-top{display:flex;justify-content:space-between;align-items:center;gap:6px;margin-bottom:2px}
+.day-rev-disc{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.day-rev-step{font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;background:#eef2ff;color:#6366f1;padding:1px 7px;border-radius:20px;white-space:nowrap}
+.day-rev-topic{font-size:11px;color:var(--txt);font-weight:600;line-height:1.3;margin-bottom:2px}
+.day-rev-last{font-size:9px;color:var(--txt2);margin-bottom:5px}
+.day-rev-edit-btn{background:#fff;border:1.5px solid #6366f1;color:#6366f1;border-radius:6px;padding:3px 10px;font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;cursor:pointer}
+.day-rev-edit-btn:hover{background:#eef2ff}
+@media(max-width:500px){.rv-agenda-daynum{font-size:9px}.rv-agenda-daycount{font-size:7px}}
 </style>
 <div class="rv-wrap">
   <div class="rv-header">
     <div>
       <div class="rv-title">🔁 Repetição Espaçada</div>
-      <div class="rv-sub">Adicione o que estudou hoje. O sistema agenda revisões em 2, 7, 15 e 30 dias automaticamente.</div>
+<div class="rv-sub">Adicione o que estudou hoje. O sistema agenda revisões em 2, 7, 15 e 25 dias automaticamente.</div>
+    </div>
+  </div>
+  <div class="rv-agenda-box">
+    <div class="rv-agenda-toggle" onclick="rvToggleAgenda()">
+      <span>🗓️ Agenda de revisões — clique para ver quantas revisões caem em cada dia</span>
+      <span id="rvAgendaArrow">▼</span>
+    </div>
+    <div class="rv-agenda-panel" id="rvAgendaPanel">
+      <div class="rv-agenda-nav">
+        <button onclick="rvAgendaMonth(-1)">← Mês anterior</button>
+        <div id="rvAgendaMonthLbl" class="rv-agenda-month-lbl"></div>
+        <button onclick="rvAgendaMonth(1)">Próximo mês →</button>
+      </div>
+      <div class="rv-agenda-weekdays"><div>Dom</div><div>Seg</div><div>Ter</div><div>Qua</div><div>Qui</div><div>Sex</div><div>Sáb</div></div>
+      <div class="rv-agenda-days" id="rvAgendaGrid"></div>
+      <div id="rvAgendaDayLists"></div>
     </div>
   </div>
   <div class="rv-add-box">
@@ -2039,7 +2089,106 @@ function rvSaveEdit(){
   });
   rvSave(); rvPersistItem(item); rvCloseEdit(); rvRender();
 }
+// ── AGENDA DE REVISÕES (aba suspensa dentro de Revisões) ──
+var RV_AGENDA_YEAR=new Date().getFullYear();
+var RV_AGENDA_MONTH=new Date().getMonth();
 
+// Retorna os itens cuja PRÓXIMA revisão pendente cai exatamente no dia informado (ms = início do dia local).
+function rvItemsDueOn(dateMs){
+  var day=rvDayStart(dateMs);
+  var out=[];
+  RV_ITEMS.forEach(function(item){
+    var next=rvNextStep(item);
+    if(next<0) return; // ciclo já concluído, sem próxima revisão
+    var due=rvNextDue(item);
+    if(due===day) out.push({item:item,stepIdx:next});
+  });
+  return out;
+}
+
+// Última revisão feita (ou, se nenhuma etapa foi concluída ainda, a data em que o tópico foi estudado).
+function rvLastRevInfo(item){
+  var last=null;
+  for(var i=item.steps.length-1;i>=0;i--){
+    if(item.steps[i].doneAt){ last=item.steps[i].doneAt; break; }
+  }
+  if(last!==null) return {date:last,label:'Última revisão'};
+  return {date:item.studiedAt,label:'Estudado em'};
+}
+
+function rvToggleAgenda(){
+  var panel=document.getElementById('rvAgendaPanel');
+  var arrow=document.getElementById('rvAgendaArrow');
+  if(!panel) return;
+  var isOpen=panel.classList.toggle('open');
+  if(arrow) arrow.textContent=isOpen?'▲':'▼';
+  if(isOpen) rvRenderAgendaGrid();
+}
+
+function rvAgendaMonth(delta){
+  RV_AGENDA_MONTH+=delta;
+  if(RV_AGENDA_MONTH<0){ RV_AGENDA_MONTH=11; RV_AGENDA_YEAR--; }
+  if(RV_AGENDA_MONTH>11){ RV_AGENDA_MONTH=0; RV_AGENDA_YEAR++; }
+  rvRenderAgendaGrid();
+}
+
+function rvRenderAgendaGrid(){
+  var grid=document.getElementById('rvAgendaGrid'); if(!grid) return;
+  var y=RV_AGENDA_YEAR, m=RV_AGENDA_MONTH;
+  var lbl=document.getElementById('rvAgendaMonthLbl');
+  var monthNames=['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+  if(lbl) lbl.textContent=monthNames[m]+' de '+y;
+  var first=new Date(y,m,1);
+  var startOffset=first.getDay(); // 0=Domingo
+  var daysInMonth=new Date(y,m+1,0).getDate();
+  var todayMs=rvToday();
+  var html='';
+  for(var i=0;i<startOffset;i++) html+='<div class="rv-agenda-day empty"></div>';
+  for(var d=1;d<=daysInMonth;d++){
+    var cellMs=rvDayStart(new Date(y,m,d).getTime());
+    var count=rvItemsDueOn(cellMs).length;
+    var isToday=cellMs===todayMs;
+    html+='<div class="rv-agenda-day'+(isToday?' today':'')+(count?' has-rev':'')+'" onclick="toggleDayRevList('+cellMs+')">'
+      +'<span class="rv-agenda-daynum">'+d+'</span>'
+      +(count?'<span class="rv-agenda-daycount">'+count+'</span>':'')
+      +'</div>';
+  }
+  grid.innerHTML=html;
+}
+
+// Abre/fecha a lista do dia clicado. Cada dia tem seu próprio bloco (id por data),
+// então abrir a lista de um dia NUNCA fecha as listas de outros dias já abertas.
+function toggleDayRevList(dateMs){
+  var container=document.getElementById('rvAgendaDayLists'); if(!container) return;
+  var existing=document.getElementById('rvDayList-'+dateMs);
+  if(existing){ existing.remove(); return; }
+  var entries=rvItemsDueOn(dateMs);
+  var box=document.createElement('div');
+  box.className='rv-day-list';
+  box.id='rvDayList-'+dateMs;
+  var itemsHtml=entries.length?entries.map(function(e){
+    var item=e.item;
+    var disc=item.disc?gD(item.disc):null;
+    var discName=disc?disc.name:(item.disc||'— Sem disciplina —');
+    var discColor=disc?disc.color:'#9ca3af';
+    var stepDays=RV_STEPS[e.stepIdx];
+    var lastInfo=rvLastRevInfo(item);
+    return '<div class="day-rev-item">'
+      +'<div class="day-rev-item-top">'
+        +'<span class="day-rev-disc" style="color:'+discColor+'">'+discName+'</span>'
+        +'<span class="day-rev-step">+'+stepDays+'d</span>'
+      +'</div>'
+      +'<div class="day-rev-topic">'+item.topic+'</div>'
+      +'<div class="day-rev-last">'+lastInfo.label+': '+rvFmtDate(lastInfo.date)+'</div>'
+      +'<button class="day-rev-edit-btn" onclick="rvOpenEdit('+item.id+')">✏️ Editar</button>'
+    +'</div>';
+  }).join(''):'<div class="day-rev-empty">Nenhuma revisão agendada para este dia.</div>';
+  box.innerHTML='<div class="rv-day-list-head"><span>📅 '+rvFmtDate(dateMs)+'</span>'
+    +'<button class="rv-day-list-close" onclick="document.getElementById(\'rvDayList-'+dateMs+'\').remove()">✕</button></div>'
+    +itemsHtml;
+  container.appendChild(box);
+}
+// ── FIM AGENDA DE REVISÕES ──
 function rvRender(){
   rvPopulateDisc();
   rvSetTodayDate();
@@ -2209,9 +2358,12 @@ function rvRender(){
 
   if(allDone.length) makeSection('✅','Ciclos completos',allDone,'background:#d1fae5;color:#065f46',true);
 
-  if(RV_ITEMS.length===0){
+if(RV_ITEMS.length===0){
     con.innerHTML='<div class="rv-empty" style="font-size:14px;padding:40px">📚 Nenhum conteúdo ainda.<br><span style="font-size:12px;margin-top:8px;display:block">Adicione o que você estudou e informe a data. O sistema agenda as revisões automaticamente em 2, 7, 15 e 30 dias.</span></div>';
   }
+
+  var agendaPanel=document.getElementById('rvAgendaPanel');
+  if(agendaPanel&&agendaPanel.classList.contains('open')) rvRenderAgendaGrid();
 }
 // ── REVISÕES END ──
 
