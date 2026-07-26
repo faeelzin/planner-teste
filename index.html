@@ -422,7 +422,19 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-form input,.rv-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
 .rv-form input:focus,.rv-form select:focus{outline:none;border-color:#6366f1}
 .rv-form label{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
-.rv-add-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;height:36px}
+.rv-topic-wrap{position:relative}
+.rv-suggest-box{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #6366f1;border-radius:8px;margin-top:3px;max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 6px 18px rgba(0,0,0,.12);display:none}
+.rv-suggest-box.show{display:block}
+.rv-suggest-item{padding:7px 10px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bg)}
+.rv-suggest-item:last-child{border-bottom:none}
+.rv-suggest-item:hover,.rv-suggest-item.active{background:#eef2ff}
+.rv-suggest-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.rv-suggest-name{flex:1;color:var(--txt)}
+.rv-suggest-mat{font-size:9px;color:var(--txt2);white-space:nowrap}
+.rv-mat-comment{background:#eef2ff;border:1px dashed #6366f1;border-radius:7px;padding:6px 9px;margin-bottom:6px}
+.rv-mat-comment .rv-comment-text{color:#4338ca}
+.rv-mat-comment .rv-comment-meta{color:#6366f1}
+  .rv-add-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;height:36px}
 .rv-add-btn:hover{background:#4f46e5}
 .rv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:18px}
 .rv-stat{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px;text-align:center}
@@ -559,8 +571,7 @@ button,.tb{font-family:'Outfit',sans-serif}
   <div class="rv-add-box">
     <h4>➕ Adicionar conteúdo estudado hoje</h4>
     <div class="rv-form">
-      <div><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Controle de Constitucionalidade"></div>
-      <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
+<div class="rv-topic-wrap"><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Controle de Constitucionalidade" autocomplete="off" oninput="rvOnTopicInput()" onfocus="rvOnTopicInput()" onblur="rvHideSuggestSoon()"><div class="rv-suggest-box" id="rvTopicSuggestBox"></div></div>      <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
       <div><label>Data que estudei</label><input type="date" id="rvDate"></div>
 <div><label>Considerar a data que estudei? <span id="rvUseStudiedBadge" class="rv-us-badge rv-us-auto">🟢 Automático</span></label>
 <select id="rvUseStudied" class="rv-us-auto-select" onchange="rvUpdateUseStudiedUI()">
@@ -1909,6 +1920,79 @@ function rvSetTodayDate(){
   if(el&&!el.value) el.value=rvTodayISO();
 }
 
+// ── LIGAÇÃO COM MATÉRIAS (sugestão de tópico + comentário vinculado) ──
+// Devolve uma lista achatada de todos os tópicos cadastrados em Matérias,
+// já com o código/nome/cor da disciplina e o comentário (se houver).
+function rvGetAllMatTopics(){
+  var out=[];
+  DISCS.forEach(function(m){
+    (m.topics||[]).forEach(function(t,ti){
+      out.push({name:t.t,comment:t.comment||'',matCode:m.code,matName:m.name,matColor:m.color,ti:ti});
+    });
+  });
+  return out;
+}
+// Acha, em Matérias, o tópico cujo nome bate (exatamente, ignorando maiúsc./espaços)
+// com o tópico digitado em Revisões. Se uma disciplina foi selecionada em Revisões,
+// prioriza um tópico daquela disciplina.
+function rvFindMatTopic(topicName,discCode){
+  if(!topicName) return null;
+  var norm=topicName.trim().toLowerCase();
+  if(!norm) return null;
+  var all=rvGetAllMatTopics();
+  var exact=all.filter(function(x){ return x.name.trim().toLowerCase()===norm; });
+  if(!exact.length) return null;
+  if(discCode){
+    var m=exact.find(function(x){ return x.matCode===discCode; });
+    if(m) return m;
+  }
+  return exact[0];
+}
+
+var rvSuggestActiveIdx=-1;
+var rvSuggestItems=[];
+function rvHideSuggest(){
+  var box=document.getElementById('rvTopicSuggestBox'); if(!box) return;
+  box.classList.remove('show'); box.innerHTML=''; rvSuggestItems=[]; rvSuggestActiveIdx=-1;
+}
+function rvHideSuggestSoon(){ setTimeout(rvHideSuggest,150); }
+function rvOnTopicInput(){
+  var input=document.getElementById('rvTopic'); var box=document.getElementById('rvTopicSuggestBox');
+  if(!input||!box) return;
+  var q=(input.value||'').trim().toLowerCase();
+  if(!q){ rvHideSuggest(); return; }
+  var all=rvGetAllMatTopics();
+  var matches=all.filter(function(x){ return x.name.toLowerCase().includes(q); });
+  // tópicos que começam com o texto digitado aparecem primeiro
+  matches.sort(function(a,b){
+    var aStarts=a.name.toLowerCase().indexOf(q)===0?0:1;
+    var bStarts=b.name.toLowerCase().indexOf(q)===0?0:1;
+    if(aStarts!==bStarts) return aStarts-bStarts;
+    return a.name.length-b.name.length;
+  });
+  matches=matches.slice(0,8);
+  rvSuggestItems=matches; rvSuggestActiveIdx=-1;
+  if(!matches.length){ rvHideSuggest(); return; }
+  box.innerHTML=matches.map(function(x,i){
+    return '<div class="rv-suggest-item" data-idx="'+i+'" onmousedown="rvPickSuggest('+i+')">'
+      +'<span class="rv-suggest-dot" style="background:'+x.matColor+'"></span>'
+      +'<span class="rv-suggest-name">'+x.name.replace(/</g,'&lt;')+'</span>'
+      +'<span class="rv-suggest-mat">'+x.matName+'</span>'
+      +'</div>';
+  }).join('');
+  box.classList.add('show');
+}
+function rvPickSuggest(idx){
+  var x=rvSuggestItems[idx]; if(!x) return;
+  var input=document.getElementById('rvTopic'); if(input) input.value=x.name;
+  var discSel=document.getElementById('rvDisc');
+  if(discSel){
+    var hasOpt=Array.from(discSel.options).some(function(o){ return o.value===x.matCode; });
+    if(hasOpt) discSel.value=x.matCode;
+  }
+  rvHideSuggest();
+}
+  
 function rvUpdateUseStudiedUI(){
   var sel=document.getElementById('rvUseStudied');
   var badge=document.getElementById('rvUseStudiedBadge');
@@ -2288,23 +2372,26 @@ function rvRender(){
         '<button class="rv-done-btn" onclick="rvMarkStep('+item.id+','+stepIdx+')">'+(diff<=0?'✅ Revisei!':'✅ Revisar')+'</button>';
     }
 
-    var comments=item.comments||[];
+var comments=item.comments||[];
+    var linkedMat=rvFindMatTopic(item.topic,item.disc);
+    var linkedMatHtml=(linkedMat&&linkedMat.comment&&linkedMat.comment.trim())?
+      '<div class="rv-comment-item rv-mat-comment">'+
+        '<div class="rv-comment-text">'+linkedMat.comment.replace(/</g,'&lt;')+'</div>'+
+        '<div class="rv-comment-meta"><span>📚 Comentário de Matérias — '+linkedMat.matName+'</span></div>'+
+      '</div>':'';
+    var totalCount=comments.length+(linkedMatHtml?1:0);
     var commentsHtml=
       '<div class="rv-comments">'+
-        '<div class="rv-comments-title">💬 Comentários ('+comments.length+')</div>'+
+        '<div class="rv-comments-title">💬 Comentários ('+totalCount+')</div>'+
         '<div class="rv-comment-list">'+
+          linkedMatHtml+
           (comments.length?comments.map(function(c){
             return '<div class="rv-comment-item">'+
               '<div class="rv-comment-text">'+c.txt+'</div>'+
               '<div class="rv-comment-meta"><span>'+c.date+'</span><button onclick="rvDelComment('+item.id+','+c.id+')">Excluir</button></div>'+
             '</div>';
-          }).join(''):'<div style="font-size:10px;color:var(--txt2)">Nenhum comentário ainda.</div>')+
+          }).join(''):(linkedMatHtml?'':'<div style="font-size:10px;color:var(--txt2)">Nenhum comentário ainda.</div>'))+
         '</div>'+
-        '<div class="rv-comment-add">'+
-          '<textarea id="rvCommentInput-'+item.id+'" placeholder="Adicionar um aviso/comentário..."></textarea>'+
-          '<button onclick="rvAddComment('+item.id+')">Adicionar</button>'+
-        '</div>'+
-      '</div>';
 
     var card=document.createElement('div');
     card.id='rvcard-'+item.id;
