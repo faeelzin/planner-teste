@@ -2390,8 +2390,15 @@ var comments=item.comments||[];
               '<div class="rv-comment-text">'+c.txt+'</div>'+
               '<div class="rv-comment-meta"><span>'+c.date+'</span><button onclick="rvDelComment('+item.id+','+c.id+')">Excluir</button></div>'+
             '</div>';
-          }).join(''):(linkedMatHtml?'':'<div style="font-size:10px;color:var(--txt2)">Nenhum comentário ainda.</div>'))+
+}).join(''):(linkedMatHtml?'':'<div style="font-size:10px;color:var(--txt2)">Nenhum comentário ainda.</div>'))+
         '</div>'+
+        '<div class="rv-comment-add">'+
+          '<textarea id="rvCommentInput-'+item.id+'" placeholder="Adicionar um aviso/comentário..."></textarea>'+
+          '<button onclick="rvAddComment('+item.id+')">Adicionar</button>'+
+        '</div>'+
+      '</div>';
+
+    var card=document.createElement('div');
 
     var card=document.createElement('div');
     card.id='rvcard-'+item.id;
