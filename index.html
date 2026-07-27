@@ -627,7 +627,13 @@ button,.tb{font-family:'Outfit',sans-serif}
 .res-form input,.res-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
 .res-form input:focus,.res-form select:focus{outline:none;border-color:#6366f1}
 .res-form label{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
-.res-topic-wrap{position:relative}
+.res-field-ok label{color:#059669;font-weight:800}
+.res-field-ok input{border-color:#a7f3d0;background:#f0fdf4;color:#065f46;font-weight:700;text-align:center;font-family:'Outfit',sans-serif;font-size:14px}
+.res-field-ok input:focus{border-color:#059669;background:#fff;box-shadow:0 0 0 3px rgba(5,150,105,.15)}
+.res-field-err label{color:#dc2626;font-weight:800}
+.res-field-err input{border-color:#fecaca;background:#fef2f2;color:#7f1d1d;font-weight:700;text-align:center;font-family:'Outfit',sans-serif;font-size:14px}
+.res-field-err input:focus{border-color:#dc2626;background:#fff;box-shadow:0 0 0 3px rgba(220,38,38,.15)}
+  .res-topic-wrap{position:relative}
 .res-suggest-box{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #6366f1;border-radius:8px;margin-top:3px;max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 6px 18px rgba(0,0,0,.12);display:none}
 .res-suggest-box.show{display:block}
 .res-suggest-item{padding:7px 10px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bg)}
@@ -699,8 +705,8 @@ button,.tb{font-family:'Outfit',sans-serif}
       <div class="res-topic-wrap"><label>Tópico *</label><input type="text" id="resTopic" placeholder="Ex: Controle de Constitucionalidade" autocomplete="off" oninput="resOnTopicInput()" onfocus="resOnTopicInput()" onblur="resHideSuggestSoon()"><div class="res-suggest-box" id="resTopicSuggestBox"></div></div>
       <div><label>Matéria</label><select id="resDisc"><option value="">— Sem matéria —</option></select></div>
       <div><label>Data do estudo</label><input type="date" id="resDate"></div>
-      <div><label>Acertos</label><input type="number" min="0" id="resAcertos" value="0" oninput="resUpdatePctPreview()"></div>
-      <div><label>Erros</label><input type="number" min="0" id="resErros" value="0" oninput="resUpdatePctPreview()"></div>
+     <div class="res-field-ok"><label>✓ Acertos</label><input type="number" min="0" id="resAcertos" value="0" oninput="resUpdatePctPreview()"></div>
+      <div class="res-field-err"><label>✗ Erros</label><input type="number" min="0" id="resErros" value="0" oninput="resUpdatePctPreview()"></div>
       <div><label>% Acerto</label><div class="res-pct-box" id="resPctPreview">--</div></div>
       <div><label>&nbsp;</label><button class="res-add-btn" onclick="resAdd()">Adicionar</button></div>
     </div>
@@ -2919,8 +2925,9 @@ function resRenderMatView(filtered){
     var matPct=resPct(totalAcertos,totalErros);
     var matKey=g.code;
     var isOpen=!!resOpenMats[matKey];
-    var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
-
+var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
+    var matBarColor='linear-gradient(90deg,#6366f1,#8b5cf6)';
+    
     var topicsHtml=topics.map(function(t){
       var topicKey=matKey+'::'+t.name.trim().toLowerCase();
       var tOpen=!!resOpenTopics[topicKey];
@@ -2968,8 +2975,8 @@ function resRenderMatView(filtered){
         '<div class="res-mat-info">'+
           '<div class="res-mat-name">'+g.name.replace(/</g,'&lt;')+'</div>'+
           '<div class="res-mat-meta">'+totalQ+' questões · '+topics.length+' tópico'+(topics.length>1?'s':'')+'</div>'+
-          '<div class="res-bar-track"><div class="res-bar-fill" style="width:'+(matPct===null?0:matPct)+'%;background:'+matColor+'"></div></div>'+
-        '</div>'+
+'<div class="res-bar-track"><div class="res-bar-fill" style="width:'+(matPct===null?0:matPct)+'%;background:'+matBarColor+'"></div></div>'+
+      '</div>'+
         '<div class="res-mat-pct" style="color:'+matColor+'">'+(matPct===null?'--':matPct+'%')+'</div>'+
       '</div>'+
       '<div class="res-mat-body'+(isOpen?' open':'')+'">'+topicsHtml+'</div>'+
