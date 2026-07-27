@@ -288,8 +288,10 @@ button,.tb{font-family:'Outfit',sans-serif}
   <button class="tb" onclick="sw('materias',this)">📚 Matérias</button>
   <button class="tb" onclick="sw('stats',this)">📊 Estatísticas</button>
   <button class="tb" onclick="sw('variavel',this)">📋 Variável</button>
-  <button class="tb" onclick="sw('revisoes',this)">🔁 Revisões</button>
+<button class="tb" onclick="sw('revisoes',this)">🔁 Revisões</button>
+  <button class="tb" onclick="sw('resultados',this)">🎯 Resultados</button>
 </div>
+  
 </div><!-- /top-fixed -->
 
 <div class="cnt">
@@ -612,6 +614,113 @@ button,.tb{font-family:'Outfit',sans-serif}
   </div>
 </div><!-- /rv-edit-modal -->
 </div><!-- /tp-revisoes -->
+
+<!-- RESULTADOS -->
+<div class="tp" id="tp-resultados">
+<style>
+.res-wrap{max-width:100%}
+.res-title{font-family:'Outfit',sans-serif;font-size:16px;font-weight:700}
+.res-sub{font-size:12px;color:var(--txt2);margin-top:2px;margin-bottom:16px;line-height:1.5}
+.res-add-box{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;margin-bottom:18px}
+.res-add-box h4{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;margin-bottom:10px;color:#6366f1}
+.res-form{display:grid;grid-template-columns:2fr 1.2fr 1fr .8fr .8fr .9fr auto;gap:8px;align-items:end}
+.res-form input,.res-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
+.res-form input:focus,.res-form select:focus{outline:none;border-color:#6366f1}
+.res-form label{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
+.res-topic-wrap{position:relative}
+.res-suggest-box{position:absolute;top:100%;left:0;right:0;background:#fff;border:1.5px solid #6366f1;border-radius:8px;margin-top:3px;max-height:220px;overflow-y:auto;z-index:50;box-shadow:0 6px 18px rgba(0,0,0,.12);display:none}
+.res-suggest-box.show{display:block}
+.res-suggest-item{padding:7px 10px;font-size:11px;cursor:pointer;display:flex;align-items:center;gap:6px;border-bottom:1px solid var(--bg)}
+.res-suggest-item:last-child{border-bottom:none}
+.res-suggest-item:hover{background:#eef2ff}
+.res-suggest-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.res-suggest-name{flex:1;color:var(--txt)}
+.res-suggest-mat{font-size:9px;color:var(--txt2);white-space:nowrap}
+.res-add-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 18px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer;white-space:nowrap;height:36px}
+.res-add-btn:hover{background:#4f46e5}
+.res-pct-box{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;text-align:center;padding:7px 0;color:var(--txt2)}
+.res-note-row{margin-top:8px}
+.res-note-row input{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px}
+.res-view-toggle{display:flex;gap:8px;margin-bottom:14px}
+.res-view-btn{background:#fff;border:1.5px solid var(--bdr);color:var(--txt2);border-radius:9px;padding:8px 16px;font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;cursor:pointer}
+.res-view-btn.active{background:#6366f1;border-color:#6366f1;color:#fff}
+.res-filters{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:14px}
+.res-filters input[type=text]{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 11px;background:#fff;flex:1;max-width:260px}
+.res-filters select{font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff}
+.res-mat-block{background:#fff;border:1px solid var(--bdr);border-radius:10px;margin-bottom:10px;overflow:hidden}
+.res-mat-head{display:flex;align-items:center;gap:10px;padding:12px 14px;cursor:pointer}
+.res-mat-head:hover{background:var(--bg)}
+.res-mat-arrow{font-size:10px;color:var(--txt2);transition:transform .2s;flex-shrink:0}
+.res-mat-arrow.open{transform:rotate(90deg)}
+.res-mat-info{flex:1;min-width:0}
+.res-mat-name{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#6366f1}
+.res-mat-meta{font-size:10px;color:var(--txt2);margin-top:1px}
+.res-bar-track{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:6px}
+.res-bar-fill{height:100%;border-radius:4px;transition:width .4s}
+.res-mat-pct{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;flex-shrink:0;min-width:44px;text-align:right}
+.res-mat-body{display:none;padding:0 14px 12px}
+.res-mat-body.open{display:block}
+.res-topic-block{border-top:1px solid var(--bdr);padding:10px 0}
+.res-topic-head{display:flex;align-items:center;gap:10px;cursor:pointer}
+.res-topic-head:hover .res-topic-name{color:#4f46e5}
+.res-topic-name{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--txt)}
+.res-topic-review{font-size:10px;color:#6366f1;margin-top:2px}
+.res-topic-review a,.res-topic-review span{cursor:pointer}
+.res-topic-pct{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;min-width:40px;text-align:right}
+.res-topic-body{display:none;margin-top:8px}
+.res-topic-body.open{display:block}
+.res-topic-summary{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--txt2);background:var(--bg);border-radius:8px;padding:8px 10px;margin-bottom:8px}
+.res-topic-summary b{color:var(--txt);font-family:'Outfit',sans-serif}
+.res-entry-row{display:flex;align-items:center;gap:8px;padding:5px 0}
+.res-entry-date{font-size:10px;color:var(--txt2);width:44px;flex-shrink:0}
+.res-chip-ok{background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;font-family:'Outfit',sans-serif;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.res-chip-err{background:#fee2e2;color:#7f1d1d;font-size:10px;font-weight:700;font-family:'Outfit',sans-serif;padding:2px 7px;border-radius:20px;flex-shrink:0}
+.res-entry-bar{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;min-width:40px}
+.res-entry-pct{font-size:11px;font-weight:700;width:36px;text-align:right;flex-shrink:0}
+.res-entry-actions{display:flex;gap:3px;flex-shrink:0}
+.res-entry-actions button{background:none;border:1px solid var(--bdr);border-radius:6px;padding:3px 6px;font-size:10px;cursor:pointer;color:var(--txt2)}
+.res-entry-actions button:hover{border-color:#6366f1;color:#6366f1}
+.res-entry-note{font-size:10px;color:var(--txt2);font-style:italic;margin-left:52px;margin-top:-2px;margin-bottom:2px}
+.res-empty{padding:30px;text-align:center;color:var(--txt2);font-size:12px}
+.res-table-wrap{overflow-x:auto;background:#fff;border:1px solid var(--bdr);border-radius:10px}
+.res-table{width:100%;border-collapse:collapse;font-size:12px}
+.res-table th{text-align:left;font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;color:var(--txt2);text-transform:uppercase;letter-spacing:.3px;padding:10px 12px;border-bottom:1px solid var(--bdr)}
+.res-table td{padding:9px 12px;border-bottom:1px solid var(--bdr)}
+.res-table tr:last-child td{border-bottom:none}
+@media(max-width:800px){.res-form{grid-template-columns:1fr 1fr}}
+</style>
+<div class="res-wrap">
+  <div class="res-title">🎯 Resultados — Desempenho por Matéria e Tópico</div>
+  <div class="res-sub">Registre acertos e erros de cada sessão de estudo/questões. Os dados se cruzam automaticamente com a aba Revisões — cada tópico mostra o status do ciclo de revisão junto com o percentual de acerto.</div>
+
+  <div class="res-add-box">
+    <h4>➕ Registrar resultado</h4>
+    <div class="res-form">
+      <div class="res-topic-wrap"><label>Tópico *</label><input type="text" id="resTopic" placeholder="Ex: Controle de Constitucionalidade" autocomplete="off" oninput="resOnTopicInput()" onfocus="resOnTopicInput()" onblur="resHideSuggestSoon()"><div class="res-suggest-box" id="resTopicSuggestBox"></div></div>
+      <div><label>Matéria</label><select id="resDisc"><option value="">— Sem matéria —</option></select></div>
+      <div><label>Data do estudo</label><input type="date" id="resDate"></div>
+      <div><label>Acertos</label><input type="number" min="0" id="resAcertos" value="0" oninput="resUpdatePctPreview()"></div>
+      <div><label>Erros</label><input type="number" min="0" id="resErros" value="0" oninput="resUpdatePctPreview()"></div>
+      <div><label>% Acerto</label><div class="res-pct-box" id="resPctPreview">--</div></div>
+      <div><label>&nbsp;</label><button class="res-add-btn" onclick="resAdd()">Adicionar</button></div>
+    </div>
+    <div class="res-note-row"><input type="text" id="resNote" placeholder="Anotação (opcional) — ex: errei questões de prazo"></div>
+  </div>
+
+  <div class="res-view-toggle">
+    <button class="res-view-btn active" id="resViewBtnMat" onclick="resSwitchView('mat')">📚 Por matéria/tópico</button>
+    <button class="res-view-btn" id="resViewBtnDay" onclick="resSwitchView('day')">🗓️ Histórico por dia</button>
+  </div>
+
+  <div class="res-filters">
+    <input type="text" id="resSearch" placeholder="🔍 Buscar tópico..." oninput="resRender()">
+    <select id="resFiltDisc" onchange="resRender()"><option value="">Todas as matérias</option></select>
+  </div>
+
+  <div id="resContentMat"></div>
+  <div id="resContentDay" style="display:none"></div>
+</div>
+</div><!-- /tp-resultados -->
 
 </div><!-- /cnt -->
 </div><!-- /app -->
@@ -973,12 +1082,13 @@ function buildStateData(){
       if(t.done) topicDone[d.code+'_'+ti]=true;
     });
   });
-  return {
+return {
     cards:CARDS,tempo:TEMPO,sst:SST,
     vardata:VARDATA,avisos:AVISOS,
     topicDone:topicDone,
     discs:DISCS,
-    rv:RV_ITEMS
+    rv:RV_ITEMS,
+    res:RES_ITEMS
   };
 }
 
@@ -990,7 +1100,8 @@ function applyStateData(data){
   if(data.avisos) AVISOS=data.avisos;
   // RV_ITEMS (revisões) é sincronizado à parte, um item por vez — ver rvLoadInitial()/rvStartRealtimeSync().
   // Isso evita que uma escrita atrasada do restante do estado apague revisões adicionadas por outra pessoa.
-  if(!fbEnabled&&data.rv) RV_ITEMS=data.rv;
+if(!fbEnabled&&data.rv) RV_ITEMS=data.rv;
+  if(!fbEnabled&&data.res) RES_ITEMS=data.res;
   if(data.discs&&data.discs.length){
     const defaultCodes=['CON','CO2','ADM','CIV','TRA','PDT','EMP','PEN','PPE','TRI'];
     DISCS=data.discs;
@@ -1020,15 +1131,16 @@ function renderAll(){
   if(tab==='stats')rStats();
   if(tab==='materias')rMat();
   if(tab==='variavel'&&typeof rVar==='function')rVar();
-  if(tab==='revisoes')rvRender();
+if(tab==='revisoes')rvRender();
+  if(tab==='resultados')resRender();
   rAv();
 }
 
 function fbDataForRoot(){
-  const data=buildStateData();
+const data=buildStateData();
   delete data.rv; // rv não vai no "pacote geral" — cada revisão é salva em seu próprio nó (ver rvPersistItem)
+  delete data.res; // res não vai no "pacote geral" — cada resultado é salvo em seu próprio nó (ver resPersistItem)
   return data;
-}
 
 function save(){
   const data=buildStateData();
@@ -1055,8 +1167,9 @@ function startRealtimeSync(){
   fbRef.on('value',function(snapshot){
     const raw=snapshot.val();
     if(!raw)return;
-    const data=Object.assign({},raw);
+const data=Object.assign({},raw);
     delete data.rv;
+    delete data.res;
     const json=JSON.stringify(data);
     if(json===fbLastSentJson)return; // já é o que a própria pessoa acabou de enviar
     applyStateData(data);
@@ -1216,9 +1329,11 @@ async function load(){
     initC();
     if(fbEnabled&&fbRef) fbRef.update(fbDataForRoot()).catch(function(){});
   }
-  await rvLoadInitial(data);
+await rvLoadInitial(data);
+  await resLoadInitial(data);
   startRealtimeSync();
   rvStartRealtimeSync();
+  resStartRealtimeSync();
 }
 
 function initC(){CARDS=[];let id=1;WT.forEach((wk,wi)=>{wk.forEach((day,di)=>{day.forEach(c=>{CARDS.push({id:id++,wk:wi+1,dy:di,mt:c.m,tp:c.t,inc:c.i,me:c.me,hr:c.h,st:'nao'});});});});}
@@ -1245,7 +1360,8 @@ function sw(tab,btn){
   if(tab==='stats')rStats();
   if(tab==='materias')rMat();
   if(tab==='variavel')rVar();
-  if(tab==='revisoes')rvRender();
+if(tab==='revisoes')rvRender();
+  if(tab==='resultados')resRender();
 }
 
 // ── HELPERS ──
@@ -2430,7 +2546,8 @@ var comments=item.comments||[];
         (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
         (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
         '<div class="rv-steps">'+stepsHtml+'</div>'+
-        '<div style="font-size:10px;color:var(--txt2);margin-top:4px">Estudado: '+rvFmtDate(item.studiedAt)+'</div>'+
+'<div style="font-size:10px;color:var(--txt2);margin-top:4px">Estudado: '+rvFmtDate(item.studiedAt)+'</div>'+
+        resBadgeHtml(item.topic,item.disc)+
         commentsHtml+
       '</div>'+
       '<div class="rv-card-right">'+rightHtml+
@@ -2481,6 +2598,388 @@ if(RV_ITEMS.length===0){
   if(agendaPanel&&agendaPanel.classList.contains('open')) rvRenderAgendaGrid();
 }
 // ── REVISÕES END ──
+
+// ── RESULTADOS (desempenho por matéria/tópico) ──
+var RES_ITEMS = []; // {id, topic, disc, date(ms), acertos, erros, note}
+
+function resTodayISO(){
+  var d=new Date();
+  return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');
+}
+function resISOToMs(iso){ var p=iso.split('-'); return new Date(+p[0],+p[1]-1,+p[2]).getTime(); }
+function resMsToISO(ms){ var d=new Date(ms); return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+function resFmtDate(ms){ return new Date(ms).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric'}); }
+function resFmtShort(ms){ return new Date(ms).toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit'}); }
+function resPct(ok,err){ var t=ok+err; if(!t) return null; return Math.round(ok/t*100); }
+function resPctColor(p){ if(p===null) return '#9ca3af'; if(p>=85) return '#059669'; if(p>=60) return '#d97706'; return '#dc2626'; }
+
+// ── Sincronização granular via Firebase (mesmo padrão usado em Revisões) ──
+function resPersistItem(item){
+  if(!fbEnabled||!fbRef||!item||item.id==null)return;
+  fbRef.child('res').child(String(item.id)).set(item).catch(function(e){ console.warn('Falha ao sincronizar resultado no Firebase',e); });
+}
+function resPersistDelete(id){
+  if(!fbEnabled||!fbRef)return;
+  fbRef.child('res').child(String(id)).remove().catch(function(e){ console.warn('Falha ao excluir resultado no Firebase',e); });
+}
+function resArrayFromMap(map){
+  if(!map) return [];
+  const arr=Array.isArray(map)?map.filter(Boolean):Object.keys(map).map(function(k){return map[k];});
+  return arr.filter(Boolean).sort(function(a,b){return (b.date||0)-(a.date||0)||(b.id||0)-(a.id||0);});
+}
+let fbResLastSentJson=null;
+function resStartRealtimeSync(){
+  if(!fbEnabled||!fbRef)return;
+  fbRef.child('res').on('value',function(snapshot){
+    const items=resArrayFromMap(snapshot.val());
+    const json=JSON.stringify(items);
+    if(json===fbResLastSentJson)return;
+    RES_ITEMS=items;
+    fbResLastSentJson=json;
+    const resTab=document.getElementById('tp-resultados');
+    if(resTab&&resTab.classList.contains('active')) resRender();
+  });
+}
+async function resLoadInitial(localData){
+  if(fbEnabled&&fbRef){
+    try{
+      const snap=await fbRef.child('res').once('value');
+      const val=snap.val();
+      if(val&&!Array.isArray(val)){
+        RES_ITEMS=resArrayFromMap(val);
+      } else if(Array.isArray(val)&&val.length){
+        const map={}; val.filter(Boolean).forEach(function(it){ if(it&&it.id!=null) map[String(it.id)]=it; });
+        await fbRef.child('res').set(map);
+        RES_ITEMS=resArrayFromMap(map);
+      } else if(localData&&localData.res&&localData.res.length){
+        const map={}; localData.res.forEach(function(it){ if(it&&it.id!=null) map[String(it.id)]=it; });
+        RES_ITEMS=resArrayFromMap(map);
+        fbRef.child('res').set(map).catch(function(){});
+      } else {
+        RES_ITEMS=[];
+      }
+      fbResLastSentJson=JSON.stringify(RES_ITEMS);
+    }catch(e){
+      console.warn('Falha ao carregar resultados do Firebase, usando dados locais.',e);
+      if(localData&&localData.res) RES_ITEMS=localData.res;
+    }
+  } else if(localData&&localData.res){
+    RES_ITEMS=localData.res;
+  }
+}
+
+// ── Sugestão de tópico (reaproveita os tópicos cadastrados em Matérias) ──
+function resHideSuggest(){
+  var box=document.getElementById('resTopicSuggestBox'); if(!box) return;
+  box.classList.remove('show'); box.innerHTML='';
+}
+function resHideSuggestSoon(){ setTimeout(resHideSuggest,150); }
+function resOnTopicInput(){
+  var input=document.getElementById('resTopic'); var box=document.getElementById('resTopicSuggestBox');
+  if(!input||!box) return;
+  var q=(input.value||'').trim().toLowerCase();
+  if(!q){ resHideSuggest(); return; }
+  var all=rvGetAllMatTopics();
+  var matches=all.filter(function(x){ return x.name.toLowerCase().includes(q); });
+  matches.sort(function(a,b){
+    var aStarts=a.name.toLowerCase().indexOf(q)===0?0:1;
+    var bStarts=b.name.toLowerCase().indexOf(q)===0?0:1;
+    if(aStarts!==bStarts) return aStarts-bStarts;
+    return a.name.length-b.name.length;
+  });
+  matches=matches.slice(0,8);
+  if(!matches.length){ resHideSuggest(); return; }
+  box.innerHTML=matches.map(function(x,i){
+    return '<div class="res-suggest-item" onmousedown="resPickSuggest('+i+')">'
+      +'<span class="res-suggest-dot" style="background:'+x.matColor+'"></span>'
+      +'<span class="res-suggest-name">'+x.name.replace(/</g,'&lt;')+'</span>'
+      +'<span class="res-suggest-mat">'+x.matName+'</span>'
+      +'</div>';
+  }).join('');
+  box.classList.add('show');
+  box._items=matches;
+}
+function resPickSuggest(idx){
+  var box=document.getElementById('resTopicSuggestBox');
+  var x=box&&box._items?box._items[idx]:null; if(!x) return;
+  var input=document.getElementById('resTopic'); if(input) input.value=x.name;
+  var discSel=document.getElementById('resDisc');
+  if(discSel){
+    var hasOpt=Array.from(discSel.options).some(function(o){ return o.value===x.matCode; });
+    if(hasOpt) discSel.value=x.matCode;
+  }
+  resHideSuggest();
+}
+function resUpdatePctPreview(){
+  var ok=parseInt(document.getElementById('resAcertos').value)||0;
+  var err=parseInt(document.getElementById('resErros').value)||0;
+  var p=resPct(ok,err);
+  var el=document.getElementById('resPctPreview');
+  if(!el) return;
+  if(p===null){ el.textContent='--'; el.style.color='var(--txt2)'; return; }
+  el.textContent=p+'%'; el.style.color=resPctColor(p);
+}
+function resPopulateDisc(){
+  ['resDisc','resFiltDisc'].forEach(function(id){
+    var sel=document.getElementById(id); if(!sel) return;
+    var cur=sel.value;
+    var keepFirst=sel.options[0];
+    sel.innerHTML=''; sel.appendChild(keepFirst);
+    DISCS.forEach(function(d){ var o=document.createElement('option'); o.value=d.code; o.textContent=d.name; sel.appendChild(o); });
+    if(cur) sel.value=cur;
+  });
+}
+
+function resAdd(){
+  var topic=(document.getElementById('resTopic').value||'').trim();
+  if(!topic){ alert('Informe o tópico estudado.'); return; }
+  var disc=document.getElementById('resDisc').value;
+  var dateEl=document.getElementById('resDate');
+  var date=dateEl&&dateEl.value ? resISOToMs(dateEl.value) : resISOToMs(resTodayISO());
+  var acertos=parseInt(document.getElementById('resAcertos').value)||0;
+  var erros=parseInt(document.getElementById('resErros').value)||0;
+  var note=(document.getElementById('resNote').value||'').trim();
+  var newItem={id:Date.now(),topic:topic,disc:disc,date:date,acertos:acertos,erros:erros,note:note};
+  RES_ITEMS.unshift(newItem);
+  resSave(); resPersistItem(newItem);
+  document.getElementById('resTopic').value='';
+  document.getElementById('resDisc').value='';
+  document.getElementById('resAcertos').value='0';
+  document.getElementById('resErros').value='0';
+  document.getElementById('resNote').value='';
+  resUpdatePctPreview();
+  if(dateEl) dateEl.value=resTodayISO();
+  resRender();
+}
+
+function resDeleteEntry(id){
+  var btn=document.getElementById('resdel-'+id); if(!btn) return;
+  if(btn.dataset.armed==='1'){
+    RES_ITEMS=RES_ITEMS.filter(function(x){ return x.id!==id; });
+    resSave(); resPersistDelete(id); resRender(); return;
+  }
+  btn.dataset.armed='1'; btn.textContent='?'; btn.title='Confirmar exclusão — clique de novo';
+  setTimeout(function(){ if(btn){ btn.dataset.armed='0'; btn.textContent='🗑'; btn.title=''; } },3000);
+}
+
+function resEditEntry(id){
+  var item=RES_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  var novoTopico=prompt('Tópico:',item.topic); if(novoTopico===null) return;
+  var novaData=prompt('Data do estudo (AAAA-MM-DD):',resMsToISO(item.date)); if(novaData===null) return;
+  var novosAcertos=prompt('Acertos:',item.acertos); if(novosAcertos===null) return;
+  var novosErros=prompt('Erros:',item.erros); if(novosErros===null) return;
+  var novaNota=prompt('Anotação:',item.note||''); if(novaNota===null) return;
+  item.topic=(novoTopico||'').trim()||item.topic;
+  var parsedMs=Date.parse(novaData);
+  if(!isNaN(parsedMs)) item.date=resISOToMs(novaData);
+  item.acertos=parseInt(novosAcertos)||0;
+  item.erros=parseInt(novosErros)||0;
+  item.note=(novaNota||'').trim();
+  resSave(); resPersistItem(item); resRender();
+}
+
+function resSave(){ save(); }
+
+// Encontra, em Revisões, o item cujo tópico bate com o de Resultados (mesma lógica de rvFindMatTopic)
+function resFindReviewItem(topicName,discCode){
+  if(!topicName) return null;
+  var norm=topicName.trim().toLowerCase();
+  var matches=RV_ITEMS.filter(function(x){ return x.topic.trim().toLowerCase()===norm; });
+  if(!matches.length) return null;
+  if(discCode){
+    var m=matches.find(function(x){ return x.disc===discCode; });
+    if(m) return m;
+  }
+  return matches[0];
+}
+// Retorna um resuminho textual do status de revisão daquele tópico (usado nos cards de Resultados)
+function resReviewInfoHtml(topicName,discCode){
+  var rvItem=resFindReviewItem(topicName,discCode);
+  if(!rvItem) return '';
+  var next=rvNextStep(rvItem);
+  if(next<0) return '<div class="res-topic-review">✅ Ciclo de revisão completo</div>';
+  var due=rvNextDue(rvItem);
+  var diff=rvDaysDiff(due);
+  var txt;
+  if(diff<0) txt='⚠️ revisão atrasada '+Math.abs(diff)+'d ('+rvFmtShort(due)+')';
+  else if(diff===0) txt='📅 revisar hoje';
+  else txt='📅 próxima revisão em '+diff+'d ('+rvFmtShort(due)+')';
+  return '<div class="res-topic-review">'+txt+'</div>';
+}
+// Agrega os resultados de um tópico específico — usado tanto em Resultados quanto no card de Revisões
+function resStatsForTopic(topicName,discCode){
+  if(!topicName) return null;
+  var norm=topicName.trim().toLowerCase();
+  var entries=RES_ITEMS.filter(function(x){
+    if(x.topic.trim().toLowerCase()!==norm) return false;
+    if(discCode&&x.disc&&x.disc!==discCode) return false;
+    return true;
+  });
+  if(!entries.length) return null;
+  var acertos=0,erros=0;
+  entries.forEach(function(e){ acertos+=e.acertos||0; erros+=e.erros||0; });
+  return {entries:entries,acertos:acertos,erros:erros,total:acertos+erros,pct:resPct(acertos,erros),dias:entries.length};
+}
+// Badge compacto "🎯 71% (24/34) em 2 dias" — usado no card de Revisões
+function resBadgeHtml(topicName,discCode){
+  var s=resStatsForTopic(topicName,discCode);
+  if(!s||s.pct===null) return '';
+  return '<div style="font-size:11px;margin-top:4px;color:'+resPctColor(s.pct)+';font-weight:600">🎯 '+s.pct+'% ('+s.acertos+'/'+s.total+') em '+s.dias+' dia'+(s.dias>1?'s':'')+'</div>';
+}
+
+var resCurrentView='mat';
+var resOpenMats={}, resOpenTopics={};
+function resSwitchView(v){
+  resCurrentView=v;
+  document.getElementById('resViewBtnMat').classList.toggle('active',v==='mat');
+  document.getElementById('resViewBtnDay').classList.toggle('active',v==='day');
+  document.getElementById('resContentMat').style.display=(v==='mat')?'':'none';
+  document.getElementById('resContentDay').style.display=(v==='day')?'':'none';
+  resRender();
+}
+
+function resRender(){
+  resPopulateDisc();
+  var dateEl=document.getElementById('resDate');
+  if(dateEl&&!dateEl.value) dateEl.value=resTodayISO();
+  resUpdatePctPreview();
+
+  var q=((document.getElementById('resSearch')||{}).value||'').toLowerCase();
+  var filtDisc=(document.getElementById('resFiltDisc')||{}).value||'';
+
+  var filtered=RES_ITEMS.filter(function(x){
+    if(filtDisc&&x.disc!==filtDisc) return false;
+    if(q&&!x.topic.toLowerCase().includes(q)&&!(x.note||'').toLowerCase().includes(q)) return false;
+    return true;
+  });
+
+  if(resCurrentView==='day'){ resRenderDayView(filtered); return; }
+  resRenderMatView(filtered);
+}
+
+function resRenderDayView(filtered){
+  var con=document.getElementById('resContentDay'); if(!con) return;
+  if(!filtered.length){ con.innerHTML='<div class="res-empty">Nenhum resultado registrado ainda.</div>'; return; }
+  var sorted=filtered.slice().sort(function(a,b){ return (b.date||0)-(a.date||0); });
+  var rows=sorted.map(function(e){
+    var disc=e.disc?gD(e.disc):null;
+    var matChip=disc?'<span class="mt mt-'+disc.code+'">'+disc.name+'</span>':'<span style="font-size:10px;color:var(--txt2)">— sem matéria —</span>';
+    var p=resPct(e.acertos,e.erros);
+    var pctChip=p===null?'<span class="inm">--</span>':'<span style="background:'+resPctColor(p)+'22;color:'+resPctColor(p)+';font-weight:700;font-size:10px;padding:2px 8px;border-radius:20px;font-family:Outfit,sans-serif">'+p+'%</span>';
+    return '<tr>'+
+      '<td>'+resFmtShort(e.date)+'</td>'+
+      '<td>'+matChip+'</td>'+
+      '<td>'+e.topic.replace(/</g,'&lt;')+'</td>'+
+      '<td style="color:#059669;font-weight:700">'+e.acertos+'</td>'+
+      '<td style="color:#dc2626;font-weight:700">'+e.erros+'</td>'+
+      '<td>'+pctChip+'</td>'+
+      '<td style="font-size:11px;color:var(--txt2);font-style:italic">'+(e.note?e.note.replace(/</g,'&lt;'):'')+'</td>'+
+      '<td><div class="res-entry-actions"><button onclick="resEditEntry('+e.id+')">✏️</button><button id="resdel-'+e.id+'" onclick="resDeleteEntry('+e.id+')">🗑</button></div></td>'+
+    '</tr>';
+  }).join('');
+  con.innerHTML='<div class="res-table-wrap"><table class="res-table">'+
+    '<thead><tr><th>Data</th><th>Matéria</th><th>Tópico</th><th>Acertos</th><th>Erros</th><th>%</th><th>Anotação</th><th></th></tr></thead>'+
+    '<tbody>'+rows+'</tbody></table></div>';
+}
+
+function resRenderMatView(filtered){
+  var con=document.getElementById('resContentMat'); if(!con) return;
+  if(!filtered.length){ con.innerHTML='<div class="res-empty">🎯 Nenhum resultado ainda.<br><span style="font-size:11px;margin-top:6px;display:block">Registre acertos e erros acima para começar a acompanhar seu desempenho por matéria e tópico.</span></div>'; return; }
+
+  // Agrupa por matéria (código) e, dentro, por tópico (nome normalizado)
+  var byDisc={}; // code -> {code,name,color,topics:{normName:{name,entries:[]}}}
+  filtered.forEach(function(e){
+    var code=e.disc||'__none__';
+    if(!byDisc[code]){
+      var d=e.disc?gD(e.disc):null;
+      byDisc[code]={code:code,name:d?d.name:'— Sem matéria —',color:d?d.color:'#9ca3af',topics:{}};
+    }
+    var tn=e.topic.trim().toLowerCase();
+    if(!byDisc[code].topics[tn]) byDisc[code].topics[tn]={name:e.topic,entries:[]};
+    byDisc[code].topics[tn].entries.push(e);
+  });
+
+  // Ordena matérias na ordem de DISCS, depois "sem matéria" por último
+  var order=DISCS.map(function(d){ return d.code; }); order.push('__none__');
+  var matGroups=Object.keys(byDisc).map(function(k){ return byDisc[k]; })
+    .sort(function(a,b){ return order.indexOf(a.code)-order.indexOf(b.code); });
+
+  var html='';
+  matGroups.forEach(function(g){
+    var topics=Object.keys(g.topics).map(function(k){ return g.topics[k]; });
+    var totalAcertos=0,totalErros=0,totalQ=0;
+    topics.forEach(function(t){
+      t.acertos=0; t.erros=0;
+      t.entries.forEach(function(e){ t.acertos+=e.acertos||0; t.erros+=e.erros||0; });
+      t.total=t.acertos+t.erros; t.pct=resPct(t.acertos,t.erros);
+      totalAcertos+=t.acertos; totalErros+=t.erros; totalQ+=t.total;
+    });
+    topics.sort(function(a,b){ return b.total-a.total; });
+    var matPct=resPct(totalAcertos,totalErros);
+    var matKey=g.code;
+    var isOpen=!!resOpenMats[matKey];
+    var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
+
+    var topicsHtml=topics.map(function(t){
+      var topicKey=matKey+'::'+t.name.trim().toLowerCase();
+      var tOpen=!!resOpenTopics[topicKey];
+      var tColor=t.pct===null?'#9ca3af':resPctColor(t.pct);
+      var reviewHtml=resReviewInfoHtml(t.name,g.code!=='__none__'?g.code:'');
+      var entriesSorted=t.entries.slice().sort(function(a,b){ return (b.date||0)-(a.date||0); });
+      var entriesHtml=entriesSorted.map(function(e){
+        var ep=resPct(e.acertos,e.erros);
+        var eColor=ep===null?'#9ca3af':resPctColor(ep);
+        return '<div class="res-entry-row">'+
+          '<div class="res-entry-date">'+resFmtShort(e.date)+'</div>'+
+          '<span class="res-chip-ok">'+e.acertos+'✓</span>'+
+          '<span class="res-chip-err">'+e.erros+'✗</span>'+
+          '<div class="res-entry-bar"><div class="res-bar-fill" style="width:'+(ep===null?0:ep)+'%;background:'+eColor+'"></div></div>'+
+          '<div class="res-entry-pct" style="color:'+eColor+'">'+(ep===null?'--':ep+'%')+'</div>'+
+          '<div class="res-entry-actions"><button onclick="resEditEntry('+e.id+')">✏️</button><button id="resdel-'+e.id+'" onclick="resDeleteEntry('+e.id+')">🗑</button></div>'+
+        '</div>'+(e.note?'<div class="res-entry-note">📝 '+e.note.replace(/</g,'&lt;')+'</div>':'');
+      }).join('');
+      return '<div class="res-topic-block">'+
+        '<div class="res-topic-head" onclick="resToggleTopic(\''+topicKey.replace(/'/g,"\\'")+'\')">'+
+          '<span class="res-mat-arrow'+(tOpen?' open':'')+'">▶</span>'+
+          '<div style="flex:1;min-width:0">'+
+            '<div class="res-topic-name">'+t.name.replace(/</g,'&lt;')+'</div>'+
+            reviewHtml+
+          '</div>'+
+          '<div class="res-topic-pct" style="color:'+tColor+'">'+(t.pct===null?'--':t.pct+'%')+'</div>'+
+        '</div>'+
+        '<div class="res-bar-track"><div class="res-bar-fill" style="width:'+(t.pct===null?0:t.pct)+'%;background:'+tColor+'"></div></div>'+
+        '<div class="res-topic-body'+(tOpen?' open':'')+'" id="restb-'+topicKey.replace(/[^a-zA-Z0-9]/g,'_')+'">'+
+          '<div class="res-topic-summary">'+
+            '<span>Total: <b>'+t.total+' questões</b></span>'+
+            '<span>Acertos: <b style="color:#059669">'+t.acertos+'</b></span>'+
+            '<span>Erros: <b style="color:#dc2626">'+t.erros+'</b></span>'+
+            '<span>Aproveitamento: <b style="color:'+tColor+'">'+(t.pct===null?'--':t.pct+'%')+'</b></span>'+
+            '<span>'+t.entries.length+' dia'+(t.entries.length>1?'s':'')+' registrado'+(t.entries.length>1?'s':'')+'</span>'+
+          '</div>'+
+          entriesHtml+
+        '</div>'+
+      '</div>';
+    }).join('');
+
+    html+='<div class="res-mat-block">'+
+      '<div class="res-mat-head" onclick="resToggleMat(\''+matKey.replace(/'/g,"\\'")+'\')">'+
+        '<span class="res-mat-arrow'+(isOpen?' open':'')+'">▶</span>'+
+        '<div class="res-mat-info">'+
+          '<div class="res-mat-name">'+g.name.replace(/</g,'&lt;')+'</div>'+
+          '<div class="res-mat-meta">'+totalQ+' questões · '+topics.length+' tópico'+(topics.length>1?'s':'')+'</div>'+
+          '<div class="res-bar-track"><div class="res-bar-fill" style="width:'+(matPct===null?0:matPct)+'%;background:'+matColor+'"></div></div>'+
+        '</div>'+
+        '<div class="res-mat-pct" style="color:'+matColor+'">'+(matPct===null?'--':matPct+'%')+'</div>'+
+      '</div>'+
+      '<div class="res-mat-body'+(isOpen?' open':'')+'">'+topicsHtml+'</div>'+
+    '</div>';
+  });
+  con.innerHTML=html;
+}
+
+function resToggleMat(key){ resOpenMats[key]=!resOpenMats[key]; resRender(); }
+function resToggleTopic(key){ resOpenTopics[key]=!resOpenTopics[key]; resRender(); }
+// ── RESULTADOS END ──
 
 
 (async function(){
