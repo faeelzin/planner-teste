@@ -678,7 +678,7 @@ button,.tb{font-family:'Outfit',sans-serif}
 .res-topic-summary{display:flex;gap:14px;flex-wrap:wrap;font-size:11px;color:var(--txt2);background:var(--bg);border-radius:8px;padding:8px 10px;margin-bottom:8px}
 .res-topic-summary b{color:var(--txt);font-family:'Outfit',sans-serif}
 .res-entry-row{display:flex;align-items:center;gap:8px;padding:5px 0}
-.res-entry-date{font-size:10px;color:var(--txt2);width:44px;flex-shrink:0}
+.res-entry-date{font-size:11px;color:var(--txt);font-weight:700;font-family:'Outfit',sans-serif;width:44px;flex-shrink:0}
 .res-chip-ok{background:#d1fae5;color:#065f46;font-size:10px;font-weight:700;font-family:'Outfit',sans-serif;padding:2px 7px;border-radius:20px;flex-shrink:0}
 .res-chip-err{background:#fee2e2;color:#7f1d1d;font-size:10px;font-weight:700;font-family:'Outfit',sans-serif;padding:2px 7px;border-radius:20px;flex-shrink:0}
 .res-entry-bar{flex:1;height:6px;background:var(--bg);border-radius:3px;overflow:hidden;min-width:40px}
@@ -1653,8 +1653,7 @@ function rMat(){
     sec.innerHTML='<div class="sh">'
       +'<div style="width:8px;height:8px;border-radius:50%;background:'+(m.dash?'transparent':m.color)+';'+(m.dash?'outline:2px dashed '+m.color+';outline-offset:2px':'')+'">'+'</div>'
       +'<span style="color:'+m.color+'">'+m.name+'</span>'
-      +'<span class="bn">'+(m.topics||[]).length+' tópicos</span>'
-     +'<span style="font-size:10px;color:var(--txt2);font-weight:400;margin-left:4px">Peso: '+m.peso+'%</span>'
++'<span class="bn">'+(m.topics||[]).length+' tópicos</span>'
       +'<button class="tsbtn" style="margin-top:0;margin-left:auto;border-color:#6366f1;color:#6366f1" onclick="openAddTopic(&quot;'+m.code+'&quot;)">➕ Adicionar tópico</button>'
       +'<button class="tsbtn" style="border-color:#dc2626;color:#dc2626" onclick="delDisc(&quot;'+m.code+'&quot;)">🗑 Apagar matéria</button></div>'
       +(m.note?'<div class="co2n">💡 '+m.note+'</div>':'')
