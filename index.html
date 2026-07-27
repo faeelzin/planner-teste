@@ -1141,6 +1141,7 @@ const data=buildStateData();
   delete data.rv; // rv não vai no "pacote geral" — cada revisão é salva em seu próprio nó (ver rvPersistItem)
   delete data.res; // res não vai no "pacote geral" — cada resultado é salvo em seu próprio nó (ver resPersistItem)
   return data;
+}
 
 function save(){
   const data=buildStateData();
