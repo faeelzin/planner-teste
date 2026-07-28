@@ -424,8 +424,8 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-sub{font-size:12px;color:var(--txt2);margin-top:2px}
 .rv-add-box{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;margin-bottom:18px}
 .rv-add-box h4{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;margin-bottom:10px;color:#6366f1}
-.rv-form{display:grid;grid-template-columns:2fr 1fr 1fr 1fr auto;gap:8px;align-items:end}
-.rv-form input,.rv-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
+.rv-form{display:grid;grid-template-columns:1.6fr 1.2fr 1fr 1fr 1fr auto;gap:8px;align-items:end}
+  .rv-form input,.rv-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
 .rv-form input:focus,.rv-form select:focus{outline:none;border-color:#6366f1}
 .rv-form label{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
 .rv-topic-wrap{position:relative}
@@ -577,7 +577,7 @@ button,.tb{font-family:'Outfit',sans-serif}
   <div class="rv-add-box">
     <h4>➕ Adicionar conteúdo estudado hoje</h4>
     <div class="rv-form">
-<div class="rv-topic-wrap"><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Controle de Constitucionalidade" autocomplete="off" oninput="rvOnTopicInput()" onfocus="rvOnTopicInput()" onblur="rvHideSuggestSoon()"><div class="rv-suggest-box" id="rvTopicSuggestBox"></div></div>      <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
+<div class="rv-topic-wrap"><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Teoria Geral do Delito" autocomplete="off" oninput="rvOnTopicInput()" onfocus="rvOnTopicInput()" onblur="rvHideSuggestSoon()"><div class="rv-suggest-box" id="rvTopicSuggestBox"></div></div>      <div class="rv-topic-wrap"><label>Subtópico (opcional)</label><input type="text" id="rvSubtopic" placeholder="Ex: Tipicidade" autocomplete="off"></div>      <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
       <div><label>Data que estudei</label><input type="date" id="rvDate"></div>
 <div><label>Considerar a data que estudei? <span id="rvUseStudiedBadge" class="rv-us-badge rv-us-auto">🟢 Automático</span></label>
 <select id="rvUseStudied" class="rv-us-auto-select" onchange="rvUpdateUseStudiedUI()">
@@ -603,8 +603,9 @@ button,.tb{font-family:'Outfit',sans-serif}
 <div class="rv-edit-modal" id="rvEditModal">
   <div class="rv-edit-box">
     <h3>✏️ Editar revisão</h3>
-    <div class="rv-ef"><label>Tópico / Conteúdo *</label><input type="text" id="rvEditTopic"></div>
-    <div class="rv-ef"><label>Disciplina</label><select id="rvEditDisc"><option value="">— Sem disciplina —</option></select></div>
+<div class="rv-ef"><label>Tópico / Conteúdo *</label><input type="text" id="rvEditTopic"></div>
+<div class="rv-ef"><label>Subtópico (opcional)</label><input type="text" id="rvEditSubtopic" placeholder="Ex: Tipicidade"></div>
+<div class="rv-ef"><label>Disciplina</label><select id="rvEditDisc"><option value="">— Sem disciplina —</option></select></div>
     <div class="rv-ef"><label>Data que estudei</label><input type="date" id="rvEditStudiedAt"></div>
     <div class="rv-ef"><label>Anotação</label><input type="text" id="rvEditNote" placeholder="Ex: foco nos legitimados da ADI"></div>
     <div class="rv-ef">
@@ -627,8 +628,8 @@ button,.tb{font-family:'Outfit',sans-serif}
 .res-sub{font-size:12px;color:var(--txt2);margin-top:2px;margin-bottom:16px;line-height:1.5}
 .res-add-box{background:#fff;border:1px solid var(--bdr);border-radius:12px;padding:14px 16px;margin-bottom:18px}
 .res-add-box h4{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;margin-bottom:10px;color:#6366f1}
-.res-form{display:grid;grid-template-columns:2fr 1.2fr 1fr .8fr .8fr .9fr auto;gap:8px;align-items:end}
-.res-form input,.res-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
+.res-form{display:grid;grid-template-columns:1.6fr 1.2fr 1.2fr 1fr .8fr .8fr .9fr auto;gap:8px;align-items:end}
+  .res-form input,.res-form select{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;width:100%}
 .res-form input:focus,.res-form select:focus{outline:none;border-color:#6366f1}
 .res-form label{font-family:'Outfit',sans-serif;font-size:10px;font-weight:600;color:var(--txt2);display:block;margin-bottom:3px;text-transform:uppercase;letter-spacing:.3px}
 .res-field-ok label{color:#059669;font-weight:800}
@@ -671,7 +672,9 @@ button,.tb{font-family:'Outfit',sans-serif}
 .res-mat-body{display:none;padding:0 14px 12px}
 .res-mat-body.open{display:block}
 .res-topic-block{border-top:1px solid var(--bdr);padding:10px 0}
-.res-topic-head{display:flex;align-items:center;gap:10px;cursor:pointer}
+.res-sub-block{margin:8px 0 8px 18px;padding:8px 0 8px 12px;border-left:2px solid #e0e7ff;background:#fafaff;border-radius:0 8px 8px 0}
+.res-sub-block .res-topic-head{padding:2px 6px}
+  .res-topic-head{display:flex;align-items:center;gap:10px;cursor:pointer}
 .res-topic-head:hover .res-topic-name{color:#4f46e5}
 .res-topic-name{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--txt)}
 .res-topic-review{font-size:10px;color:#6366f1;margin-top:2px}
@@ -706,7 +709,9 @@ button,.tb{font-family:'Outfit',sans-serif}
   <div class="res-add-box">
     <h4>➕ Registrar resultado</h4>
     <div class="res-form">
-      <div class="res-topic-wrap"><label>Tópico *</label><input type="text" id="resTopic" placeholder="Ex: Controle de Constitucionalidade" autocomplete="off" oninput="resOnTopicInput()" onfocus="resOnTopicInput()" onblur="resHideSuggestSoon()"><div class="res-suggest-box" id="resTopicSuggestBox"></div></div>
+<div class="res-topic-wrap"><label>Tópico *</label><input type="text" id="resTopic" placeholder="Ex: Teoria Geral do Delito" autocomplete="off" oninput="resOnTopicInput()" onfocus="resOnTopicInput()" onblur="resHideSuggestSoon()"><div class="res-suggest-box" id="resTopicSuggestBox"></div></div>
+      <div class="res-topic-wrap"><label>Subtópico (opcional)</label><input type="text" id="resSubtopic" placeholder="Ex: Tipicidade" autocomplete="off"></div>
+      <div><label>Matéria</label><select id="resDisc"><option value="">— Sem matéria —</option></select></div>
       <div><label>Matéria</label><select id="resDisc"><option value="">— Sem matéria —</option></select></div>
       <div><label>Data do estudo</label><input type="date" id="resDate"></div>
      <div class="res-field-ok"><label>✓ Acertos</label><input type="number" min="0" id="resAcertos" value="0" oninput="resUpdatePctPreview()"></div>
@@ -2171,6 +2176,8 @@ function rvUpdateUseStudiedUI(){
 function rvAdd(){
   var topic=(document.getElementById('rvTopic').value||'').trim();
   if(!topic){ alert('Informe o tópico/conteúdo estudado.'); return; }
+  var subtopicEl=document.getElementById('rvSubtopic');
+  var subtopic=subtopicEl?(subtopicEl.value||'').trim():'';
   var disc=document.getElementById('rvDisc').value;
   var note=(document.getElementById('rvNote').value||'').trim();
   var dateEl=document.getElementById('rvDate');
@@ -2181,10 +2188,11 @@ var useStudiedEl=document.getElementById('rvUseStudied');
   var firstRevDate=(useStudied==='nao'&&firstRevEl&&firstRevEl.value) ? rvISOToMs(firstRevEl.value) : null;
   var steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
   if(firstRevDate) steps[0].targetDate=firstRevDate;
-  var newItem={id:Date.now(),topic:topic,disc:disc,note:note,studiedAt:studiedAt,steps:steps};
+  var newItem={id:Date.now(),topic:topic,subtopic:subtopic,disc:disc,note:note,studiedAt:studiedAt,steps:steps};
   RV_ITEMS.unshift(newItem);
   rvSave(); rvPersistItem(newItem);
   document.getElementById('rvTopic').value='';
+  if(subtopicEl) subtopicEl.value='';
   document.getElementById('rvNote').value='';
   document.getElementById('rvDisc').value='';
   if(firstRevEl) firstRevEl.value='';
@@ -2266,7 +2274,9 @@ function rvOpenEdit(id){
   var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
   rvEditId=id;
   rvPopulateDisc();
-  document.getElementById('rvEditTopic').value=item.topic||'';
+document.getElementById('rvEditTopic').value=item.topic||'';
+  var editSubEl=document.getElementById('rvEditSubtopic');
+  if(editSubEl) editSubEl.value=item.subtopic||'';
   document.getElementById('rvEditDisc').value=item.disc||'';
   document.getElementById('rvEditStudiedAt').value=rvMsToISO(item.studiedAt);
   document.getElementById('rvEditNote').value=item.note||'';
@@ -2317,8 +2327,10 @@ function rvCloseEdit(){
 function rvSaveEdit(){
   var item=RV_ITEMS.find(function(x){ return x.id===rvEditId; }); if(!item) return;
   var topic=(document.getElementById('rvEditTopic').value||'').trim();
-  if(!topic){ alert('Informe o tópico/conteúdo.'); return; }
+if(!topic){ alert('Informe o tópico/conteúdo.'); return; }
   item.topic=topic;
+  var editSubEl2=document.getElementById('rvEditSubtopic');
+  item.subtopic=editSubEl2?(editSubEl2.value||'').trim():(item.subtopic||'');
   item.disc=document.getElementById('rvEditDisc').value;
   item.note=(document.getElementById('rvEditNote').value||'').trim();
   var studiedEl=document.getElementById('rvEditStudiedAt');
@@ -2427,7 +2439,7 @@ function toggleDayRevList(dateMs){
         +'<span class="day-rev-disc" style="color:'+discColor+'">'+discName+'</span>'
         +'<span class="day-rev-step">+'+stepDays+'d</span>'
       +'</div>'
-      +'<div class="day-rev-topic">'+item.topic+'</div>'
++'<div class="day-rev-topic">'+item.topic+(item.subtopic?' <span style="color:#6366f1;font-weight:600">› '+item.subtopic+'</span>':'')+'</div>'
       +'<div class="day-rev-last">'+lastInfo.label+': '+rvFmtDate(lastInfo.date)+'</div>'
       +'<button class="day-rev-edit-btn" onclick="rvOpenEdit('+item.id+')">✏️ Editar</button>'
     +'</div>';
@@ -2570,12 +2582,12 @@ var comments=item.comments||[];
     card.className='rv-card'+(diff!==null&&diff<0?' overdue':diff===0?' today':isAllDone?' done-all':'');
     card.innerHTML=
       '<div class="rv-card-left">'+
-        '<div class="rv-card-topic">'+item.topic+'</div>'+
+'<div class="rv-card-topic">'+item.topic+(item.subtopic?' <span style="color:#6366f1;font-weight:600">› '+item.subtopic+'</span>':'')+'</div>'+
         (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
         (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
         '<div class="rv-steps">'+stepsHtml+'</div>'+
 '<div style="font-size:10px;color:var(--txt2);margin-top:4px">Estudado: '+rvFmtDate(item.studiedAt)+'</div>'+
-        resBadgeHtml(item.topic,item.disc)+
+        resBadgeHtml(item.topic,item.disc,item.subtopic)+
         commentsHtml+
       '</div>'+
       '<div class="rv-card-right">'+rightHtml+
@@ -2761,16 +2773,19 @@ function resPopulateDisc(){
 function resAdd(){
   var topic=(document.getElementById('resTopic').value||'').trim();
   if(!topic){ alert('Informe o tópico estudado.'); return; }
+  var subtopicEl=document.getElementById('resSubtopic');
+  var subtopic=subtopicEl?(subtopicEl.value||'').trim():'';
   var disc=document.getElementById('resDisc').value;
   var dateEl=document.getElementById('resDate');
   var date=dateEl&&dateEl.value ? resISOToMs(dateEl.value) : resISOToMs(resTodayISO());
   var acertos=parseInt(document.getElementById('resAcertos').value)||0;
   var erros=parseInt(document.getElementById('resErros').value)||0;
   var note=(document.getElementById('resNote').value||'').trim();
-  var newItem={id:Date.now(),topic:topic,disc:disc,date:date,acertos:acertos,erros:erros,note:note};
+  var newItem={id:Date.now(),topic:topic,subtopic:subtopic,disc:disc,date:date,acertos:acertos,erros:erros,note:note};
   RES_ITEMS.unshift(newItem);
   resSave(); resPersistItem(newItem);
   document.getElementById('resTopic').value='';
+  if(subtopicEl) subtopicEl.value='';
   document.getElementById('resDisc').value='';
   document.getElementById('resAcertos').value='0';
   document.getElementById('resErros').value='0';
@@ -2793,11 +2808,13 @@ function resDeleteEntry(id){
 function resEditEntry(id){
   var item=RES_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
   var novoTopico=prompt('Tópico:',item.topic); if(novoTopico===null) return;
+  var novoSubtopico=prompt('Subtópico (deixe em branco se for o tópico inteiro):',item.subtopic||''); if(novoSubtopico===null) return;
   var novaData=prompt('Data do estudo (AAAA-MM-DD):',resMsToISO(item.date)); if(novaData===null) return;
   var novosAcertos=prompt('Acertos:',item.acertos); if(novosAcertos===null) return;
   var novosErros=prompt('Erros:',item.erros); if(novosErros===null) return;
   var novaNota=prompt('Anotação:',item.note||''); if(novaNota===null) return;
   item.topic=(novoTopico||'').trim()||item.topic;
+  item.subtopic=(novoSubtopico||'').trim();
   var parsedMs=Date.parse(novaData);
   if(!isNaN(parsedMs)) item.date=resISOToMs(novaData);
   item.acertos=parseInt(novosAcertos)||0;
@@ -2808,11 +2825,15 @@ function resEditEntry(id){
 
 function resSave(){ save(); }
 
-// Encontra, em Revisões, o item cujo tópico bate com o de Resultados (mesma lógica de rvFindMatTopic)
-function resFindReviewItem(topicName,discCode){
+// Encontra, em Revisões, o item cujo tópico (+ subtópico, se houver) bate com o de Resultados
+function resFindReviewItem(topicName,discCode,subtopic){
   if(!topicName) return null;
   var norm=topicName.trim().toLowerCase();
-  var matches=RV_ITEMS.filter(function(x){ return x.topic.trim().toLowerCase()===norm; });
+  var normSub=(subtopic||'').trim().toLowerCase();
+  var matches=RV_ITEMS.filter(function(x){
+    if(x.topic.trim().toLowerCase()!==norm) return false;
+    return (x.subtopic||'').trim().toLowerCase()===normSub;
+  });
   if(!matches.length) return null;
   if(discCode){
     var m=matches.find(function(x){ return x.disc===discCode; });
@@ -2821,8 +2842,8 @@ function resFindReviewItem(topicName,discCode){
   return matches[0];
 }
 // Retorna um resuminho textual do status de revisão daquele tópico (usado nos cards de Resultados)
-function resReviewInfoHtml(topicName,discCode){
-  var rvItem=resFindReviewItem(topicName,discCode);
+function resReviewInfoHtml(topicName,discCode,subtopic){
+  var rvItem=resFindReviewItem(topicName,discCode,subtopic);
   if(!rvItem) return '';
   var next=rvNextStep(rvItem);
   if(next<0) return '<div class="res-topic-review">✅ Ciclo de revisão completo</div>';
@@ -2834,12 +2855,14 @@ function resReviewInfoHtml(topicName,discCode){
   else txt='📅 próxima revisão em '+diff+'d ('+rvFmtShort(due)+')';
   return '<div class="res-topic-review">'+txt+'</div>';
 }
-// Agrega os resultados de um tópico específico — usado tanto em Resultados quanto no card de Revisões
-function resStatsForTopic(topicName,discCode){
+// Agrega os resultados de um tópico específico (opcionalmente restrito a um subtópico) — usado tanto em Resultados quanto no card de Revisões
+function resStatsForTopic(topicName,discCode,subtopic){
   if(!topicName) return null;
   var norm=topicName.trim().toLowerCase();
+  var normSub=(subtopic||'').trim().toLowerCase();
   var entries=RES_ITEMS.filter(function(x){
     if(x.topic.trim().toLowerCase()!==norm) return false;
+    if((x.subtopic||'').trim().toLowerCase()!==normSub) return false;
     if(discCode&&x.disc&&x.disc!==discCode) return false;
     return true;
   });
@@ -2849,15 +2872,15 @@ function resStatsForTopic(topicName,discCode){
   return {entries:entries,acertos:acertos,erros:erros,total:acertos+erros,pct:resPct(acertos,erros),dias:entries.length};
 }
 // Badge compacto "🎯 71% (24/34) em 2 dias" — usado no card de Revisões
-function resBadgeHtml(topicName,discCode){
-  var s=resStatsForTopic(topicName,discCode);
+function resBadgeHtml(topicName,discCode,subtopic){
+  var s=resStatsForTopic(topicName,discCode,subtopic);
   if(!s||s.pct===null) return '';
   return '<div style="font-size:11px;margin-top:4px;color:'+resPctColor(s.pct)+';font-weight:600">🎯 '+s.pct+'% ('+s.acertos+'/'+s.total+') em '+s.dias+' dia'+(s.dias>1?'s':'')+'</div>';
 }
 
 var resCurrentView='mat';
-var resOpenMats={}, resOpenTopics={};
-function resSwitchView(v){
+var resOpenMats={}, resOpenTopics={}, resOpenSubs={};
+  function resSwitchView(v){
   resCurrentView=v;
   document.getElementById('resViewBtnMat').classList.toggle('active',v==='mat');
   document.getElementById('resViewBtnDay').classList.toggle('active',v==='day');
@@ -2894,10 +2917,12 @@ function resRenderDayView(filtered){
     var matChip=disc?'<span class="mt mt-'+disc.code+'">'+disc.name+'</span>':'<span style="font-size:10px;color:var(--txt2)">— sem matéria —</span>';
     var p=resPct(e.acertos,e.erros);
     var pctChip=p===null?'<span class="inm">--</span>':'<span style="background:'+resPctColor(p)+'22;color:'+resPctColor(p)+';font-weight:700;font-size:10px;padding:2px 8px;border-radius:20px;font-family:Outfit,sans-serif">'+p+'%</span>';
+    var subCell=e.subtopic?e.subtopic.replace(/</g,'&lt;'):'<span style="color:var(--txt2)">—</span>';
     return '<tr>'+
       '<td>'+resFmtShort(e.date)+'</td>'+
       '<td>'+matChip+'</td>'+
       '<td>'+e.topic.replace(/</g,'&lt;')+'</td>'+
+      '<td>'+subCell+'</td>'+
       '<td style="color:#059669;font-weight:700">'+e.acertos+'</td>'+
       '<td style="color:#dc2626;font-weight:700">'+e.erros+'</td>'+
       '<td>'+pctChip+'</td>'+
@@ -2906,7 +2931,7 @@ function resRenderDayView(filtered){
     '</tr>';
   }).join('');
   con.innerHTML='<div class="res-table-wrap"><table class="res-table">'+
-    '<thead><tr><th>Data</th><th>Matéria</th><th>Tópico</th><th>Acertos</th><th>Erros</th><th>%</th><th>Anotação</th><th></th></tr></thead>'+
+    '<thead><tr><th>Data</th><th>Matéria</th><th>Tópico</th><th>Subtópico</th><th>Acertos</th><th>Erros</th><th>%</th><th>Anotação</th><th></th></tr></thead>'+
     '<tbody>'+rows+'</tbody></table></div>';
 }
 
@@ -2914,8 +2939,8 @@ function resRenderMatView(filtered){
   var con=document.getElementById('resContentMat'); if(!con) return;
   if(!filtered.length){ con.innerHTML='<div class="res-empty">🎯 Nenhum resultado ainda.<br><span style="font-size:11px;margin-top:6px;display:block">Registre acertos e erros acima para começar a acompanhar seu desempenho por matéria e tópico.</span></div>'; return; }
 
-  // Agrupa por matéria (código) e, dentro, por tópico (nome normalizado)
-  var byDisc={}; // code -> {code,name,color,topics:{normName:{name,entries:[]}}}
+  // Agrupa por matéria (código) > tópico (nome normalizado) > subtópico (nome normalizado)
+  var byDisc={}; // code -> {code,name,color,topics:{normName:{name,entries:[],subs:{normSub:{name,entries:[]}}}}}
   filtered.forEach(function(e){
     var code=e.disc||'__none__';
     if(!byDisc[code]){
@@ -2923,14 +2948,36 @@ function resRenderMatView(filtered){
       byDisc[code]={code:code,name:d?d.name:'— Sem matéria —',color:d?d.color:'#9ca3af',topics:{}};
     }
     var tn=e.topic.trim().toLowerCase();
-    if(!byDisc[code].topics[tn]) byDisc[code].topics[tn]={name:e.topic,entries:[]};
-    byDisc[code].topics[tn].entries.push(e);
+    if(!byDisc[code].topics[tn]) byDisc[code].topics[tn]={name:e.topic,entries:[],subs:{}};
+    var topicObj=byDisc[code].topics[tn];
+    topicObj.entries.push(e);
+    var subName=(e.subtopic||'').trim();
+    var sn=subName.toLowerCase();
+    if(!topicObj.subs[sn]) topicObj.subs[sn]={name:subName,entries:[]};
+    topicObj.subs[sn].entries.push(e);
   });
 
   // Ordena matérias na ordem de DISCS, depois "sem matéria" por último
   var order=DISCS.map(function(d){ return d.code; }); order.push('__none__');
   var matGroups=Object.keys(byDisc).map(function(k){ return byDisc[k]; })
     .sort(function(a,b){ return order.indexOf(a.code)-order.indexOf(b.code); });
+
+  // Renderiza uma "fileira" de entradas (mesmo bloco usado no nível de tópico e no de subtópico)
+  function entriesHtmlFor(entries){
+    var entriesSorted=entries.slice().sort(function(a,b){ return (b.date||0)-(a.date||0); });
+    return entriesSorted.map(function(e){
+      var ep=resPct(e.acertos,e.erros);
+      var eColor=ep===null?'#9ca3af':resPctColor(ep);
+      return '<div class="res-entry-row">'+
+        '<div class="res-entry-date">'+resFmtShort(e.date)+'</div>'+
+        '<span class="res-chip-ok">'+e.acertos+'✓</span>'+
+        '<span class="res-chip-err">'+e.erros+'✗</span>'+
+        '<div class="res-entry-bar"><div class="res-bar-fill" style="width:'+(ep===null?0:ep)+'%;background:'+eColor+'"></div></div>'+
+        '<div class="res-entry-pct" style="color:'+eColor+'">'+(ep===null?'--':ep+'%')+'</div>'+
+        '<div class="res-entry-actions"><button onclick="resEditEntry('+e.id+')">✏️</button><button id="resdel-'+e.id+'" onclick="resDeleteEntry('+e.id+')">🗑</button></div>'+
+      '</div>'+(e.note?'<div class="res-entry-note">📝 '+e.note.replace(/</g,'&lt;')+'</div>':'');
+    }).join('');
+  }
 
   var html='';
   matGroups.forEach(function(g){
@@ -2941,6 +2988,18 @@ function resRenderMatView(filtered){
       t.entries.forEach(function(e){ t.acertos+=e.acertos||0; t.erros+=e.erros||0; });
       t.total=t.acertos+t.erros; t.pct=resPct(t.acertos,t.erros);
       totalAcertos+=t.acertos; totalErros+=t.erros; totalQ+=t.total;
+
+      // agrega cada subtópico dentro do tópico
+      var subs=Object.keys(t.subs).map(function(k){ return t.subs[k]; });
+      subs.forEach(function(s){
+        s.acertos=0; s.erros=0;
+        s.entries.forEach(function(e){ s.acertos+=e.acertos||0; s.erros+=e.erros||0; });
+        s.total=s.acertos+s.erros; s.pct=resPct(s.acertos,s.erros);
+      });
+      subs.sort(function(a,b){ return b.total-a.total; });
+      t.subsList=subs;
+      // só vale a pena mostrar o nível de subtópico se ALGUM registro tiver subtópico preenchido
+      t.hasRealSub=subs.some(function(s){ return !!s.name; });
     });
     topics.sort(function(a,b){ return b.total-a.total; });
     var matPct=resPct(totalAcertos,totalErros);
@@ -2953,31 +3012,49 @@ var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
       var topicKey=matKey+'::'+t.name.trim().toLowerCase();
       var tOpen=!!resOpenTopics[topicKey];
       var tColor=t.pct===null?'#9ca3af':resPctColor(t.pct);
-      var reviewHtml=resReviewInfoHtml(t.name,g.code!=='__none__'?g.code:'');
-      var entriesSorted=t.entries.slice().sort(function(a,b){ return (b.date||0)-(a.date||0); });
-      var entriesHtml=entriesSorted.map(function(e){
-        var ep=resPct(e.acertos,e.erros);
-        var eColor=ep===null?'#9ca3af':resPctColor(ep);
-        return '<div class="res-entry-row">'+
-          '<div class="res-entry-date">'+resFmtShort(e.date)+'</div>'+
-          '<span class="res-chip-ok">'+e.acertos+'✓</span>'+
-          '<span class="res-chip-err">'+e.erros+'✗</span>'+
-          '<div class="res-entry-bar"><div class="res-bar-fill" style="width:'+(ep===null?0:ep)+'%;background:'+eColor+'"></div></div>'+
-          '<div class="res-entry-pct" style="color:'+eColor+'">'+(ep===null?'--':ep+'%')+'</div>'+
-          '<div class="res-entry-actions"><button onclick="resEditEntry('+e.id+')">✏️</button><button id="resdel-'+e.id+'" onclick="resDeleteEntry('+e.id+')">🗑</button></div>'+
-        '</div>'+(e.note?'<div class="res-entry-note">📝 '+e.note.replace(/</g,'&lt;')+'</div>':'');
-      }).join('');
-      return '<div class="res-topic-block">'+
-        '<div class="res-topic-head" onclick="resToggleTopic(\''+topicKey.replace(/'/g,"\\'")+'\')">'+
-          '<span class="res-mat-arrow'+(tOpen?' open':'')+'">▶</span>'+
-          '<div style="flex:1;min-width:0">'+
-            '<div class="res-topic-name">'+t.name.replace(/</g,'&lt;')+'</div>'+
-            reviewHtml+
-          '</div>'+
-          '<div class="res-topic-pct" style="color:'+tColor+'">'+(t.pct===null?'--':t.pct+'%')+'</div>'+
-        '</div>'+
-        '<div class="res-bar-track"><div class="res-bar-fill" style="width:'+(t.pct===null?0:t.pct)+'%;background:'+tColor+'"></div></div>'+
-        '<div class="res-topic-body'+(tOpen?' open':'')+'" id="restb-'+topicKey.replace(/[^a-zA-Z0-9]/g,'_')+'">'+
+      var discCodeForLookup=g.code!=='__none__'?g.code:'';
+      var reviewHtml=resReviewInfoHtml(t.name,discCodeForLookup,'');
+
+      var topicBodyInner;
+      if(t.hasRealSub){
+        // ── nível extra: subtópicos dentro do tópico ──
+        var subsHtml=t.subsList.map(function(s){
+          var subLabel=s.name?s.name:'📄 Tópico geral (sem subtópico específico)';
+          var subKey=topicKey+'::'+(s.name?s.name.trim().toLowerCase():'__geral__');
+          var sOpen=!!resOpenSubs[subKey];
+          var sColor=s.pct===null?'#9ca3af':resPctColor(s.pct);
+          var subReviewHtml=resReviewInfoHtml(t.name,discCodeForLookup,s.name);
+          return '<div class="res-sub-block">'+
+            '<div class="res-topic-head" onclick="resToggleSub(\''+subKey.replace(/'/g,"\\'")+'\')">'+
+              '<span class="res-mat-arrow'+(sOpen?' open':'')+'">▶</span>'+
+              '<div style="flex:1;min-width:0">'+
+                '<div class="res-topic-name" style="font-size:12px">'+(s.name?'↳ '+subLabel.replace(/</g,'&lt;'):subLabel)+'</div>'+
+                subReviewHtml+
+              '</div>'+
+              '<div class="res-topic-pct" style="color:'+sColor+'">'+(s.pct===null?'--':s.pct+'%')+'</div>'+
+            '</div>'+
+            '<div class="res-bar-track"><div class="res-bar-fill" style="width:'+(s.pct===null?0:s.pct)+'%;background:'+sColor+'"></div></div>'+
+            '<div class="res-topic-body'+(sOpen?' open':'')+'">'+
+              '<div class="res-topic-summary">'+
+                '<span>Total: <b>'+s.total+' questões</b></span>'+
+                '<span>Acertos: <b style="color:#059669">'+s.acertos+'</b></span>'+
+                '<span>Erros: <b style="color:#dc2626">'+s.erros+'</b></span>'+
+                '<span>Aproveitamento: <b style="color:'+sColor+'">'+(s.pct===null?'--':s.pct+'%')+'</b></span>'+
+                '<span>'+s.entries.length+' dia'+(s.entries.length>1?'s':'')+' registrado'+(s.entries.length>1?'s':'')+'</span>'+
+              '</div>'+
+              entriesHtmlFor(s.entries)+
+            '</div>'+
+          '</div>';
+        }).join('');
+        topicBodyInner=
+          '<div class="res-topic-summary">'+
+            '<span>Total do tópico (todos os subtópicos): <b>'+t.total+' questões</b></span>'+
+            '<span>Aproveitamento geral: <b style="color:'+tColor+'">'+(t.pct===null?'--':t.pct+'%')+'</b></span>'+
+            '<span>'+t.subsList.length+' subtópico'+(t.subsList.length>1?'s':'')+' registrado'+(t.subsList.length>1?'s':'')+'</span>'+
+          '</div>'+subsHtml;
+      } else {
+        // comportamento original: sem subtópicos, mostra as entradas direto
+        topicBodyInner=
           '<div class="res-topic-summary">'+
             '<span>Total: <b>'+t.total+' questões</b></span>'+
             '<span>Acertos: <b style="color:#059669">'+t.acertos+'</b></span>'+
@@ -2985,7 +3062,21 @@ var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
             '<span>Aproveitamento: <b style="color:'+tColor+'">'+(t.pct===null?'--':t.pct+'%')+'</b></span>'+
             '<span>'+t.entries.length+' dia'+(t.entries.length>1?'s':'')+' registrado'+(t.entries.length>1?'s':'')+'</span>'+
           '</div>'+
-          entriesHtml+
+          entriesHtmlFor(t.entries);
+      }
+
+      return '<div class="res-topic-block">'+
+        '<div class="res-topic-head" onclick="resToggleTopic(\''+topicKey.replace(/'/g,"\\'")+'\')">'+
+          '<span class="res-mat-arrow'+(tOpen?' open':'')+'">▶</span>'+
+          '<div style="flex:1;min-width:0">'+
+            '<div class="res-topic-name">'+t.name.replace(/</g,'&lt;')+(t.hasRealSub?' <span style="font-size:10px;color:var(--txt2);font-weight:600">('+t.subsList.length+' subtópico'+(t.subsList.length>1?'s':'')+')</span>':'')+'</div>'+
+            reviewHtml+
+          '</div>'+
+          '<div class="res-topic-pct" style="color:'+tColor+'">'+(t.pct===null?'--':t.pct+'%')+'</div>'+
+        '</div>'+
+        '<div class="res-bar-track"><div class="res-bar-fill" style="width:'+(t.pct===null?0:t.pct)+'%;background:'+tColor+'"></div></div>'+
+        '<div class="res-topic-body'+(tOpen?' open':'')+'" id="restb-'+topicKey.replace(/[^a-zA-Z0-9]/g,'_')+'">'+
+          topicBodyInner+
         '</div>'+
       '</div>';
     }).join('');
@@ -3008,6 +3099,7 @@ var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
 
 function resToggleMat(key){ resOpenMats[key]=!resOpenMats[key]; resRender(); }
 function resToggleTopic(key){ resOpenTopics[key]=!resOpenTopics[key]; resRender(); }
+function resToggleSub(key){ resOpenSubs[key]=!resOpenSubs[key]; resRender(); }
 // ── RESULTADOS END ──
 
 
