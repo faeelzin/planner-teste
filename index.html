@@ -148,7 +148,11 @@ button,.tb{font-family:'Outfit',sans-serif}
 .mtt tr:hover td{background:#fafafa}
 .mtt-row-done td{background:#f7fdfa}
 .mtt-topic-done{text-decoration:line-through;text-decoration-color:#059669;text-decoration-thickness:2px;color:#4b5563;font-weight:500}
-.mat-filter{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;cursor:pointer;margin-top:10px}
+.mtt-subtopics{list-style:none;margin:3px 0 6px;padding:0;display:flex;flex-direction:column;gap:3px}
+.mtt-subtopics li{font-size:11.5px;font-weight:500;color:#1f2937;line-height:1.4;display:flex;align-items:center;gap:7px;cursor:pointer;user-select:none;padding:2px 0}
+.mtt-subtopics li input[type=checkbox]{width:15px;height:15px;flex-shrink:0;accent-color:#059669;cursor:pointer}
+.mtt-subtopics li.mtt-sub-done{color:#059669;font-weight:600}
+  .mat-filter{font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:7px 10px;background:#fff;cursor:pointer;margin-top:10px}
 .mat-filter:focus{outline:none;border-color:#6366f1}
 .sh{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;padding:12px 0 6px;border-bottom:2px solid var(--bdr);margin-bottom:9px;display:flex;align-items:center;gap:7px}
 .tsbtn{background:none;border:1px solid var(--bdr);border-radius:5px;padding:2px 7px;font-size:10px;font-family:'Outfit',sans-serif;color:var(--txt2);cursor:pointer;margin-top:3px}
@@ -806,6 +810,7 @@ button,.tb{font-family:'Outfit',sans-serif}
   <div class="md" style="max-width:380px">
     <h3 id="atTitle">➕ Adicionar tópico</h3>
     <div class="fg"><label>Tópico / Conteúdo *</label><input type="text" id="atTopic" placeholder="Ex: Prescrição e Decadência"></div>
+    <div class="fg"><label>Subtópicos (opcional, separe por vírgula)</label><input type="text" id="atSub" placeholder="Ex: Prazos, Interrupção, Súmulas"></div>
     <div class="fg"><label>Incidência na prova</label><select id="atInc"><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option><option value="nao_marquei">Não marquei</option></select>
     </div>
     <div class="ma">
@@ -1672,6 +1677,10 @@ function rMat(){
 tr.id='tr-'+m.code+'-'+ti;
 if(isDone)tr.classList.add('mtt-row-done');
 tr.innerHTML='<td><div class="'+(isDone?'mtt-topic-done':'')+'" style="font-size:11px;margin-bottom:3px">'+t.t+'</div>'
+        +(t.sub?'<ul class="mtt-subtopics">'+t.sub.split(',').map(s=>s.trim()).filter(Boolean).map((s,si)=>{
+          const sd=t.subState&&t.subState[si];
+          return '<li class="'+(sd?'mtt-sub-done':'')+'" onclick="toggleSubDone(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;,&quot;'+si+'&quot;)"><input type="checkbox" '+(sd?'checked':'')+' onclick="event.stopPropagation();toggleSubDone(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;,&quot;'+si+'&quot;)"><span>'+s+'</span></li>';
+        }).join('')+'</ul>':'')
         +'<div style="display:flex;gap:5px;flex-wrap:wrap;align-items:center">'
         +'<button class="tsbtn" style="'+(isDone?'background:#d1fae5;color:#065f46;border-color:#a7f3d0':'')+'" onclick="markTopicDone(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">'+(isDone?'✅ Finalizado':'☐ Marcar como finalizado')+'</button>'
         +'<button class="tsbtn" style="color:#6366f1" onclick="openEditTopic(&quot;'+m.code+'&quot;,&quot;'+ti+'&quot;)">✏️ Editar tópico</button>'
@@ -1685,6 +1694,15 @@ tr.innerHTML='<td><div class="'+(isDone?'mtt-topic-done':'')+'" style="font-size
     });
   });
 }
+function toggleSubDone(matCode,tiStr,siStr){
+  const ti=parseInt(tiStr);const si=parseInt(siStr);
+  const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
+  const t=disc.topics[ti];
+  if(!t.subState)t.subState={};
+  t.subState[si]=!t.subState[si];
+  save();rMat();
+}
+  
 function markTopicDone(matCode,tiStr){
   const ti=parseInt(tiStr);
   const disc=gD(matCode);if(!disc||!disc.topics||!disc.topics[ti])return;
@@ -1723,6 +1741,7 @@ function openAddTopic(code){
   const disc=gD(code);
   document.getElementById('atTitle').textContent='➕ Adicionar tópico — '+(disc?disc.name:code);
   document.getElementById('atTopic').value='';
+  document.getElementById('atSub').value='';
   document.getElementById('atInc').value='alta';
   document.getElementById('atDelBtn').style.display='none';
   document.getElementById('atSaveBtn').textContent='Adicionar';
@@ -1735,6 +1754,7 @@ function openEditTopic(code,tiStr){
   atCode=code;atIndex=ti;
   document.getElementById('atTitle').textContent='✏️ Editar tópico — '+(disc?disc.name:code);
   document.getElementById('atTopic').value=t.t;
+  document.getElementById('atSub').value=t.sub||'';
   document.getElementById('atInc').value=t.inc||'alta';
   document.getElementById('atDelBtn').style.display='inline-block';
   document.getElementById('atSaveBtn').textContent='Salvar';
@@ -1749,13 +1769,15 @@ function confirmAddTopic(){
   const t=(document.getElementById('atTopic').value||'').trim();
   if(!t){alert('Informe o tópico.');return;}
   const inc=document.getElementById('atInc').value;
+  const sub=(document.getElementById('atSub').value||'').trim();
   if(atIndex===null){
     if(!disc.topics)disc.topics=[];
-    disc.topics.push({t,inc});
+    disc.topics.push({t,inc,sub});
   }else{
     if(!disc.topics||!disc.topics[atIndex])return;
     disc.topics[atIndex].t=t;
     disc.topics[atIndex].inc=inc;
+    disc.topics[atIndex].sub=sub;
   }
   save();closeAddTopic();rMat();
   if(document.getElementById('tp-stats').classList.contains('active'))rStats();
