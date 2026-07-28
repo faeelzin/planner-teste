@@ -207,6 +207,12 @@ button,.tb{font-family:'Outfit',sans-serif}
 .md{background:#fff;border-radius:13px;padding:20px;width:420px;max-width:95vw;max-height:90vh;overflow-y:auto}
 .md h3{font-family:'Outfit',sans-serif;font-size:14px;font-weight:600;margin-bottom:13px}
 .fg{margin-bottom:9px}
+.at-sub-tags{display:flex;flex-wrap:wrap;gap:6px;border:1px solid var(--bdr);border-radius:8px;padding:6px 8px;background:#fff;align-items:center;cursor:text}
+.at-sub-tags:focus-within{border-color:#6366f1}
+.at-sub-chip{display:inline-flex;align-items:center;gap:5px;background:#eef2ff;color:#3730a3;font-size:11px;font-weight:600;padding:3px 6px 3px 10px;border-radius:20px;white-space:nowrap}
+.at-sub-chip button{background:none;border:none;cursor:pointer;color:#4f46e5;font-size:12px;line-height:1;padding:0 2px}
+.at-sub-chip button:hover{color:#dc2626}
+#atSubInput{border:none;outline:none;flex:1;min-width:110px;font-size:12px;font-family:'DM Sans',sans-serif;padding:3px 2px;background:transparent}
 .fg label{display:block;font-size:11px;color:var(--txt2);margin-bottom:2px;font-family:'Outfit',sans-serif;font-weight:500}
 .fg input,.fg select,.fg textarea{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:6px;padding:6px 9px;background:#fff;color:var(--txt)}
 .fg input:focus,.fg select:focus,.fg textarea:focus{outline:none;border-color:#6366f1}
@@ -813,7 +819,11 @@ button,.tb{font-family:'Outfit',sans-serif}
   <div class="md" style="max-width:380px">
     <h3 id="atTitle">➕ Adicionar tópico</h3>
     <div class="fg"><label>Tópico / Conteúdo *</label><input type="text" id="atTopic" placeholder="Ex: Prescrição e Decadência"></div>
-    <div class="fg"><label>Subtópicos (opcional, separe por vírgula)</label><input type="text" id="atSub" placeholder="Ex: Prazos, Interrupção, Súmulas"></div>
+<div class="fg"><label>Subtópicos (opcional)</label>
+  <div class="at-sub-tags" id="atSubTags" onclick="document.getElementById('atSubInput').focus()">
+    <input type="text" id="atSubInput" placeholder="Digite e Enter" onkeydown="atSubKeydown(event)">
+  </div>
+</div>
     <div class="fg"><label>Incidência na prova</label><select id="atInc"><option value="alta">Alta</option><option value="media">Média</option><option value="baixa">Baixa</option><option value="nao_marquei">Não marquei</option></select>
     </div>
     <div class="ma">
@@ -1739,12 +1749,43 @@ function updTopicComment(matCode,tiStr,val){
 }
 let atCode=null;
 let atIndex=null; // null = modo adicionar, número = modo edição
-function openAddTopic(code){
+var atSubList=[];
+function atRenderSubTags(){
+  var box=document.getElementById('atSubTags'); if(!box) return;
+  var input=document.getElementById('atSubInput');
+  Array.from(box.querySelectorAll('.at-sub-chip')).forEach(function(el){ el.remove(); });
+  atSubList.forEach(function(s,i){
+    var chip=document.createElement('span');
+    chip.className='at-sub-chip';
+    var txt=document.createElement('span'); txt.textContent=s;
+    var btn=document.createElement('button'); btn.type='button'; btn.textContent='✕';
+    btn.onclick=function(ev){ ev.stopPropagation(); atRemoveSubTag(i); };
+    chip.appendChild(txt); chip.appendChild(btn);
+    box.insertBefore(chip,input);
+  });
+}
+function atAddSubTag(raw){
+  var v=(raw||'').trim(); if(!v) return;
+  var exists=atSubList.some(function(s){ return s.toLowerCase()===v.toLowerCase(); });
+  if(!exists) atSubList.push(v);
+  var input=document.getElementById('atSubInput'); if(input) input.value='';
+  atRenderSubTags();
+}
+function atRemoveSubTag(i){ atSubList.splice(i,1); atRenderSubTags(); }
+function atSubKeydown(ev){
+  if(ev.key===','||ev.key==='Enter'){
+    ev.preventDefault();
+    atAddSubTag(ev.target.value);
+  } else if(ev.key==='Backspace'&&!ev.target.value&&atSubList.length){
+    atSubList.pop(); atRenderSubTags();
+  }
+}
+  function openAddTopic(code){
   atCode=code;atIndex=null;
   const disc=gD(code);
   document.getElementById('atTitle').textContent='➕ Adicionar tópico — '+(disc?disc.name:code);
-  document.getElementById('atTopic').value='';
-  document.getElementById('atSub').value='';
+document.getElementById('atTopic').value='';
+  atSubList=[]; atRenderSubTags();
   document.getElementById('atInc').value='alta';
   document.getElementById('atDelBtn').style.display='none';
   document.getElementById('atSaveBtn').textContent='Adicionar';
@@ -1756,8 +1797,9 @@ function openEditTopic(code,tiStr){
   const t=disc.topics[ti];
   atCode=code;atIndex=ti;
   document.getElementById('atTitle').textContent='✏️ Editar tópico — '+(disc?disc.name:code);
-  document.getElementById('atTopic').value=t.t;
-  document.getElementById('atSub').value=t.sub||'';
+document.getElementById('atTopic').value=t.t;
+  atSubList=(t.sub||'').split(',').map(function(s){return s.trim();}).filter(Boolean);
+  atRenderSubTags();
   document.getElementById('atInc').value=t.inc||'alta';
   document.getElementById('atDelBtn').style.display='inline-block';
   document.getElementById('atSaveBtn').textContent='Salvar';
@@ -1772,7 +1814,9 @@ function confirmAddTopic(){
   const t=(document.getElementById('atTopic').value||'').trim();
   if(!t){alert('Informe o tópico.');return;}
   const inc=document.getElementById('atInc').value;
-  const sub=(document.getElementById('atSub').value||'').trim();
+var pendingSubInput=document.getElementById('atSubInput');
+  if(pendingSubInput&&pendingSubInput.value.trim()) atAddSubTag(pendingSubInput.value);
+  const sub=atSubList.join(', ');
   if(atIndex===null){
     if(!disc.topics)disc.topics=[];
     disc.topics.push({t,inc,sub});
