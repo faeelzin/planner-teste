@@ -577,7 +577,7 @@ button,.tb{font-family:'Outfit',sans-serif}
   <div class="rv-add-box">
     <h4>➕ Adicionar conteúdo estudado hoje</h4>
     <div class="rv-form">
-<div class="rv-topic-wrap"><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Teoria Geral do Delito" autocomplete="off" oninput="rvOnTopicInput()" onfocus="rvOnTopicInput()" onblur="rvHideSuggestSoon()"><div class="rv-suggest-box" id="rvTopicSuggestBox"></div></div>      <div class="rv-topic-wrap"><label>Subtópico (opcional)</label><input type="text" id="rvSubtopic" placeholder="Ex: Tipicidade" autocomplete="off"></div>      <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
+<div class="rv-topic-wrap"><label>Tópico / Conteúdo *</label><input type="text" id="rvTopic" placeholder="Ex: Teoria Geral do Delito" autocomplete="off" oninput="rvOnTopicInput()" onfocus="rvOnTopicInput()" onblur="rvHideSuggestSoon()"><div class="rv-suggest-box" id="rvTopicSuggestBox"></div></div>      <div><label>Disciplina</label><select id="rvDisc"><option value="">— Sem disciplina —</option></select></div>
       <div><label>Data que estudei</label><input type="date" id="rvDate"></div>
 <div><label>Considerar a data que estudei? <span id="rvUseStudiedBadge" class="rv-us-badge rv-us-auto">🟢 Automático</span></label>
 <select id="rvUseStudied" class="rv-us-auto-select" onchange="rvUpdateUseStudiedUI()">
@@ -604,7 +604,6 @@ button,.tb{font-family:'Outfit',sans-serif}
   <div class="rv-edit-box">
     <h3>✏️ Editar revisão</h3>
 <div class="rv-ef"><label>Tópico / Conteúdo *</label><input type="text" id="rvEditTopic"></div>
-<div class="rv-ef"><label>Subtópico (opcional)</label><input type="text" id="rvEditSubtopic" placeholder="Ex: Tipicidade"></div>
 <div class="rv-ef"><label>Disciplina</label><select id="rvEditDisc"><option value="">— Sem disciplina —</option></select></div>
     <div class="rv-ef"><label>Data que estudei</label><input type="date" id="rvEditStudiedAt"></div>
     <div class="rv-ef"><label>Anotação</label><input type="text" id="rvEditNote" placeholder="Ex: foco nos legitimados da ADI"></div>
@@ -665,7 +664,7 @@ button,.tb{font-family:'Outfit',sans-serif}
 .res-mat-arrow.open{transform:rotate(90deg)}
 .res-mat-info{flex:1;min-width:0}
 .res-mat-name{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;color:#6366f1}
-.res-mat-meta{font-size:10px;color:var(--txt2);margin-top:1px}
+.res-mat-meta{font-size:11px;color:#4b5563;font-weight:600;margin-top:1px}
 .res-bar-track{height:7px;background:var(--bg);border-radius:4px;overflow:hidden;margin-top:6px}
 .res-bar-fill{height:100%;border-radius:4px;transition:width .4s}
 .res-mat-pct{font-family:'Outfit',sans-serif;font-size:15px;font-weight:700;flex-shrink:0;min-width:44px;text-align:right}
@@ -677,8 +676,8 @@ button,.tb{font-family:'Outfit',sans-serif}
   .res-topic-head{display:flex;align-items:center;gap:10px;cursor:pointer}
 .res-topic-head:hover .res-topic-name{color:#4f46e5}
 .res-topic-name{font-family:'Outfit',sans-serif;font-size:12px;font-weight:600;color:var(--txt)}
-.res-topic-review{font-size:10px;color:#6366f1;margin-top:2px}
-.res-topic-review a,.res-topic-review span{cursor:pointer}
+.res-topic-review{font-size:11px;font-weight:600;margin-top:2px}
+  .res-topic-review a,.res-topic-review span{cursor:pointer}
 .res-topic-pct{font-family:'Outfit',sans-serif;font-size:13px;font-weight:700;flex-shrink:0;min-width:40px;text-align:right}
 .res-topic-body{display:none;margin-top:8px}
 .res-topic-body.open{display:block}
@@ -710,7 +709,7 @@ button,.tb{font-family:'Outfit',sans-serif}
     <h4>➕ Registrar resultado</h4>
     <div class="res-form">
 <div class="res-topic-wrap"><label>Tópico *</label><input type="text" id="resTopic" placeholder="Ex: Teoria Geral do Delito" autocomplete="off" oninput="resOnTopicInput()" onfocus="resOnTopicInput()" onblur="resHideSuggestSoon()"><div class="res-suggest-box" id="resTopicSuggestBox"></div></div>
-      <div class="res-topic-wrap"><label>Subtópico (opcional)</label><input type="text" id="resSubtopic" placeholder="Ex: Tipicidade" autocomplete="off"></div>
+<div class="res-topic-wrap"><label>Subtópico (opcional)</label><input type="text" id="resSubtopic" placeholder="Ex: Tipicidade" autocomplete="off" oninput="resOnSubtopicInput()" onfocus="resOnSubtopicInput()" onblur="resHideSubtopicSuggestSoon()"><div class="res-suggest-box" id="resSubtopicSuggestBox"></div></div>
       <div><label>Matéria</label><select id="resDisc"><option value="">— Sem matéria —</option></select></div>
       <div><label>Matéria</label><select id="resDisc"><option value="">— Sem matéria —</option></select></div>
       <div><label>Data do estudo</label><input type="date" id="resDate"></div>
@@ -2176,8 +2175,6 @@ function rvUpdateUseStudiedUI(){
 function rvAdd(){
   var topic=(document.getElementById('rvTopic').value||'').trim();
   if(!topic){ alert('Informe o tópico/conteúdo estudado.'); return; }
-  var subtopicEl=document.getElementById('rvSubtopic');
-  var subtopic=subtopicEl?(subtopicEl.value||'').trim():'';
   var disc=document.getElementById('rvDisc').value;
   var note=(document.getElementById('rvNote').value||'').trim();
   var dateEl=document.getElementById('rvDate');
@@ -2188,11 +2185,10 @@ var useStudiedEl=document.getElementById('rvUseStudied');
   var firstRevDate=(useStudied==='nao'&&firstRevEl&&firstRevEl.value) ? rvISOToMs(firstRevEl.value) : null;
   var steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
   if(firstRevDate) steps[0].targetDate=firstRevDate;
-  var newItem={id:Date.now(),topic:topic,subtopic:subtopic,disc:disc,note:note,studiedAt:studiedAt,steps:steps};
+  var newItem={id:Date.now(),topic:topic,disc:disc,note:note,studiedAt:studiedAt,steps:steps};
   RV_ITEMS.unshift(newItem);
   rvSave(); rvPersistItem(newItem);
   document.getElementById('rvTopic').value='';
-  if(subtopicEl) subtopicEl.value='';
   document.getElementById('rvNote').value='';
   document.getElementById('rvDisc').value='';
   if(firstRevEl) firstRevEl.value='';
@@ -2275,8 +2271,6 @@ function rvOpenEdit(id){
   rvEditId=id;
   rvPopulateDisc();
 document.getElementById('rvEditTopic').value=item.topic||'';
-  var editSubEl=document.getElementById('rvEditSubtopic');
-  if(editSubEl) editSubEl.value=item.subtopic||'';
   document.getElementById('rvEditDisc').value=item.disc||'';
   document.getElementById('rvEditStudiedAt').value=rvMsToISO(item.studiedAt);
   document.getElementById('rvEditNote').value=item.note||'';
@@ -2329,8 +2323,6 @@ function rvSaveEdit(){
   var topic=(document.getElementById('rvEditTopic').value||'').trim();
 if(!topic){ alert('Informe o tópico/conteúdo.'); return; }
   item.topic=topic;
-  var editSubEl2=document.getElementById('rvEditSubtopic');
-  item.subtopic=editSubEl2?(editSubEl2.value||'').trim():(item.subtopic||'');
   item.disc=document.getElementById('rvEditDisc').value;
   item.note=(document.getElementById('rvEditNote').value||'').trim();
   var studiedEl=document.getElementById('rvEditStudiedAt');
@@ -2439,7 +2431,7 @@ function toggleDayRevList(dateMs){
         +'<span class="day-rev-disc" style="color:'+discColor+'">'+discName+'</span>'
         +'<span class="day-rev-step">+'+stepDays+'d</span>'
       +'</div>'
-+'<div class="day-rev-topic">'+item.topic+(item.subtopic?' <span style="color:#6366f1;font-weight:600">› '+item.subtopic+'</span>':'')+'</div>'
++'<div class="day-rev-topic">'+item.topic+'</div>'
       +'<div class="day-rev-last">'+lastInfo.label+': '+rvFmtDate(lastInfo.date)+'</div>'
       +'<button class="day-rev-edit-btn" onclick="rvOpenEdit('+item.id+')">✏️ Editar</button>'
     +'</div>';
@@ -2582,12 +2574,12 @@ var comments=item.comments||[];
     card.className='rv-card'+(diff!==null&&diff<0?' overdue':diff===0?' today':isAllDone?' done-all':'');
     card.innerHTML=
       '<div class="rv-card-left">'+
-'<div class="rv-card-topic">'+item.topic+(item.subtopic?' <span style="color:#6366f1;font-weight:600">› '+item.subtopic+'</span>':'')+'</div>'+
+'<div class="rv-card-topic">'+item.topic+'</div>'+
         (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
         (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
         '<div class="rv-steps">'+stepsHtml+'</div>'+
 '<div style="font-size:10px;color:var(--txt2);margin-top:4px">Estudado: '+rvFmtDate(item.studiedAt)+'</div>'+
-        resBadgeHtml(item.topic,item.disc,item.subtopic)+
+        resBadgeHtml(item.topic,item.disc)+
         commentsHtml+
       '</div>'+
       '<div class="rv-card-right">'+rightHtml+
@@ -2750,6 +2742,63 @@ function resPickSuggest(idx){
   }
   resHideSuggest();
 }
+
+// ── Sugestão de subtópico (reaproveita os subtópicos já digitados antes em Resultados) ──
+function resGetAllSubtopics(){
+  var seen={}; var out=[];
+  RES_ITEMS.forEach(function(x){
+    var sub=(x.subtopic||'').trim();
+    if(!sub) return;
+    var key=sub.toLowerCase()+'|'+x.topic.trim().toLowerCase();
+    if(seen[key]) return;
+    seen[key]=true;
+    var disc=x.disc?gD(x.disc):null;
+    out.push({name:sub,topic:x.topic.trim(),matColor:disc?disc.color:'#9ca3af'});
+  });
+  return out;
+}
+function resHideSubtopicSuggest(){
+  var box=document.getElementById('resSubtopicSuggestBox'); if(!box) return;
+  box.classList.remove('show'); box.innerHTML='';
+}
+function resHideSubtopicSuggestSoon(){ setTimeout(resHideSubtopicSuggest,150); }
+function resOnSubtopicInput(){
+  var input=document.getElementById('resSubtopic'); var box=document.getElementById('resSubtopicSuggestBox');
+  if(!input||!box) return;
+  var q=(input.value||'').trim().toLowerCase();
+  if(!q){ resHideSubtopicSuggest(); return; }
+  var currentTopic=(document.getElementById('resTopic').value||'').trim().toLowerCase();
+  var all=resGetAllSubtopics();
+  var matches=all.filter(function(x){ return x.name.toLowerCase().includes(q); });
+  // subtópicos já usados no MESMO tópico digitado aparecem primeiro
+  matches.sort(function(a,b){
+    var aSame=a.topic.toLowerCase()===currentTopic?0:1;
+    var bSame=b.topic.toLowerCase()===currentTopic?0:1;
+    if(aSame!==bSame) return aSame-bSame;
+    var aStarts=a.name.toLowerCase().indexOf(q)===0?0:1;
+    var bStarts=b.name.toLowerCase().indexOf(q)===0?0:1;
+    if(aStarts!==bStarts) return aStarts-bStarts;
+    return a.name.length-b.name.length;
+  });
+  matches=matches.slice(0,8);
+  if(!matches.length){ resHideSubtopicSuggest(); return; }
+  box.innerHTML=matches.map(function(x,i){
+    return '<div class="res-suggest-item" onmousedown="resPickSubtopicSuggest('+i+')">'
+      +'<span class="res-suggest-dot" style="background:'+x.matColor+'"></span>'
+      +'<span class="res-suggest-name">'+x.name.replace(/</g,'&lt;')+'</span>'
+      +'<span class="res-suggest-mat">'+x.topic.replace(/</g,'&lt;')+'</span>'
+      +'</div>';
+  }).join('');
+  box.classList.add('show');
+  box._items=matches;
+}
+function resPickSubtopicSuggest(idx){
+  var box=document.getElementById('resSubtopicSuggestBox');
+  var x=box&&box._items?box._items[idx]:null; if(!x) return;
+  var input=document.getElementById('resSubtopic'); if(input) input.value=x.name;
+  resHideSubtopicSuggest();
+}
+
 function resUpdatePctPreview(){
   var ok=parseInt(document.getElementById('resAcertos').value)||0;
   var err=parseInt(document.getElementById('resErros').value)||0;
@@ -2825,15 +2874,11 @@ function resEditEntry(id){
 
 function resSave(){ save(); }
 
-// Encontra, em Revisões, o item cujo tópico (+ subtópico, se houver) bate com o de Resultados
-function resFindReviewItem(topicName,discCode,subtopic){
+// Encontra, em Revisões, o item cujo tópico bate com o de Resultados (mesma lógica de rvFindMatTopic)
+function resFindReviewItem(topicName,discCode){
   if(!topicName) return null;
   var norm=topicName.trim().toLowerCase();
-  var normSub=(subtopic||'').trim().toLowerCase();
-  var matches=RV_ITEMS.filter(function(x){
-    if(x.topic.trim().toLowerCase()!==norm) return false;
-    return (x.subtopic||'').trim().toLowerCase()===normSub;
-  });
+  var matches=RV_ITEMS.filter(function(x){ return x.topic.trim().toLowerCase()===norm; });
   if(!matches.length) return null;
   if(discCode){
     var m=matches.find(function(x){ return x.disc===discCode; });
@@ -2841,28 +2886,31 @@ function resFindReviewItem(topicName,discCode,subtopic){
   }
   return matches[0];
 }
-// Retorna um resuminho textual do status de revisão daquele tópico (usado nos cards de Resultados)
-function resReviewInfoHtml(topicName,discCode,subtopic){
-  var rvItem=resFindReviewItem(topicName,discCode,subtopic);
+// Retorna um resuminho textual do status de revisão daquele tópico (usado nos cards de Resultados).
+// A cor muda conforme a urgência: atrasada = vermelho, hoje = índigo, futura = cinza-escuro (boa leitura em qualquer caso).
+function resReviewInfoHtml(topicName,discCode){
+  var rvItem=resFindReviewItem(topicName,discCode);
   if(!rvItem) return '';
   var next=rvNextStep(rvItem);
-  if(next<0) return '<div class="res-topic-review">✅ Ciclo de revisão completo</div>';
+  if(next<0) return '<div class="res-topic-review" style="color:#059669">✅ Ciclo de revisão completo</div>';
   var due=rvNextDue(rvItem);
   var diff=rvDaysDiff(due);
-  var txt;
-  if(diff<0) txt='⚠️ revisão atrasada '+Math.abs(diff)+'d ('+rvFmtShort(due)+')';
-  else if(diff===0) txt='📅 revisar hoje';
-  else txt='📅 próxima revisão em '+diff+'d ('+rvFmtShort(due)+')';
-  return '<div class="res-topic-review">'+txt+'</div>';
+  var txt,color;
+  if(diff<0){ txt='⚠️ revisão atrasada '+Math.abs(diff)+'d ('+rvFmtShort(due)+')'; color='#dc2626'; }
+  else if(diff===0){ txt='📅 revisar hoje'; color='#4f46e5'; }
+  else{ txt='📅 próxima revisão em '+diff+'d ('+rvFmtShort(due)+')'; color='#334155'; }
+  return '<div class="res-topic-review" style="color:'+color+'">'+txt+'</div>';
 }
-// Agrega os resultados de um tópico específico (opcionalmente restrito a um subtópico) — usado tanto em Resultados quanto no card de Revisões
+// Agrega os resultados de um tópico específico. Se 'subtopic' for informado (string, mesmo vazia),
+// filtra só aquele subtópico; se for omitido, agrega TODOS os subtópicos daquele tópico (usado no card de Revisões).
 function resStatsForTopic(topicName,discCode,subtopic){
   if(!topicName) return null;
   var norm=topicName.trim().toLowerCase();
-  var normSub=(subtopic||'').trim().toLowerCase();
+  var filterSub=(typeof subtopic==='string');
+  var normSub=filterSub?subtopic.trim().toLowerCase():null;
   var entries=RES_ITEMS.filter(function(x){
     if(x.topic.trim().toLowerCase()!==norm) return false;
-    if((x.subtopic||'').trim().toLowerCase()!==normSub) return false;
+    if(filterSub&&(x.subtopic||'').trim().toLowerCase()!==normSub) return false;
     if(discCode&&x.disc&&x.disc!==discCode) return false;
     return true;
   });
@@ -2871,13 +2919,13 @@ function resStatsForTopic(topicName,discCode,subtopic){
   entries.forEach(function(e){ acertos+=e.acertos||0; erros+=e.erros||0; });
   return {entries:entries,acertos:acertos,erros:erros,total:acertos+erros,pct:resPct(acertos,erros),dias:entries.length};
 }
-// Badge compacto "🎯 71% (24/34) em 2 dias" — usado no card de Revisões
+// Badge compacto "🎯 71% (24/34) em 2 dias" — usado no card de Revisões (agrega todos os subtópicos do tópico)
 function resBadgeHtml(topicName,discCode,subtopic){
   var s=resStatsForTopic(topicName,discCode,subtopic);
   if(!s||s.pct===null) return '';
   return '<div style="font-size:11px;margin-top:4px;color:'+resPctColor(s.pct)+';font-weight:600">🎯 '+s.pct+'% ('+s.acertos+'/'+s.total+') em '+s.dias+' dia'+(s.dias>1?'s':'')+'</div>';
 }
-
+  
 var resCurrentView='mat';
 var resOpenMats={}, resOpenTopics={}, resOpenSubs={};
   function resSwitchView(v){
@@ -3013,7 +3061,7 @@ var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
       var tOpen=!!resOpenTopics[topicKey];
       var tColor=t.pct===null?'#9ca3af':resPctColor(t.pct);
       var discCodeForLookup=g.code!=='__none__'?g.code:'';
-      var reviewHtml=resReviewInfoHtml(t.name,discCodeForLookup,'');
+     var reviewHtml=resReviewInfoHtml(t.name,discCodeForLookup);
 
       var topicBodyInner;
       if(t.hasRealSub){
@@ -3023,7 +3071,7 @@ var matColor=matPct===null?'#9ca3af':resPctColor(matPct);
           var subKey=topicKey+'::'+(s.name?s.name.trim().toLowerCase():'__geral__');
           var sOpen=!!resOpenSubs[subKey];
           var sColor=s.pct===null?'#9ca3af':resPctColor(s.pct);
-          var subReviewHtml=resReviewInfoHtml(t.name,discCodeForLookup,s.name);
+var subReviewHtml=resReviewInfoHtml(t.name,discCodeForLookup);
           return '<div class="res-sub-block">'+
             '<div class="res-topic-head" onclick="resToggleSub(\''+subKey.replace(/'/g,"\\'")+'\')">'+
               '<span class="res-mat-arrow'+(sOpen?' open':'')+'">▶</span>'+
