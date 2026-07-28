@@ -2742,9 +2742,22 @@ function resPickSuggest(idx){
   resHideSuggest();
 }
 
-// ── Sugestão de subtópico (reaproveita os subtópicos já digitados antes em Resultados) ──
+// ── Sugestão de subtópico (junta os subtópicos cadastrados em Matérias + os já digitados antes em Resultados) ──
 function resGetAllSubtopics(){
   var seen={}; var out=[];
+  // 1) subtópicos pré-cadastrados em Matérias (campo "Subtópicos" de cada tópico, editável em "✏️ Editar tópico")
+  DISCS.forEach(function(m){
+    (m.topics||[]).forEach(function(t){
+      if(!t.sub) return;
+      t.sub.split(',').map(function(s){return s.trim();}).filter(Boolean).forEach(function(s){
+        var key=s.toLowerCase()+'|'+t.t.trim().toLowerCase();
+        if(seen[key]) return;
+        seen[key]=true;
+        out.push({name:s,topic:t.t.trim(),matColor:m.color});
+      });
+    });
+  });
+  // 2) subtópicos que você já digitou antes em Resultados (aprende com o uso)
   RES_ITEMS.forEach(function(x){
     var sub=(x.subtopic||'').trim();
     if(!sub) return;
