@@ -462,7 +462,10 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-card.done-all{opacity:.6}
 .rv-card-left{flex:1;min-width:0}
 .rv-card-topic{font-family:'Outfit',sans-serif;font-size:13px;font-weight:600;color:var(--txt);margin-bottom:3px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
-.rv-card-disc{font-size:11px;color:var(--txt2);margin-bottom:6px}
+.rv-repeat-badge{display:inline-block;background:#fef3c7;color:#92400e;font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;letter-spacing:.3px;padding:2px 7px;border-radius:20px;margin-bottom:4px}
+.rv-reorg-btn{background:#6366f1;color:#fff;border:none;border-radius:8px;padding:8px 14px;font-family:'Outfit',sans-serif;font-weight:600;font-size:12px;cursor:pointer;white-space:nowrap}
+.rv-reorg-btn:hover{background:#4f46e5}
+  .rv-card-disc{font-size:11px;color:var(--txt2);margin-bottom:6px}
 .rv-card-note{font-size:11px;color:#6b7280;font-style:italic;margin-bottom:6px}
 .rv-steps{display:flex;gap:5px;flex-wrap:wrap}
 .rv-step{font-size:10px;font-family:'Outfit',sans-serif;font-weight:600;padding:3px 9px;border-radius:20px;border:1.5px solid}
@@ -563,6 +566,7 @@ button,.tb{font-family:'Outfit',sans-serif}
       <div class="rv-title">🔁 Repetição Espaçada</div>
 <div class="rv-sub">Adicione o que estudou hoje. O sistema agenda revisões em 2, 7, 15 e 25 dias automaticamente.</div>
     </div>
+    <button class="rv-reorg-btn" onclick="rvReorganizeOverdue()">🧠 Reorganizar atrasadas</button>
   </div>
   <div class="rv-agenda-box">
     <div class="rv-agenda-toggle" onclick="rvToggleAgenda()">
@@ -599,6 +603,7 @@ button,.tb{font-family:'Outfit',sans-serif}
       <input type="text" id="rvSearch" placeholder="🔍 Buscar revisão..." style="font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:6px 11px;background:#fff;flex:1;max-width:260px" oninput="rvRender()">
       <select id="rvFiltDisc" style="font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;background:#fff" onchange="rvRender()"><option value="">Todas as disciplinas</option></select>
       <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvHideDone" onchange="rvRender()"> Ocultar concluídas</label>
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvOnlyRepeat" onchange="rvRender()"> 🔁 Somente ciclos repetidos</label>
     </div>
   </div>
   <div class="rv-stats" id="rvStats"></div>
@@ -2276,11 +2281,66 @@ function rvConfirmReset(id){
   var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
   var dateEl=document.getElementById('rvResetDate-'+id);
   var newStart=dateEl&&dateEl.value ? rvISOToMs(dateEl.value) : rvToday();
+  // Se o ciclo anterior já tinha sido concluído (todas as etapas feitas),
+  // isso é uma REPETIÇÃO do ciclo — marcamos o item e pulamos a etapa de +2 dias.
+  var wasCompleted = rvNextStep(item)===-1;
   item.studiedAt=newStart;
   item.steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
+  if(wasCompleted){
+    item.repeating=true;
+    // Considera o dia 2 automaticamente cumprido → a cadeia segue 7, 15, 25 a partir daqui
+    item.steps[0].doneAt=newStart;
+  }
   rvSave(); rvPersistItem(item); rvRender();
 }
 
+// ── REORGANIZAR ATRASADAS ──
+// Pega todas as revisões atrasadas e remaneja a data-alvo delas para os
+// próximos dias disponíveis, sem deixar mais de 3 revisões no mesmo dia.
+// Só mexe nas atrasadas — o resto do cronograma permanece intocado.
+function rvReorganizeOverdue(){
+  var today=rvToday();
+  var MAX_PER_DAY=3;
+
+  var overdueEntries=[];
+  var dayCount={};
+
+  RV_ITEMS.forEach(function(item){
+    var next=rvNextStep(item);
+    if(next<0) return; // ciclo já concluído
+    var due=rvNextDue(item);
+    var diff=rvDaysDiff(due);
+    if(diff<0){
+      overdueEntries.push({item:item,stepIdx:next});
+    } else {
+      // conta o que já está agendado hoje/no futuro, pra não sobrecarregar esses dias
+      dayCount[due]=(dayCount[due]||0)+1;
+    }
+  });
+
+  if(!overdueEntries.length){
+    alert('Nenhuma revisão atrasada para reorganizar. 🎉');
+    return;
+  }
+
+  // ordena as atrasadas da mais antiga pra mais recente, pra priorizar quem espera há mais tempo
+  overdueEntries.sort(function(a,b){ return rvNextDue(a.item)-rvNextDue(b.item); });
+
+  var cursor=rvAddDays(today,1); // começa amanhã
+  overdueEntries.forEach(function(entry){
+    var day=cursor;
+    while((dayCount[day]||0)>=MAX_PER_DAY){ day=rvAddDays(day,1); }
+    dayCount[day]=(dayCount[day]||0)+1;
+    entry.item.steps[entry.stepIdx].targetDate=day;
+    cursor=day;
+    rvPersistItem(entry.item);
+  });
+
+  rvSave();
+  rvRender();
+  alert('✅ '+overdueEntries.length+' revisão(ões) atrasada(s) foram redistribuídas para os próximos dias (máx. '+MAX_PER_DAY+' por dia).');
+}
+  
 function rvDelete(id){
   var btn=document.getElementById('rvdel-'+id); if(!btn) return;
   if(btn.dataset.armed==='1'){
@@ -2493,7 +2553,7 @@ function rvRender(){
   var q=qRaw.toLowerCase();
   var filtDisc=(document.getElementById('rvFiltDisc')||{}).value||'';
   var hideDone=document.getElementById('rvHideDone')&&document.getElementById('rvHideDone').checked;
-
+  var onlyRepeat=document.getElementById('rvOnlyRepeat')&&document.getElementById('rvOnlyRepeat').checked;
   var overdue=[],dueToday=[],upcoming=[],allDone=[];
 
   RV_ITEMS.forEach(function(item){
@@ -2617,6 +2677,7 @@ var comments=item.comments||[];
     card.className='rv-card'+(diff!==null&&diff<0?' overdue':diff===0?' today':isAllDone?' done-all':'');
     card.innerHTML=
       '<div class="rv-card-left">'+
+        (item.repeating?'<div class="rv-repeat-badge">🔁 CICLO SENDO REPETIDO</div>':'')+
 '<div class="rv-card-topic">'+item.topic+'</div>'+
         (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
         (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
