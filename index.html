@@ -2559,6 +2559,7 @@ function rvRender(){
   RV_ITEMS.forEach(function(item){
     if(q&&!item.topic.toLowerCase().includes(q)&&!(item.note||'').toLowerCase().includes(q)) return;
     if(filtDisc&&item.disc!==filtDisc) return;
+    if(onlyRepeat&&!item.repeating) return;
     var next=rvNextStep(item);
     if(next<0){ if(!hideDone) allDone.push({item:item}); return; }
     var due=rvNextDue(item);
