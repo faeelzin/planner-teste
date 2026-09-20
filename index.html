@@ -2296,11 +2296,11 @@ function rvConfirmReset(id){
 
 // ── REORGANIZAR ATRASADAS ──
 // Pega todas as revisões atrasadas e remaneja a data-alvo delas para os
-// próximos dias disponíveis, sem deixar mais de 3 revisões no mesmo dia.
-// Só mexe nas atrasadas — o resto do cronograma permanece intocado.
+// próximos dias disponíveis, sem deixar mais de 1 revisão no mesmo dia.
+  // Só mexe nas atrasadas — o resto do cronograma permanece intocado.
 function rvReorganizeOverdue(){
   var today=rvToday();
-  var MAX_PER_DAY=3;
+  var MAX_PER_DAY=1;
 
   var overdueEntries=[];
   var dayCount={};
@@ -2338,7 +2338,7 @@ function rvReorganizeOverdue(){
 
   rvSave();
   rvRender();
-  alert('✅ '+overdueEntries.length+' revisão(ões) atrasada(s) foram redistribuídas para os próximos dias (máx. '+MAX_PER_DAY+' por dia).');
+alert('✅ '+overdueEntries.length+' revisão(ões) atrasada(s) foram redistribuídas para os próximos dias (1 matéria por dia).');
 }
   
 function rvDelete(id){
