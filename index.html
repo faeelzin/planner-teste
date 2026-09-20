@@ -567,7 +567,6 @@ button,.tb{font-family:'Outfit',sans-serif}
 <div class="rv-sub">Adicione o que estudou hoje. O sistema agenda revisões em 2, 7, 15 e 25 dias automaticamente.</div>
     </div>
     <button class="rv-reorg-btn" onclick="rvReorganizeOverdue()">🧠 Reorganizar atrasadas</button>
-    <button class="rv-reorg-btn" onclick="rvReorganizeAll()" style="background:#7c3aed;border-color:#7c3aed;color:#fff">🔄 Reorganizar TUDO (1/dia)</button>
   </div>
   <div class="rv-agenda-box">
     <div class="rv-agenda-toggle" onclick="rvToggleAgenda()">
@@ -2342,55 +2341,6 @@ function rvReorganizeOverdue(){
 alert('✅ '+overdueEntries.length+' revisão(ões) atrasada(s) foram redistribuídas para os próximos dias (1 matéria por dia).');
 }
 
-// ── REORGANIZAR TUDO (BOTÃO TEMPORÁRIO) ──
-// Reorganiza TODAS as matérias (atrasadas + agendadas) para 1 por dia
-// Use uma vez e depois remova o botão do código
-function rvReorganizeAll(){
-  if(!confirm('⚠️ ATENÇÃO!\n\nIsso vai reorganizar TODAS as suas matérias agendadas.\n\nTodas receberão novas datas começando de hoje, 1 matéria por dia.\n\nTem certeza?')){
-    return;
-  }
-  
-  var today=rvToday();
-  var MAX_PER_DAY=1;
-  var allEntries=[];
-
-  // Pega TODAS as revisões que ainda não foram concluídas
-  RV_ITEMS.forEach(function(item){
-    var next=rvNextStep(item);
-    if(next<0) return; // ciclo já concluído, pula
-    allEntries.push({item:item, stepIdx:next});
-  });
-
-  if(!allEntries.length){
-    alert('Nenhuma revisão para reorganizar. 🎉');
-    return;
-  }
-
-  // Ordena pela data de revisão atual (prioriza as mais antigas)
-  allEntries.sort(function(a,b){ 
-    return rvNextDue(a.item)-rvNextDue(b.item); 
-  });
-
-  var dayCount={};
-  var cursor=today; // começa hoje
-
-  // Distribui cada matéria em um dia diferente
-  allEntries.forEach(function(entry){
-    var day=cursor;
-    while((dayCount[day]||0)>=MAX_PER_DAY){ 
-      day=rvAddDays(day,1); 
-    }
-    dayCount[day]=(dayCount[day]||0)+1;
-    entry.item.steps[entry.stepIdx].targetDate=day;
-    cursor=day;
-    rvPersistItem(entry.item);
-  });
-
-  rvSave();
-  rvRender();
-  alert('✅ '+allEntries.length+' matéria(s) reorganizada(s)!\n\nAgora tudo está com 1 matéria por dia, começando de hoje.\n\n🎯 PRÓXIMO PASSO:\nRemova o botão "🔄 Reorganizar TUDO" do código (linha ~570)');
-}
-  
 function rvDelete(id){
   var btn=document.getElementById('rvdel-'+id); if(!btn) return;
   if(btn.dataset.armed==='1'){
