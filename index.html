@@ -516,6 +516,11 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-comment-add{display:flex;gap:6px;margin-top:7px;align-items:flex-start}
 .rv-comment-add textarea{flex:1;font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--bdr);border-radius:7px;padding:6px 8px;resize:none;min-height:34px}
 .rv-comment-add textarea:focus{outline:none;border-color:#6366f1}
+  .rv-subdates{margin-top:8px;width:100%}
+.rv-subdate-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:4px 0;border-bottom:1px dashed var(--bdr)}
+.rv-subdate-row:last-child{border-bottom:none}
+.rv-subdate-name{font-size:11px;color:var(--txt);flex:1}
+.rv-subdate-input{font-family:'DM Sans',sans-serif;font-size:11px;border:1px solid var(--bdr);border-radius:6px;padding:3px 6px;background:#fff}
 .rv-us-badge{font-family:'Outfit',sans-serif;font-size:10px;font-weight:700;padding:2px 8px;border-radius:20px;margin-left:6px;display:inline-block}
 .rv-us-auto-select{font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid #059669!important;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
 .rv-us-manual-select{font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid #f59e0b!important;border-radius:8px;padding:6px 10px;background:#fff;cursor:pointer}
@@ -1241,6 +1246,7 @@ function rvSanitizeItem(it){
   }
   it.steps=fixed;
   if(!Array.isArray(it.comments)) it.comments=it.comments||[];
+  if(!it.subDates||typeof it.subDates!=='object') it.subDates={};
   return it;
 }
 function rvArrayFromMap(map){
@@ -2144,11 +2150,12 @@ function rvGetAllMatTopics(){
   var out=[];
   DISCS.forEach(function(m){
     (m.topics||[]).forEach(function(t,ti){
-      out.push({name:t.t,comment:t.comment||'',matCode:m.code,matName:m.name,matColor:m.color,ti:ti});
+      out.push({name:t.t,comment:t.comment||'',matCode:m.code,matName:m.name,matColor:m.color,ti:ti,sub:t.sub||''});
     });
   });
   return out;
 }
+  
 // Acha, em Matérias, o tópico cujo nome bate (exatamente, ignorando maiúsc./espaços)
 // com o tópico digitado em Revisões. Se uma disciplina foi selecionada em Revisões,
 // prioriza um tópico daquela disciplina.
@@ -2367,6 +2374,14 @@ function rvDelComment(id,cid){
   rvSave(); rvPersistItem(item); rvRender();
 }
 
+function rvSetSubDate(id,subKey,isoVal){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  if(!item.subDates) item.subDates={};
+  if(isoVal) item.subDates[subKey]=rvISOToMs(isoVal);
+  else delete item.subDates[subKey];
+  rvSave(); rvPersistItem(item); rvRender();
+}
+  
 // ── EDITAR REVISÃO ──
 var rvEditId=null;
 function rvOpenEdit(id){
@@ -2647,6 +2662,19 @@ function rvRender(){
 
 var comments=item.comments||[];
     var linkedMat=rvFindMatTopic(item.topic,item.disc);
+    var subList=(linkedMat&&linkedMat.sub)?linkedMat.sub.split(',').map(function(s){return s.trim();}).filter(Boolean):[];
+    var subDatesHtml='';
+    if(subList.length){
+      if(!item.subDates) item.subDates={};
+      subDatesHtml='<div class="rv-subdates"><div class="rv-comments-title">📌 Subtópicos estudados</div>'+
+        subList.map(function(s){
+          var key=s.toLowerCase();
+          var val=item.subDates[key]?rvMsToISO(item.subDates[key]):'';
+          return '<div class="rv-subdate-row"><span class="rv-subdate-name">'+s.replace(/</g,'&lt;')+'</span>'+
+            '<input type="date" class="rv-subdate-input" value="'+val+'" onchange="rvSetSubDate('+item.id+',\''+key.replace(/'/g,"\\'")+'\',this.value)"></div>';
+        }).join('')+
+      '</div>';
+    }
     var linkedMatHtml=(linkedMat&&linkedMat.comment&&linkedMat.comment.trim())?
       '<div class="rv-comment-item rv-mat-comment">'+
         '<div class="rv-comment-text">'+linkedMat.comment.replace(/</g,'&lt;')+'</div>'+
@@ -2685,6 +2713,7 @@ var comments=item.comments||[];
         '<div class="rv-steps">'+stepsHtml+'</div>'+
 '<div style="font-size:10px;color:var(--txt2);margin-top:4px">Estudado: '+rvFmtDate(item.studiedAt)+'</div>'+
         resBadgeHtml(item.topic,item.disc)+
+        subDatesHtml+
         commentsHtml+
       '</div>'+
       '<div class="rv-card-right">'+rightHtml+
