@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Planner OAB 47</title>
+<title>Planner OAB 48</title>
 <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700;800&family=DM+Sans:wght@400;500&display=swap" rel="stylesheet">
 <style>
 *{margin:0;padding:0;box-sizing:border-box}
@@ -276,11 +276,11 @@ button,.tb{font-family:'Outfit',sans-serif}
       <div class="av-list" id="avList"></div>
     </div>
   </div>
-  <div style="font-size:11px;color:var(--txt2);white-space:nowrap">47º EOU · FGV</div>
+<div style="font-size:11px;color:var(--txt2);white-space:nowrap">48º EOU · FGV</div>
 </div>
 
 <div class="cdb">
-  <div><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600">📋 Prova Objetiva — 1ª Fase</div><div style="font-size:11px;opacity:.8">28 de novembro de 2026</div></div>
+  <div><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600">📋 Prova Objetiva — 1ª Fase</div><div style="font-size:11px;opacity:.8">11 de janeiro de 2027</div></div>
   <div class="cdi">
     <div style="text-align:center"><div class="cdn" id="cd">--</div><div class="cdl">dias</div></div>
     <div class="cds">:</div>
@@ -290,7 +290,7 @@ button,.tb{font-family:'Outfit',sans-serif}
     <div class="cds">:</div>
     <div style="text-align:center"><div class="cdn" id="cs2">--</div><div class="cdl">seg</div></div>
   </div>
-  <div style="text-align:right"><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600">159 dias de estudo</div><div style="font-size:11px;opacity:.8">Início: <span id="ssd"></span> · <span style="opacity:.6">v2026-06-22</span></div></div>
+  <div style="text-align:right"><div style="font-family:'Outfit',sans-serif;font-size:13px;font-weight:600">203 dias de estudo</div>
 </div>
 
 <div class="tabs">
@@ -869,7 +869,7 @@ const WM=[
 
 // ── CONSTANTS ──
 const SS=new Date(2026,5,22);
-const PD=new Date(2026,10,28,13,0,0);
+  const PD=new Date(2027,0,11,13,0,0);
 const TW=22;
 const TW_FULL=24;
 const DYS=['Segunda','Terça','Quarta','Quinta','Sexta'];
@@ -1073,7 +1073,7 @@ const WT=[
  [{m:'CIV',t:'VÉSPERA — revisão flash CIV',i:'alta',me:'Leitura',h:'1h'},{m:'ADM',t:'VÉSPERA — revisão flash ADM',i:'alta',me:'Leitura',h:'1h'},{m:'CO2',t:'VÉSPERA — descanso e preparo mental',i:'alta',me:'Leitura',h:'1h'}],
  [{m:'CON',t:'VÉSPERA — relax e confiança ✨',i:'alta',me:'Leitura',h:'30m'},{m:'TRI',t:'VÉSPERA — revisão flash TRI',i:'alta',me:'Leitura',h:'30m'}],
  [{m:'TRA',t:'VÉSPERA — revisão flash TRA',i:'alta',me:'Leitura',h:'30m'},{m:'EMP',t:'VÉSPERA — revisão flash EMP',i:'alta',me:'Leitura',h:'30m'}],
- [{m:'CON',t:'DIA DA PROVA — 28/11/2026',i:'alta',me:'Questoes',h:'5h'}]],
+[{m:'CON',t:'DIA DA PROVA — 11/01/2027',i:'alta',me:'Questoes',h:'5h'}]],
 ];
 
 // ── STATE ──
@@ -2373,7 +2373,19 @@ function rvDelComment(id,cid){
   item.comments=item.comments.filter(function(c){ return c.id!==cid; });
   rvSave(); rvPersistItem(item); rvRender();
 }
-
+  
+function rvEditComment(id,cid){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item||!item.comments) return;
+  var c=item.comments.find(function(x){ return x.id===cid; }); if(!c) return;
+  var novoTxt=prompt('Editar comentário:',c.txt);
+  if(novoTxt===null) return;
+  novoTxt=novoTxt.trim();
+  if(!novoTxt) return;
+  c.txt=novoTxt;
+  c.date=new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})+' (editado)';
+  rvSave(); rvPersistItem(item); rvRender();
+}
+  
 function rvSetSubDate(id,subKey,isoVal){
   var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
   if(!item.subDates) item.subDates={};
@@ -2666,14 +2678,23 @@ var comments=item.comments||[];
     var subDatesHtml='';
     if(subList.length){
       if(!item.subDates) item.subDates={};
-      subDatesHtml='<div class="rv-subdates"><div class="rv-comments-title">📌 Subtópicos estudados</div>'+
-        subList.map(function(s){
-          var key=s.toLowerCase();
-          var val=item.subDates[key]?rvMsToISO(item.subDates[key]):'';
-          return '<div class="rv-subdate-row"><span class="rv-subdate-name">'+s.replace(/</g,'&lt;')+'</span>'+
-            '<input type="date" class="rv-subdate-input" value="'+val+'" onchange="rvSetSubDate('+item.id+',\''+key.replace(/'/g,"\\'")+'\',this.value)"></div>';
-        }).join('')+
-      '</div>';
+ subDatesHtml='<div class="rv-subdates"><div class="rv-comments-title">📌 Subtópicos estudados</div>'+
+  subList.map(function(s){
+    var key=s.toLowerCase();
+    var val=item.subDates[key]?rvMsToISO(item.subDates[key]):'';
+    var keyEsc=key.replace(/'/g,"\\'");
+    return '<div class="rv-subdate-row">'+
+      '<span style="flex:1;min-width:0">'+
+        '<span class="rv-subdate-name">'+s.replace(/</g,'&lt;')+'</span>'+
+        resBadgeHtml(item.topic,item.disc,s)+
+      '</span>'+
+      '<span style="display:flex;align-items:center;gap:5px;flex-shrink:0">'+
+        '<input type="date" class="rv-subdate-input" value="'+val+'" onchange="rvSetSubDate('+item.id+',\''+keyEsc+'\',this.value)">'+
+        (val?'<button class="rv-del-btn" style="padding:3px 7px" title="Limpar data" onclick="rvSetSubDate('+item.id+',\''+keyEsc+'\',\'\')">🗑</button>':'')+
+      '</span>'+
+    '</div>';
+  }).join('')+
+'</div>';
     }
     var linkedMatHtml=(linkedMat&&linkedMat.comment&&linkedMat.comment.trim())?
       '<div class="rv-comment-item rv-mat-comment">'+
@@ -2689,8 +2710,8 @@ var comments=item.comments||[];
           (comments.length?comments.map(function(c){
             return '<div class="rv-comment-item">'+
               '<div class="rv-comment-text">'+c.txt+'</div>'+
-              '<div class="rv-comment-meta"><span>'+c.date+'</span><button onclick="rvDelComment('+item.id+','+c.id+')">Excluir</button></div>'+
-            '</div>';
+'<div class="rv-comment-meta"><span>'+c.date+'</span><span><button onclick="rvEditComment('+item.id+','+c.id+')">Editar</button> <button onclick="rvDelComment('+item.id+','+c.id+')">Excluir</button></span></div>'+
+              '</div>';
 }).join(''):(linkedMatHtml?'':'<div style="font-size:10px;color:var(--txt2)">Nenhum comentário ainda.</div>'))+
         '</div>'+
         '<div class="rv-comment-add">'+
