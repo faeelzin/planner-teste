@@ -2154,15 +2154,26 @@ function rvLastStudyInfo(item){
   var dueExtraLate=(dueGap!==null&&expectedGap!==null)?(dueGap-expectedGap):null;
   return {lastDate:lastDate,daysSince:daysSince,expectedGap:expectedGap,isLate:isLate,isAllDone:nextIdx<0,dueDate:dueDate,dueExtraLate:dueExtraLate};
 }
+  
 function rvLastStudyHtml(item){
   var li=rvLastStudyInfo(item);
   var bg=li.isLate?'#fee2e2':'#eef2ff';
   var fg=li.isLate?'#dc2626':'#3730a3';
-  var dueLine=(li.dueExtraLate!==null&&li.dueExtraLate>0)?
-    '<span style="width:100%;color:#b45309">📌 Se for considerar a data do próximo ciclo ('+rvFmtDate(li.dueDate)+'): '+li.dueExtraLate+' dia'+(li.dueExtraLate!==1?'s':'')+' estarão atrasados.</span>':'';
+  var currentLate=(li.expectedGap!==null)?(li.daysSince-li.expectedGap):null;
+  var mainLine='<span>⏳ Sem estudar esse assunto: '+li.daysSince+' dia'+(li.daysSince!==1?'s':'')+
+    (li.isLate&&currentLate>0?' — já eram pra ter revisado há '+currentLate+' dia'+(currentLate!==1?'s':'')+' (intervalo ideal: '+li.expectedGap+' dias) ⚠️':'')+
+    '</span>';
+  var dueLine='';
+  if(li.dueExtraLate!==null&&li.dueExtraLate>0){
+    var dueTotalDays=li.daysSince+Math.round((rvDayStart(li.dueDate)-rvToday())/86400000);
+    var diffToDue=Math.round((rvDayStart(li.dueDate)-rvToday())/86400000);
+    dueLine='<span style="width:100%;color:#b45309">📌 Você remarcou pro dia '+rvFmtDate(li.dueDate)+
+      (diffToDue>0?' (daqui a '+diffToDue+' dia'+(diffToDue!==1?'s':'')+')':diffToDue===0?' (hoje)':' (já passou)')+
+      '; nessa data, já serão '+dueTotalDays+' dias sem estudar — '+li.dueExtraLate+' a mais que o ideal.</span>';
+  }
   return '<div style="margin-top:5px;padding:6px 9px;border-radius:7px;background:'+bg+';color:'+fg+';font-size:10px;font-weight:600;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center'+(li.isLate?';border:1px solid #fecaca':'')+'">'+
       '<span>🔄 Último ciclo estudado em: '+rvFmtDate(li.lastDate)+'</span>'+
-      '<span>⏳ Sem estudar esse assunto: '+li.daysSince+' dia'+(li.daysSince!==1?'s':'')+(li.isLate?' — atrasado, era pra ter estudado! ⚠️':'')+'</span>'+
+      mainLine+
       dueLine+
     '</div>';
 }
