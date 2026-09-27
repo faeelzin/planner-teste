@@ -2123,6 +2123,50 @@ function rvNextDue(item){
   return rvPlannedDates(item)[i];
 }
 
+function rvNextDue(item){
+  var i=rvNextStep(item); if(i<0) return null;
+  return rvPlannedDates(item)[i];
+}
+
+// ── CONTROLE "SEM ESTUDAR HÁ X DIAS" ──
+// Acha a data do último estudo REAL desse assunto (a última etapa marcada como
+// feita; ou a data de estudo original, se nenhuma etapa ainda foi feita) e
+// calcula há quantos dias isso ocorreu, comparando SEMPRE com o intervalo
+// "original" da etapa pendente (RV_STEPS[i]) — mesmo que a data de vencimento
+// dessa etapa tenha sido remarcada/adiada manualmente (targetDate). Assim, se
+// você adiar a revisão, ela deixa de aparecer em "Atrasadas", mas aqui continua
+// acusando (em vermelho) que já passou do prazo que você deveria ter estudado.
+function rvLastStudyInfo(item){
+  var lastDate=item.studiedAt;
+  for(var i=0;i<item.steps.length;i++){
+    if(item.steps[i]&&item.steps[i].doneAt) lastDate=item.steps[i].doneAt;
+  }
+  var daysSince=Math.max(0,Math.round((rvToday()-rvDayStart(lastDate))/86400000));
+  var nextIdx=rvNextStep(item);
+  var expectedGap=nextIdx>=0?RV_STEPS[nextIdx]:null;
+  var isLate=expectedGap!==null&&daysSince>expectedGap;
+  // Data do próximo ciclo já considerando eventual remarcação manual (targetDate).
+  // Se essa data (quando chegar) já significar um intervalo maior que o
+  // originalmente previsto (RV_STEPS[nextIdx]) a partir do último estudo real,
+  // é porque a revisão foi remarcada pra frente — aqui avisamos de quanto.
+  var dueDate=nextIdx>=0?rvPlannedDates(item)[nextIdx]:null;
+  var dueGap=(dueDate!==null)?Math.round((rvDayStart(dueDate)-rvDayStart(lastDate))/86400000):null;
+  var dueExtraLate=(dueGap!==null&&expectedGap!==null)?(dueGap-expectedGap):null;
+  return {lastDate:lastDate,daysSince:daysSince,expectedGap:expectedGap,isLate:isLate,isAllDone:nextIdx<0,dueDate:dueDate,dueExtraLate:dueExtraLate};
+}
+function rvLastStudyHtml(item){
+  var li=rvLastStudyInfo(item);
+  var bg=li.isLate?'#fee2e2':'#eef2ff';
+  var fg=li.isLate?'#dc2626':'#3730a3';
+  var dueLine=(li.dueExtraLate!==null&&li.dueExtraLate>0)?
+    '<span style="width:100%;color:#b45309">📌 Se for considerar a data do próximo ciclo ('+rvFmtDate(li.dueDate)+'): '+li.dueExtraLate+' dia'+(li.dueExtraLate!==1?'s':'')+' estarão atrasados.</span>':'';
+  return '<div style="margin-top:5px;padding:6px 9px;border-radius:7px;background:'+bg+';color:'+fg+';font-size:10px;font-weight:600;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center'+(li.isLate?';border:1px solid #fecaca':'')+'">'+
+      '<span>🔄 Último ciclo estudado em: '+rvFmtDate(li.lastDate)+'</span>'+
+      '<span>⏳ Sem estudar esse assunto: '+li.daysSince+' dia'+(li.daysSince!==1?'s':'')+(li.isLate?' — atrasado, era pra ter estudado! ⚠️':'')+'</span>'+
+      dueLine+
+    '</div>';
+}
+  
 function rvPopulateDisc(){
   ['rvDisc','rvFiltDisc','rvEditDisc'].forEach(function(id){
     var sel=document.getElementById(id); if(!sel) return;
@@ -2733,6 +2777,7 @@ var comments=item.comments||[];
         (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
         '<div class="rv-steps">'+stepsHtml+'</div>'+
 '<div style="font-size:10px;color:var(--txt2);margin-top:4px">Estudado: '+rvFmtDate(item.studiedAt)+'</div>'+
+        rvLastStudyHtml(item)+
         resBadgeHtml(item.topic,item.disc)+
         subDatesHtml+
         commentsHtml+
