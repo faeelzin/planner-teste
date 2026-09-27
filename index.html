@@ -2193,13 +2193,6 @@ function rvLastStudyHtml(item){
     '</div>';
 }
   
-  return '<div style="margin-top:5px;padding:6px 9px;border-radius:7px;background:'+bg+';color:'+fg+';font-size:10px;font-weight:600;display:flex;flex-wrap:wrap;gap:4px 14px;align-items:center'+(li.isLate?';border:1px solid #fecaca':'')+'">'+
-      '<span>🔄 Último ciclo estudado em: '+rvFmtDate(li.lastDate)+'</span>'+
-      mainLine+
-      dueLine+
-    '</div>';
-}
-  
 function rvPopulateDisc(){
   ['rvDisc','rvFiltDisc','rvEditDisc'].forEach(function(id){
     var sel=document.getElementById(id); if(!sel) return;
