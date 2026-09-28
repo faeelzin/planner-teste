@@ -613,8 +613,8 @@ button,.tb{font-family:'Outfit',sans-serif}
     <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <input type="text" id="rvSearch" placeholder="🔍 Buscar revisão..." style="font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:6px 11px;background:#fff;flex:1;max-width:260px" oninput="rvRender()">
       <select id="rvFiltDisc" style="font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;background:#fff" onchange="rvRender()"><option value="">Todas as disciplinas</option></select>
-      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvHideDone" onchange="rvRender()"> Ocultar concluídas</label>
-      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvOnlyRepeat" onchange="rvRender()"> 🔁 Somente ciclos repetidos</label>
+    <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvOnlyRepeat" onchange="if(this.checked)document.getElementById('rvHideRepeat').checked=false;rvRender()"> 🔁 Somente ciclos repetidos</label>
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvHideRepeat" onchange="if(this.checked)document.getElementById('rvOnlyRepeat').checked=false;rvRender()"> 🙈 Ocultar ciclos repetidos</label>
     </div>
   </div>
   <div class="rv-stats" id="rvStats"></div>
@@ -2649,16 +2649,17 @@ function rvRender(){
   var qRaw=(document.getElementById('rvSearch')||{}).value||'';
   var q=qRaw.toLowerCase();
   var filtDisc=(document.getElementById('rvFiltDisc')||{}).value||'';
-  var hideDone=document.getElementById('rvHideDone')&&document.getElementById('rvHideDone').checked;
+var hideRepeat=document.getElementById('rvHideRepeat')&&document.getElementById('rvHideRepeat').checked;
   var onlyRepeat=document.getElementById('rvOnlyRepeat')&&document.getElementById('rvOnlyRepeat').checked;
   var overdue=[],dueToday=[],upcoming=[],allDone=[];
 
   RV_ITEMS.forEach(function(item){
     if(q&&!item.topic.toLowerCase().includes(q)&&!(item.note||'').toLowerCase().includes(q)) return;
     if(filtDisc&&item.disc!==filtDisc) return;
-    if(onlyRepeat&&!item.repeating) return;
+       if(onlyRepeat&&!item.repeating) return;
+    if(hideRepeat&&item.repeating) return;
     var next=rvNextStep(item);
-    if(next<0){ if(!hideDone) allDone.push({item:item}); return; }
+    if(next<0){ allDone.push({item:item}); return; }
     var due=rvNextDue(item);
     var diff=rvDaysDiff(due);
     var entry={item:item,diff:diff,stepIdx:next,due:due};
