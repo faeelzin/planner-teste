@@ -461,10 +461,7 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-info-tip{display:none;position:absolute;bottom:calc(100% + 7px);left:0;background:#1f2430;color:#f3f4f6;font-size:10.5px;font-weight:400;line-height:1.55;padding:10px 12px;border-radius:8px;width:250px;max-width:70vw;box-shadow:0 10px 30px rgba(0,0,0,.3);z-index:60;white-space:normal;text-align:left}
 .rv-info-tip b{color:#fff}
 .rv-info-wrap:hover .rv-info-tip,.rv-info-wrap:focus .rv-info-tip{display:block}
-.rv-card{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;flex-direction:column;align-items:stretch;transition:box-shadow .2s}
-.rv-card-body{display:flex;align-items:flex-start;gap:12px}
 /* Alertas informativos acumuláveis (urgência / índice) */
-.rv-card{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;transition:box-shadow .2s}
 .rv-alerts-row{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:4px}
 .rv-alert-badge{display:inline-flex;align-items:center;gap:3px;font-family:'Outfit',sans-serif;font-size:9px;font-weight:700;letter-spacing:.2px;padding:3px 9px;border-radius:20px}
 .rv-alerts-picker{margin-top:6px;font-size:10px}
@@ -473,7 +470,6 @@ button,.tb{font-family:'Outfit',sans-serif}
 .rv-alerts-options{display:flex;flex-direction:column;gap:6px;margin-top:6px;padding:9px 10px;background:var(--bg);border:1px solid var(--bdr);border-radius:8px}
 .rv-alerts-options label{display:flex;align-items:center;gap:7px;cursor:pointer;font-weight:600;font-size:10.5px}
 .rv-alerts-options input[type=checkbox]{cursor:pointer}
-  /* M*/
   .rv-card{background:#fff;border:1px solid var(--bdr);border-radius:10px;padding:12px 14px;margin-bottom:8px;display:flex;align-items:flex-start;gap:12px;transition:box-shadow .2s}
 .rv-card:hover{box-shadow:0 2px 8px rgba(99,102,241,.1)}
 .rv-card.overdue{border-color:#fca5a5;background:#fff8f8}
@@ -2127,25 +2123,22 @@ function rvToggleAlert(id,alertId){
   rvSave(); rvPersistItem(item); rvRender();
 }
   
-function rvAlertsBadgesHtml(item){
+function rvAlertsHtml(item){
   var alerts=item.alerts||[];
-  if(!alerts.length) return '';
   var badgesHtml=alerts.map(function(aid){
     var a=RV_ALERTS.find(function(x){ return x.id===aid; }); if(!a) return '';
     return '<span class="rv-alert-badge" style="background:'+a.bg+';color:'+a.fg+'">'+a.emoji+' '+a.label+'</span>';
   }).join('');
-  return '<div class="rv-alerts-row">'+badgesHtml+'</div>';
-}
-function rvAlertsPickerHtml(item){
-  var alerts=item.alerts||[];
+  var badgesRow=badgesHtml?'<div class="rv-alerts-row">'+badgesHtml+'</div>':'';
   var optionsHtml=RV_ALERTS.map(function(a){
     var checked=alerts.indexOf(a.id)>=0?' checked':'';
     return '<label><input type="checkbox"'+checked+' onchange="rvToggleAlert('+item.id+',\''+a.id+'\')"> '+a.emoji+' '+a.label+'</label>';
   }).join('');
-  return '<details class="rv-alerts-picker">'+
+  var picker='<details class="rv-alerts-picker">'+
       '<summary>🚩 Alertas'+(alerts.length?' ('+alerts.length+')':'')+'</summary>'+
       '<div class="rv-alerts-options">'+optionsHtml+'</div>'+
     '</details>';
+  return badgesRow+picker;
 }
   
 function rvISOToMs(iso){
@@ -2848,9 +2841,8 @@ var comments=item.comments||[];
     card.id='rvcard-'+item.id;
     card.className='rv-card'+(diff!==null&&diff<0?' overdue':diff===0?' today':isAllDone?' done-all':'');
     card.innerHTML=
-      rvAlertsBadgesHtml(item)+
-      '<div class="rv-card-body">'+
       '<div class="rv-card-left">'+
+        rvAlertsHtml(item)+
         (item.repeating?'<div class="rv-repeat-badge">🔁 CICLO SENDO REPETIDO</div>':'')+
 '<div class="rv-card-topic">'+item.topic+'</div>'+
         (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
@@ -2861,12 +2853,10 @@ var comments=item.comments||[];
         resBadgeHtml(item.topic,item.disc)+
         subDatesHtml+
         commentsHtml+
-        rvAlertsPickerHtml(item)+
       '</div>'+
       '<div class="rv-card-right">'+rightHtml+
         '<button class="rv-edit-btn" onclick="rvOpenEdit('+item.id+')">✏️ Editar</button>'+
         '<button class="rv-del-btn" id="rvdel-'+item.id+'" onclick="rvDelete('+item.id+')">🗑</button>'+
-      '</div>'+
       '</div>';
     return card;
   }
