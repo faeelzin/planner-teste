@@ -622,7 +622,13 @@ button,.tb{font-family:'Outfit',sans-serif}
     <div style="margin-top:10px;display:flex;gap:8px;flex-wrap:wrap;align-items:center">
       <input type="text" id="rvSearch" placeholder="🔍 Buscar revisão..." style="font-family:'DM Sans',sans-serif;font-size:12px;border:1.5px solid var(--bdr);border-radius:8px;padding:6px 11px;background:#fff;flex:1;max-width:260px" oninput="rvRender()">
       <select id="rvFiltDisc" style="font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;background:#fff" onchange="rvRender()"><option value="">Todas as disciplinas</option></select>
-    <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvOnlyRepeat" onchange="if(this.checked)document.getElementById('rvHideRepeat').checked=false;rvRender()"> 🔁 Somente ciclos repetidos</label>
+          <select id="rvSortMode" style="font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid var(--bdr);border-radius:8px;padding:6px 10px;background:#fff" onchange="rvRender()">
+        <option value="">↕️ Ordem padrão</option>
+        <option value="atrasadas">⚠️ Atrasadas há mais tempo</option>
+        <option value="semrevisar">⏳ Há mais tempo sem revisar</option>
+        <option value="maislonge">📆 Mais longe de revisar</option>
+      </select>
+      <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvOnlyRepeat" onchange="if(this.checked)document.getElementById('rvHideRepeat').checked=false;rvRender()"> 🔁 Somente ciclos repetidos</label>
       <label style="display:flex;align-items:center;gap:5px;font-size:12px;color:var(--txt2);cursor:pointer"><input type="checkbox" id="rvHideRepeat" onchange="if(this.checked)document.getElementById('rvOnlyRepeat').checked=false;rvRender()"> 🙈 Ocultar ciclos repetidos</label>
     </div>
   </div>
@@ -2873,6 +2879,53 @@ var comments=item.comments||[];
     con.appendChild(sec);
   }
 
+    // ── FILTRO / ORDENAÇÃO ESPECIAL (atrasadas / sem revisar / mais longe) ──
+  var sortMode=(document.getElementById('rvSortMode')||{}).value||'';
+  if(sortMode){
+    var pending=overdue.concat(dueToday,upcoming);
+    var list=[],title='',emoji='',badge='',emptyMsg='';
+    if(sortMode==='atrasadas'){
+      // só as atrasadas, da que está há MAIS dias de atraso para a menos
+      list=overdue.slice().sort(function(a,b){ return a.diff-b.diff; });
+      emoji='⚠️'; title='Atrasadas há mais tempo'; badge='background:#fee2e2;color:#dc2626';
+      emptyMsg='Nenhuma revisão atrasada. 🎉';
+    } else if(sortMode==='semrevisar'){
+      // todas as pendentes, da que está há MAIS dias sem ser estudada/revisada para a menos
+      list=pending.map(function(e){ e.since=rvLastStudyInfo(e.item).daysSince; return e; })
+                  .sort(function(a,b){ return (b.since-a.since)||(a.diff-b.diff); });
+      emoji='⏳'; title='Há mais tempo sem revisar'; badge='background:#fef3c7;color:#92400e';
+      emptyMsg='Nenhuma revisão pendente.';
+    } else if(sortMode==='maislonge'){
+      // só as futuras, da que está mais DISTANTE de ser revisada para a mais próxima
+      list=upcoming.slice().sort(function(a,b){ return b.diff-a.diff; });
+      emoji='📆'; title='Mais longe de serem revisadas'; badge='background:#e0e7ff;color:#3730a3';
+      emptyMsg='Nenhuma revisão agendada para os próximos dias.';
+    }
+    var secF=document.createElement('div'); secF.className='rv-section';
+    secF.innerHTML='<div class="rv-section-title">'+emoji+' '+title+'<span class="rv-section-cnt" style="'+badge+'">'+list.length+'</span></div>';
+    if(!list.length) secF.innerHTML+='<div class="rv-empty">'+emptyMsg+'</div>';
+    list.forEach(function(e,i){
+      var c=makeCard(e,false);
+      var lbl=document.createElement('div');
+      lbl.style.cssText='font-size:10px;font-family:Outfit,sans-serif;font-weight:700;color:var(--txt2);margin:8px 0 3px';
+      var extra='';
+      if(sortMode==='atrasadas') extra=' · '+Math.abs(e.diff)+' dia'+(Math.abs(e.diff)!==1?'s':'')+' de atraso';
+      else if(sortMode==='semrevisar') extra=' · '+e.since+' dia'+(e.since!==1?'s':'')+' sem revisar';
+      else extra=' · revisar em '+e.diff+' dia'+(e.diff!==1?'s':'');
+      lbl.textContent='#'+(i+1)+extra;
+      secF.appendChild(lbl);
+      secF.appendChild(c);
+    });
+    con.appendChild(secF);
+    if(RV_ITEMS.length===0){
+      con.innerHTML='<div class="rv-empty" style="font-size:14px;padding:40px">📚 Nenhum conteúdo ainda.</div>';
+    }
+    var agendaPanelF=document.getElementById('rvAgendaPanel');
+    if(agendaPanelF&&agendaPanelF.classList.contains('open')) rvRenderAgendaGrid();
+    return;
+  }
+  // ── FIM DO FILTRO ESPECIAL ──
+  
   if(overdue.length) makeSection('⚠️','Atrasadas',overdue,'background:#fee2e2;color:#dc2626');
   if(dueToday.length) makeSection('📅','Para revisar hoje',dueToday,'background:#eef2ff;color:#6366f1');
 
