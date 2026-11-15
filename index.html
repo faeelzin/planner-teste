@@ -78,6 +78,13 @@ button,.tb{font-family:'Outfit',sans-serif}
 .av-meta{font-size:10px;color:var(--txt2);margin-top:2px}
 .av-del{background:none;border:none;cursor:pointer;font-size:12px;color:var(--txt2);flex-shrink:0}
 .av-del:hover{color:#dc2626}
+  .av-edit{background:none;border:none;cursor:pointer;font-size:12px;color:var(--txt2);flex-shrink:0}
+.av-edit:hover{color:#f59e0b}
+.av-text{white-space:pre-wrap;word-break:break-word}
+.av-edit-txt{width:100%;font-family:'DM Sans',sans-serif;font-size:12px;border:1px solid #f59e0b;border-radius:7px;padding:7px 9px;resize:vertical;min-height:56px;color:var(--txt);box-sizing:border-box}
+.av-edit-txt:focus{outline:none}
+.av-cancel{background:none;border:1px solid var(--bdr);color:var(--txt2);border-radius:7px;padding:5px 11px;font-family:'Outfit',sans-serif;font-size:12px;cursor:pointer}
+.av-cancel:hover{background:#f3f4f6}
 .av-empty{padding:20px;text-align:center;color:var(--txt2);font-size:12px}
 
 /* COUNTDOWN */
@@ -1568,15 +1575,42 @@ function goMat(discCode,ti){
 }
   
 // ── AVISOS ──
+let AV_EDIT=null;
 function tgAv(){const p=document.getElementById('avPanel');p.classList.toggle('open');}
 document.addEventListener('click',function(e){
+  if(!e.target.isConnected)return; // clique em elemento que foi re-renderizado (ex: ✎, ✕)
   const p=document.getElementById('avPanel');const b=document.getElementById('avBtn');
   if(p&&p.classList.contains('open')&&!p.contains(e.target)&&!b.contains(e.target)){p.classList.remove('open');}
 });
+document.addEventListener('keydown',function(e){
+  if(AV_EDIT===null)return;
+  if(e.key==='Escape'){cancelAv();}
+  else if(e.key==='Enter'&&(e.ctrlKey||e.metaKey)){saveAv(AV_EDIT);}
+});
+function avPriLabel(p){return p==='alta'?'🔴 Urgente':p==='media'?'🟡 Normal':'🟢 Informativo';}
 function rAv(){
   const list=document.getElementById('avList');const badge=document.getElementById('avBadge');
   if(!AVISOS.length){list.innerHTML='<div class="av-empty">📭 Nenhum aviso ainda.<br>Crie lembretes e anotações!</div>';}
-  else{list.innerHTML=AVISOS.map(a=>'<div class="av-item"><div class="av-dot" style="background:'+AV_COLORS[a.pri]+'"></div><div><div class="av-text">'+a.txt+'</div><div class="av-meta">'+(a.pri==='alta'?'🔴 Urgente':a.pri==='media'?'🟡 Normal':'🟢 Informativo')+' · '+a.date+'</div></div><button class="av-del" onclick="delAv('+a.id+')">✕</button></div>').join('');}
+  else{
+    list.innerHTML=AVISOS.map(a=>{
+      if(a.id===AV_EDIT){
+        return '<div class="av-item"><div class="av-dot" style="background:'+AV_COLORS[a.pri]+'"></div>'+
+          '<div style="flex:1;min-width:0"><textarea id="avEditTxt" class="av-edit-txt"></textarea>'+
+          '<div class="av-add-row"><select id="avEditPri">'+
+            '<option value="alta">🔴 Urgente</option><option value="media">🟡 Normal</option><option value="baixa">🟢 Informativo</option>'+
+          '</select><button class="av-save" onclick="saveAv('+a.id+')">Salvar</button><button class="av-cancel" onclick="cancelAv()">Cancelar</button></div></div></div>';
+      }
+      return '<div class="av-item"><div class="av-dot" style="background:'+AV_COLORS[a.pri]+'"></div>'+
+        '<div style="flex:1;min-width:0"><div class="av-text">'+a.txt+'</div><div class="av-meta">'+avPriLabel(a.pri)+' · '+a.date+(a.edited?' · editado':'')+'</div></div>'+
+        '<button class="av-edit" title="Editar" onclick="editAv('+a.id+')">✎</button>'+
+        '<button class="av-del" title="Excluir" onclick="delAv('+a.id+')">✕</button></div>';
+    }).join('');
+    // preenche o editor via JS (evita problemas de escape de HTML no texto)
+    if(AV_EDIT!==null){
+      const a=AVISOS.find(x=>x.id===AV_EDIT);const t=document.getElementById('avEditTxt');
+      if(a&&t){t.value=a.txt;document.getElementById('avEditPri').value=a.pri;t.focus();t.setSelectionRange(t.value.length,t.value.length);}
+    }
+  }
   const cnt=AVISOS.filter(a=>a.pri==='alta').length;
   if(cnt>0){badge.style.display='block';badge.textContent=cnt;}else{badge.style.display='none';}
 }
@@ -1586,7 +1620,20 @@ function addAv(){
   AVISOS.unshift({id:Date.now(),txt,pri,date:new Date().toLocaleDateString('pt-BR',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'})});
   save();rAv();document.getElementById('avTxt').value='';
 }
-function delAv(id){AVISOS=AVISOS.filter(a=>a.id!==id);save();rAv();}
+function editAv(id){AV_EDIT=id;rAv();}
+function cancelAv(){AV_EDIT=null;rAv();}
+function saveAv(id){
+  const t=document.getElementById('avEditTxt');const p=document.getElementById('avEditPri');
+  if(!t||!p)return;
+  const txt=t.value.trim();
+  if(!txt)return; // não permite salvar vazio (use ✕ para excluir)
+  const a=AVISOS.find(x=>x.id===id);
+  if(a){
+    if(a.txt!==txt||a.pri!==p.value){a.txt=txt;a.pri=p.value;a.edited=true;}
+  }
+  AV_EDIT=null;save();rAv();
+}
+function delAv(id){if(AV_EDIT===id)AV_EDIT=null;AVISOS=AVISOS.filter(a=>a.id!==id);save();rAv();}
 
 // ── MODAL TOPIC ──
 function oAdd(){EID=null;document.getElementById('mot').textContent='Adicionar tópico';document.getElementById('mop').value='';document.getElementById('moh').value='1h30';bWSel('mow');bMSel('mom');document.getElementById('mow').value=CW;document.getElementById('bdm').style.display='none';document.getElementById('mo').classList.add('open');}
