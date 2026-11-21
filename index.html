@@ -2476,8 +2476,8 @@ function rvConfirmReset(id){
   item.studiedAt=newStart;
   item.steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
   if(wasCompleted){
-    // contador de repetições: 1ª vez = 1, 2ª = 2, 3ª = 3...
-    // (rvRepeatCount trata itens antigos, que só tinham repeating=true, como 1)
+    // 1ª repetição = 1, 2ª = 2, 3ª = 3...
+    // (itens antigos, que só tinham repeating=true, já contam como 1)
     item.repeatCount=rvRepeatCount(item)+1;
     item.repeating=true;
     // Considera o dia 2 automaticamente cumprido → a cadeia segue 7, 15, 25 a partir daqui
@@ -2914,7 +2914,7 @@ var comments=item.comments||[];
     card.innerHTML=
       '<div class="rv-card-left">'+
         rvAlertsHtml(item)+
-        (item.repeating?'<div class="rv-repeat-badge" style="cursor:pointer" title="Clique para ajustar o número de repetições" onclick="rvSetRepeatCount('+item.id+')">🔁 CICLO SENDO REPETIDO'+(rvRepeatCount(item)>=2?': '+rvRepeatCount(item):'')+'</div>':'')+
+        (item.repeating?'<div class="rv-repeat-badge" style="cursor:pointer" title="Clique para ajustar o número de repetições" onclick="rvSetRepeatCount('+item.id+')">🔁 CICLO SENDO REPETIDO: '+rvRepeatCount(item)+'</div>':'')+
   '<div class="rv-card-topic">'+item.topic+'</div>'+
         (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
         (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
