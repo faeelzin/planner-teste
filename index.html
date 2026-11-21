@@ -2451,6 +2451,21 @@ function rvResetCycle(id){
   card.appendChild(dlg);
 }
 
+function rvRepeatCount(item){
+  if(!item.repeating) return 0;
+  return item.repeatCount>0 ? item.repeatCount : 1; // itens antigos (só com repeating=true) contam como 1
+}
+function rvSetRepeatCount(id){
+  var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
+  var v=prompt('Quantas vezes este ciclo já foi repetido?', rvRepeatCount(item));
+  if(v===null) return;
+  var n=parseInt(v,10);
+  if(isNaN(n)||n<0) return;
+  item.repeatCount=n;
+  item.repeating=n>0;
+  rvSave(); rvPersistItem(item); rvRender();
+}
+  
 function rvConfirmReset(id){
   var item=RV_ITEMS.find(function(x){ return x.id===id; }); if(!item) return;
   var dateEl=document.getElementById('rvResetDate-'+id);
@@ -2461,6 +2476,9 @@ function rvConfirmReset(id){
   item.studiedAt=newStart;
   item.steps=RV_STEPS.map(function(){ return {doneAt:null,targetDate:null}; });
   if(wasCompleted){
+    // contador de repetições: 1ª vez = 1, 2ª = 2, 3ª = 3...
+    // (rvRepeatCount trata itens antigos, que só tinham repeating=true, como 1)
+    item.repeatCount=rvRepeatCount(item)+1;
     item.repeating=true;
     // Considera o dia 2 automaticamente cumprido → a cadeia segue 7, 15, 25 a partir daqui
     item.steps[0].doneAt=newStart;
@@ -2896,8 +2914,8 @@ var comments=item.comments||[];
     card.innerHTML=
       '<div class="rv-card-left">'+
         rvAlertsHtml(item)+
-        (item.repeating?'<div class="rv-repeat-badge">🔁 CICLO SENDO REPETIDO</div>':'')+
-'<div class="rv-card-topic">'+item.topic+'</div>'+
+        (item.repeating?'<div class="rv-repeat-badge" style="cursor:pointer" title="Clique para ajustar o número de repetições" onclick="rvSetRepeatCount('+item.id+')">🔁 CICLO SENDO REPETIDO'+(rvRepeatCount(item)>=2?': '+rvRepeatCount(item):'')+'</div>':'')+
+  '<div class="rv-card-topic">'+item.topic+'</div>'+
         (discName?'<div class="rv-card-disc" style="color:'+discColor+'">'+discName+'</div>':'')+
         (item.note?'<div class="rv-card-note">📝 '+item.note+'</div>':'')+
         '<div class="rv-steps">'+stepsHtml+'</div>'+
